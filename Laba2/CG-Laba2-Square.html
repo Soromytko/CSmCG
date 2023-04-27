@@ -1,0 +1,124 @@
+<html>
+	<head>
+		<title>Triangle</title>
+	</head>
+	<body>
+		<canvas id="canvas" width="800" height="800">
+			Your browser does not support HTML5
+		</canvas>
+		<br />
+		<script>
+			var canvas = document.getElementById('canvas')
+			var gl = canvas.getContext('webgl')
+      
+			function loadShader(gl, type, source) { 
+				const shader = gl.createShader(type)
+				gl.shaderSource(shader, source) 
+				gl.compileShader(shader)
+				if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) { 
+					alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader))
+					gl.deleteShader(shader)
+					return null; 
+				} 
+				return shader;
+			}
+
+			function createShaderProgram(gl, vertexShader, fragmentShader) {
+				const shaderProgram = gl.createProgram();
+				gl.attachShader(shaderProgram, vertexShader); 
+				gl.attachShader(shaderProgram, fragmentShader); 
+				gl.linkProgram(shaderProgram); 
+				if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) { 
+					('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram)); 
+					return null; 
+				} 
+				return shaderProgram
+			}
+			
+			// Initialization =========================================================
+			var vertSource =
+			`
+				precision mediump float;
+				
+				attribute vec2 vertPosition;
+				attribute vec3 vertColor;
+				varying vec2 vPos;
+				
+				void main()
+				{
+				  gl_Position = vec4(vertPosition, 0.0, 1.0);
+				  vPos = vertPosition;
+				}
+			`
+
+			var fragSource =
+			`
+			precision mediump float;
+			
+			varying vec2 vPos;
+			
+			void main()
+			{
+				float n = 16.0; 
+				int sum = int( vPos.y * n);
+				
+				vec4 color1 = vec4(0, 1, 0, 1);
+				vec4 color2 = vec4(0.8, 0, 0.4, 1);
+
+				
+				if ( (sum -sum / 2 * 2)== 0 ) {  
+					if (vPos.y <= 0.0) gl_FragColor = color2;
+					else gl_FragColor = color1;
+				} else {  
+					if (vPos.y <= 0.0) gl_FragColor = color1;
+					else gl_FragColor = color2;
+				}
+			}
+			`
+			
+			const vertShader = loadShader(gl, gl.VERTEX_SHADER, vertSource)
+			const fragShader = loadShader(gl, gl.FRAGMENT_SHADER, fragSource)
+			
+			if (!vertShader || !fragShader)
+				throw new Error()
+
+			var shaderProgram = createShaderProgram(gl, vertShader, fragShader)
+			
+			if (!shaderProgram)
+				throw new Error()
+			
+			
+			// Drawing ================================================================
+			var vertices =
+			[ // X, Y,       R, G, B
+				0.5, 0.5,
+				-0.5, 0.5,
+				0.5, -0.5,
+				-0.5, -0.5,
+			];
+			
+			
+			var vertex_buffer = gl.createBuffer()
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer)
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+			
+			
+			gl.useProgram(shaderProgram)
+			
+			const float32Offset = Float32Array.BYTES_PER_ELEMENT
+			
+			
+			gl.clearColor(1.0, 1.0, 1.0, 1.0)
+			gl.enable(gl.DEPTH_TEST)
+			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+			gl.viewport(0, 0, canvas.width, canvas.height)
+			
+			var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vertPosition")
+			gl.vertexAttribPointer(vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0)
+			gl.enableVertexAttribArray(vertexPositionAttribute)
+			
+			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+			
+		</script>
+	</body>
+</html>
