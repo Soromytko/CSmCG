@@ -1,0 +1,69 @@
+<html>
+	<head>
+		<titleLaba3</title>
+	</head>
+	<body onload="main()">
+		<div class="slidecontainer">
+			<div>
+				<label for="temp">Scene:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="sceneRange">
+				<label for="temp">Pedestal:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="pedestalRange">
+				<label for="temp">Red:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="redRange">
+				<label for="temp">Green:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="greenRange">
+				<label for="temp">Yellow:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="yellowRange">
+				<label for="temp">Blue:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="blueRange">
+			</div>
+		</div>
+		<canvas id="canvas" width="600" height="600">
+			Your browser does not support HTML5
+		</canvas>
+		<div>
+			<div>
+				<label for="temp">Ambient:</label>
+				<input type="range" min="0" max="1" value="0.1" step="0.01" class="slider" id="ambientRange">
+				<label for="temp">Diffuse:</label>
+				<input type="range" min="0" max="1" value="0.2" step="0.01" class="slider" id="diffuseRange">
+				<label for="temp">Specular:</label>
+				<input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="specularRange">
+				<label for="temp">LightSize:</label>
+				<input type="range" min="0" max="1" value="0.7" step="0.01" class="slider" id="lightSizeRange">
+			</div>
+
+			<div>
+				<label for="temp">LightPositionX:</label>
+				<input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="lightXRange">
+				<label for="temp">LightPositionY:</label>
+				<input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="lightYRange">
+				<label for="temp">LightPositionZ:</label>
+				<input type="range" min="0" max="1" value="0.3" step="0.01" class="slider" id="lightZRange">
+			</div>
+			<div>
+				<label for="pet-select">Lighting model:</label>
+				<select name="pets" id="lightingModelSelect">
+				<option value="Lambert">Lambert</option>
+				<option value="Phong">Phong</option>
+				<option value="Guro">Guro</option>
+			</select>
+			</div>
+				
+				
+		</div>
+		<script src="gl-matrix/dist/gl-matrix-min.js"></script>
+		<script src="src/global.js"></script>
+		<script src="src/Material.js"></script>
+		<script src="src/Mesh.js"></script>
+		<script src="src/CubeMesh.js"></script>
+		<script src="src/Object.js"></script>
+		<script src="src/CubeObject.js"></script>
+		<script src="src/lambert.js"></script>
+		<script src="src/phong.js"></script>
+		<script src="src/lamp.js"></script>
+		<script src="src/guro.js"></script>
+		<script src="src/index.js"></script>
+	</body>
+</html>
