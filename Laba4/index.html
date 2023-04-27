@@ -1,0 +1,34 @@
+<html>
+	<head>
+		<titleLaba3</title>
+	</head>
+	<body onload="main()">
+		<div class="slidecontainer">
+			<div>
+				<label for="temp">Scene:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="sceneRange">
+				<label for="temp">Pedestal:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="pedestalRange">
+				<label for="temp">Red:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="redRange">
+				<label for="temp">Green:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="greenRange">
+				<label for="temp">Yellow:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="yellowRange">
+				<label for="temp">Orange:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="orangeRange">
+			</div>
+		</div>
+		<canvas id="canvas" width="600" height="600">
+			Your browser does not support HTML5
+		</canvas>
+		<div>
+				<label for="temp">Ambient:</label>
+				<input type="range" min="0" max="1" value="0.1" step="0.01" class="slider" id="ambientRange">
+				
+			</div>
+		<script src="gl-matrix/dist/gl-matrix-min.js"></script>
+		<script src="src/cube.js"></script>
+		<script src="src/index.js"></script>
+	</body>
+</html>
