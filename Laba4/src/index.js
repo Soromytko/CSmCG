@@ -22,6 +22,8 @@ function createShaderProgram(gl, vertexShader, fragmentShader) {
     return shaderProgram
 }
 
+var gl
+
 var scene = {
     pos: {x: 0, y: 0, z: -5},
     rotY: 0
@@ -36,6 +38,13 @@ var greenCube = new Cube({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
 var yellowCube = new Cube({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
 var orangeCube = new Cube({x: 1, y: 0, z: 0}, 0.3, {r: 1, g: 0.6, b: 0})
 var lightCube = new Cube({x: 0, y: 2, z: 0}, 0.1, {r: 1, g: 1, b: 1})
+
+var objects = [
+    redCube,
+    greenCube,
+    yellowCube,
+    orangeCube,
+]
 
 
  // Initialization =========================================================
@@ -82,21 +91,27 @@ var lightCube = new Cube({x: 0, y: 2, z: 0}, 0.1, {r: 1, g: 1, b: 1})
     }
  `
 
-function main() {
-    var canvas = document.getElementById('canvas')
-    var gl = canvas.getContext('webgl')
-
+ function init() {
+    const canvas = document.getElementById('canvas')
     if (!canvas) {
         alert("Canvas not found")
         throw new Error()
     }
 
+    gl = canvas.getContext('webgl')
     if (!gl) {
         alert("WebGL initialization error")
         throw new Error()
     }
 
+    // CubeMesh is a singleton class, call this for an instance
+    new CubeMesh().createBuffers(gl)
+
     bindInput()
+ }
+
+function main() {
+    init()
 
     const vertShader = compileShader(gl, gl.VERTEX_SHADER, vertSource)
     const fragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragSource)
@@ -108,56 +123,72 @@ function main() {
 
     if (!shaderProgram)
         throw new Error()
-
-    //Red cube
-    redCube.attachShaderProgram(shaderProgram)
-    redCube.createBuffers(gl)
-
-    // Green cube
-    greenCube.attachShaderProgram(shaderProgram)
-    greenCube.createBuffers(gl)
-
-    // Green cube
-    yellowCube.attachShaderProgram(shaderProgram)
-    yellowCube.createBuffers(gl)
-
-    // Orange cube
-    orangeCube.attachShaderProgram(shaderProgram)
-    orangeCube.createBuffers(gl)
-
-    // Light cube
-    lightCube.attachShaderProgram(shaderProgram)
-    lightCube.createBuffers(gl)
-
-    
    
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LEQUAL)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    render()
     
-    function render() {
+
+    gl.useProgram(shaderProgram)
+    const uProjectMatLocation = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
+    const uLocal = gl.getUniformLocation(shaderProgram, 'u_mLocal')
+    const uSizeLocation = gl.getUniformLocation(shaderProgram, "u_Size")
+    const uColorLocation = gl.getUniformLocation(shaderProgram, "u_Color")
+    const u_AmbientLocation = gl.getUniformLocation(shaderProgram, "u_AmbientStrength")
+    const uLightDirectionLocation = gl.getUniformLocation(shaderProgram, "u_LightDirection")
+    const vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
+    const vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexNormal')
+    
+    gl.enableVertexAttribArray(vertexPositionAttribLoc)
+    gl.enableVertexAttribArray(vertexNormalAttribLoc)
+
+    renderObject = function(object, baseMatrix) {
+        const mesh = object.mesh
+        mesh.setVertexAttributePointers(vertexPositionAttribLoc, vertexNormalAttribLoc)
+
+        // Local Matrix
+        const localMat = glMatrix.mat4.create()
+        glMatrix.mat4.translate(localMat, baseMatrix, [object.position.x, object.position.y, object.position.z, 0])
+        glMatrix.mat4.rotate(localMat, localMat, object.rotationY, [0, 1, 0])
+        gl.uniformMatrix4fv(uLocal, false, localMat)
+        // Size
+        gl.uniform1f(uSizeLocation, object.size)
+        // Color
+        gl.uniform4f(uColorLocation, object.color.r, object.color.g, object.color.b, 1)
+
+        // Lights
+        gl.uniform1f(u_AmbientLocation, ambient)
+        gl.uniform3f(uLightDirectionLocation, -1, -1, 0)
+
+        gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0)
+    }
+
+    renderLoop()
+    function renderLoop() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
         gl.clearColor(0.0, 0.0, 0.0, 1.0)
 
         const baseMatrix = glMatrix.mat4.create()
-        // Scene
+        // Scene transformation
         glMatrix.mat4.translate(baseMatrix, baseMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
         glMatrix.mat4.rotate(baseMatrix, baseMatrix, scene.rotY, [0, 1, 0])
-        // Pedestal
+        // Pedestal transformation
         glMatrix.mat4.translate(baseMatrix, baseMatrix, [pedestal.pos.x, pedestal.pos.y, pedestal.pos.z, 0])
         glMatrix.mat4.rotate(baseMatrix, baseMatrix, pedestal.rotY, [0, 1, 0])
 
-        redCube.render(gl, baseMatrix, ambient)
-        greenCube.render(gl, baseMatrix, ambient)
-        yellowCube.render(gl, baseMatrix, ambient)
-        orangeCube.render(gl, baseMatrix, ambient)
+        const projectionMatrix = glMatrix.mat4.create()
+        glMatrix.mat4.perspective(projectionMatrix, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
+        gl.uniformMatrix4fv(uProjectMatLocation, false, projectionMatrix)
+        
+        objects.forEach(object => {
+            renderObject(object, baseMatrix)
+        })
 
         const lightCubeMatrix = glMatrix.mat4.create()
         glMatrix.mat4.translate(lightCubeMatrix, lightCubeMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
-        lightCube.render(gl, lightCubeMatrix, 1)
+        renderObject(lightCube, lightCubeMatrix)
 
-        requestAnimationFrame(render)
+        requestAnimationFrame(renderLoop)
     }
 }
 
@@ -171,19 +202,19 @@ function bindInput() {
     })
 
     document.getElementById("redRange").addEventListener("input", (event) => {
-        redCube.rotation = event.target.value / 50
+        redCube.rotationY = event.target.value / 50
     })
 
     document.getElementById("greenRange").addEventListener("input", (event) => {
-        greenCube.rotation = event.target.value / 50
+        greenCube.rotationY = event.target.value / 50
     })
 
     document.getElementById("yellowRange").addEventListener("input", (event) => {
-        yellowCube.rotation = event.target.value / 50
+        yellowCube.rotationY = event.target.value / 50
     })
 
     document.getElementById("orangeRange").addEventListener("input", (event) => {
-        orangeCube.rotation = event.target.value / 50
+        orangeCube.rotationY = event.target.value / 50
     })
 
     document.getElementById("ambientRange").addEventListener("input", (event) => {
