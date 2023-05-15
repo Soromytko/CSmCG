@@ -35,6 +35,7 @@ var redCube = new Cube({x: -2, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
 var greenCube = new Cube({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
 var yellowCube = new Cube({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
 var orangeCube = new Cube({x: 1, y: 0, z: 0}, 0.3, {r: 1, g: 0.6, b: 0})
+var lightCube = new Cube({x: 0, y: 2, z: 0}, 0.1, {r: 1, g: 1, b: 1})
 
 
  // Initialization =========================================================
@@ -108,21 +109,26 @@ function main() {
     if (!shaderProgram)
         throw new Error()
 
-    //Red
+    //Red cube
     redCube.attachShaderProgram(shaderProgram)
     redCube.createBuffers(gl)
 
-    // Green
+    // Green cube
     greenCube.attachShaderProgram(shaderProgram)
     greenCube.createBuffers(gl)
 
-    // Green
+    // Green cube
     yellowCube.attachShaderProgram(shaderProgram)
     yellowCube.createBuffers(gl)
 
-    // Orange
+    // Orange cube
     orangeCube.attachShaderProgram(shaderProgram)
     orangeCube.createBuffers(gl)
+
+    // Light cube
+    lightCube.attachShaderProgram(shaderProgram)
+    lightCube.createBuffers(gl)
+
     
    
     gl.enable(gl.DEPTH_TEST)
@@ -146,6 +152,10 @@ function main() {
         greenCube.render(gl, baseMatrix, ambient)
         yellowCube.render(gl, baseMatrix, ambient)
         orangeCube.render(gl, baseMatrix, ambient)
+
+        const lightCubeMatrix = glMatrix.mat4.create()
+        glMatrix.mat4.translate(lightCubeMatrix, lightCubeMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
+        lightCube.render(gl, lightCubeMatrix, 1)
 
         requestAnimationFrame(render)
     }
@@ -178,6 +188,18 @@ function bindInput() {
 
     document.getElementById("ambientRange").addEventListener("input", (event) => {
         ambient = event.target.value
+    })
+
+    document.getElementById("lightXRange").addEventListener("input", (event) => {
+        lightCube.position.x = event.target.value
+    })
+
+    document.getElementById("lightYRange").addEventListener("input", (event) => {
+        lightCube.position.y = event.target.value
+    })
+
+    document.getElementById("lightZRange").addEventListener("input", (event) => {
+        lightCube.position.z = event.target.value
     })
 }
 
