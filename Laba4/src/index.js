@@ -40,6 +40,7 @@ var orangeCube = new Cube({x: 1, y: 0, z: 0}, 0.3, {r: 1, g: 0.6, b: 0})
 var lightCube = new Cube({x: 0, y: 2, z: 0}, 0.1, {r: 1, g: 1, b: 1})
 
 var objects = [
+    new Cube({x: 0, y: 1, z: 0}, 0.2, {r: 1, g: 0, b: 1}),
     redCube,
     greenCube,
     yellowCube,
@@ -65,11 +66,14 @@ var objects = [
 
     void main(void)
     {
+        vec4 vertexGlobalPosition = u_mLocal * vec4(vertexPosition * u_Size, 1.0);
         gl_Position = u_ProjectMat * u_mLocal * vec4(vertexPosition * u_Size, 1.0);
 
-        vec3 directionToLight = -u_LightDirection;
-        vec3 rotatedNormal = (u_ProjectMat * u_mLocal * vec4(vertexNormal, 1.0)).xyz;
-        v_diffuseColor = max(0.0, dot(normalize(directionToLight), normalize(rotatedNormal)));
+        vec3 directionToLight = u_LightPosition - vertexGlobalPosition.xyz;
+        vec3 rotatedNormal = (u_mLocal * vec4(vertexNormal, 1.0)).xyz - (u_mLocal * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+        // rotatedNormal = vertexNormal;
+        float diff = max(0.0, dot(normalize(directionToLight), normalize(rotatedNormal)));
+        v_diffuseColor = diff / length(directionToLight) * 5.0;
     }
  `
  
@@ -130,11 +134,12 @@ function main() {
     
 
     gl.useProgram(shaderProgram)
-    const uProjectMatLocation = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
+    const uProjectMatLoc = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
     const uLocal = gl.getUniformLocation(shaderProgram, 'u_mLocal')
     const uSizeLocation = gl.getUniformLocation(shaderProgram, "u_Size")
     const uColorLocation = gl.getUniformLocation(shaderProgram, "u_Color")
     const u_AmbientLocation = gl.getUniformLocation(shaderProgram, "u_AmbientStrength")
+    const uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
     const uLightDirectionLocation = gl.getUniformLocation(shaderProgram, "u_LightDirection")
     const vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
     const vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexNormal')
@@ -156,9 +161,7 @@ function main() {
         // Color
         gl.uniform4f(uColorLocation, object.color.r, object.color.g, object.color.b, 1)
 
-        // Lights
-        gl.uniform1f(u_AmbientLocation, ambient)
-        gl.uniform3f(uLightDirectionLocation, -1, -1, 0)
+       
 
         gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0)
     }
@@ -178,7 +181,12 @@ function main() {
 
         const projectionMatrix = glMatrix.mat4.create()
         glMatrix.mat4.perspective(projectionMatrix, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
-        gl.uniformMatrix4fv(uProjectMatLocation, false, projectionMatrix)
+        gl.uniformMatrix4fv(uProjectMatLoc, false, projectionMatrix)
+
+        // Lights
+        gl.uniform1f(u_AmbientLocation, ambient)
+        gl.uniform3f(uLightDirectionLocation, -1, -1, 0)
+        gl.uniform3f(uLightPositionLoc, lightCube.position.x, lightCube.position.y, lightCube.position.z)
         
         objects.forEach(object => {
             renderObject(object, baseMatrix)
