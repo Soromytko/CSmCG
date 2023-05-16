@@ -147,7 +147,7 @@ function main() {
     gl.enableVertexAttribArray(vertexPositionAttribLoc)
     gl.enableVertexAttribArray(vertexNormalAttribLoc)
 
-    renderObject = function(object, baseMatrix) {
+    let renderObject = function(object, baseMatrix) {
         const mesh = object.mesh
         mesh.setVertexAttributePointers(vertexPositionAttribLoc, vertexNormalAttribLoc)
 
@@ -186,6 +186,7 @@ function main() {
         // Lights
         gl.uniform1f(u_AmbientLocation, ambient)
         gl.uniform3f(uLightDirectionLocation, -1, -1, 0)
+        console.log(lightCube.position.z + scene.pos.z)
         gl.uniform3f(uLightPositionLoc, lightCube.position.x, lightCube.position.y, lightCube.position.z)
         
         objects.forEach(object => {
@@ -193,7 +194,7 @@ function main() {
         })
 
         const lightCubeMatrix = glMatrix.mat4.create()
-        glMatrix.mat4.translate(lightCubeMatrix, lightCubeMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
+        // glMatrix.mat4.translate(lightCubeMatrix, lightCubeMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
         renderObject(lightCube, lightCubeMatrix)
 
         requestAnimationFrame(renderLoop)
