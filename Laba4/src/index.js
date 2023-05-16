@@ -24,27 +24,31 @@ function createShaderProgram(gl, vertexShader, fragmentShader) {
 
 var gl
 
+var camera = {
+    pos: {x: 0, y: 2, z: 0},
+    rotX: 0.3,
+}
 var scene = {
-    pos: {x: 0, y: 0, z: -5},
-    rotY: 0
+    pos: {x: 0, y: 0, z: -6},
+    rotY: 0,
 }
 var pedestal = {
     pos: {x: 0, y: 0, z: -3},
     rotY: 0,
 }
-var ambient = 0.1
+var ambientIntensity = 0.1
+var diffuseIntensity = 0.5
 var redCube = new Cube({x: -2, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
 var greenCube = new Cube({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
 var yellowCube = new Cube({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
-var orangeCube = new Cube({x: 1, y: 0, z: 0}, 0.3, {r: 1, g: 0.6, b: 0})
+var blueCube = new Cube({x: 1, y: 0, z: 0}, 0.3, {r: 0, g: 0, b: 1})
 var lightCube = new Cube({x: 0, y: 2, z: 0}, 0.1, {r: 1, g: 1, b: 1})
 
 var objects = [
-    new Cube({x: 0, y: 1, z: 0}, 0.2, {r: 1, g: 0, b: 1}),
     redCube,
     greenCube,
     yellowCube,
-    orangeCube,
+    blueCube,
 ]
 
 
@@ -56,7 +60,8 @@ var objects = [
 
     uniform float u_Size;
     uniform mat4 u_ProjectMat;
-    uniform mat4 u_mLocal;
+    uniform mat4 u_ViewMat;
+    uniform mat4 u_WorldMat;
 
     // Lights
     uniform vec3 u_LightPosition;
@@ -66,14 +71,14 @@ var objects = [
 
     void main(void)
     {
-        vec4 vertexGlobalPosition = u_mLocal * vec4(vertexPosition * u_Size, 1.0);
-        gl_Position = u_ProjectMat * u_mLocal * vec4(vertexPosition * u_Size, 1.0);
+        vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition * u_Size, 1.0);
+        gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(vertexPosition * u_Size, 1.0);
 
         vec3 directionToLight = u_LightPosition - vertexGlobalPosition.xyz;
-        vec3 rotatedNormal = (u_mLocal * vec4(vertexNormal, 1.0)).xyz - (u_mLocal * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+        vec3 rotatedNormal = (u_WorldMat * vec4(vertexNormal, 1.0)).xyz - (u_WorldMat * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
         // rotatedNormal = vertexNormal;
         float diff = max(0.0, dot(normalize(directionToLight), normalize(rotatedNormal)));
-        v_diffuseColor = diff / length(directionToLight) * 5.0;
+        v_diffuseColor = diff / length(directionToLight);
     }
  `
  
@@ -81,17 +86,18 @@ var objects = [
     precision mediump float;
 
     uniform vec4 u_Color;
-    uniform float u_AmbientStrength;
+    uniform float u_AmbientIntensity;
+    uniform float u_DiffuseIntensity;
 
     varying float v_diffuseColor;
  
     void main()
     {
         vec3 lightColor = vec3(1.0, 1.0, 1.0);
-        vec4 ambient = vec4(lightColor * u_AmbientStrength, 1.0);
+        vec4 ambient = vec4(lightColor * u_AmbientIntensity, 1.0);
         // gl_FragColor = ambient * u_Color;
         // gl_FragColor = v_diffuseColor * u_Color;
-        gl_FragColor = (ambient + v_diffuseColor) * u_Color;
+        gl_FragColor = (ambient + v_diffuseColor * u_DiffuseIntensity) * u_Color;
     }
  `
 
@@ -135,10 +141,12 @@ function main() {
 
     gl.useProgram(shaderProgram)
     const uProjectMatLoc = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
-    const uLocal = gl.getUniformLocation(shaderProgram, 'u_mLocal')
+    const uViewMatLoc = gl.getUniformLocation(shaderProgram, 'u_ViewMat')
+    const uWorldMatLoc = gl.getUniformLocation(shaderProgram, 'u_WorldMat')
     const uSizeLocation = gl.getUniformLocation(shaderProgram, "u_Size")
     const uColorLocation = gl.getUniformLocation(shaderProgram, "u_Color")
-    const u_AmbientLocation = gl.getUniformLocation(shaderProgram, "u_AmbientStrength")
+    const uAmbientIntensityLoc = gl.getUniformLocation(shaderProgram, "u_AmbientIntensity")
+    const uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
     const uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
     const uLightDirectionLocation = gl.getUniformLocation(shaderProgram, "u_LightDirection")
     const vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
@@ -155,7 +163,7 @@ function main() {
         const localMat = glMatrix.mat4.create()
         glMatrix.mat4.translate(localMat, baseMatrix, [object.position.x, object.position.y, object.position.z, 0])
         glMatrix.mat4.rotate(localMat, localMat, object.rotationY, [0, 1, 0])
-        gl.uniformMatrix4fv(uLocal, false, localMat)
+        gl.uniformMatrix4fv(uWorldMatLoc, false, localMat)
         // Size
         gl.uniform1f(uSizeLocation, object.size)
         // Color
@@ -179,15 +187,25 @@ function main() {
         glMatrix.mat4.translate(baseMatrix, baseMatrix, [pedestal.pos.x, pedestal.pos.y, pedestal.pos.z, 0])
         glMatrix.mat4.rotate(baseMatrix, baseMatrix, pedestal.rotY, [0, 1, 0])
 
+        // Project
         const projectionMatrix = glMatrix.mat4.create()
         glMatrix.mat4.perspective(projectionMatrix, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
         gl.uniformMatrix4fv(uProjectMatLoc, false, projectionMatrix)
 
+        // View
+        const viewMatrix = glMatrix.mat4.create()
+        /* To move the camera in some direction,
+        you need to move all objects in the opposite direction,
+        so the camera position with a minus sign */
+        glMatrix.mat4.translate(viewMatrix, viewMatrix, [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
+        glMatrix.mat4.rotate(viewMatrix, viewMatrix, camera.rotX, [1, 0, 0])
+        gl.uniformMatrix4fv(uViewMatLoc, false, viewMatrix)
+
         // Lights
-        gl.uniform1f(u_AmbientLocation, ambient)
+        gl.uniform1f(uAmbientIntensityLoc, ambientIntensity)
         gl.uniform3f(uLightDirectionLocation, -1, -1, 0)
-        console.log(lightCube.position.z + scene.pos.z)
         gl.uniform3f(uLightPositionLoc, lightCube.position.x, lightCube.position.y, lightCube.position.z)
+        gl.uniform1f(uDiffuseIntensityLoc, diffuseIntensity)
         
         objects.forEach(object => {
             renderObject(object, baseMatrix)
@@ -222,13 +240,18 @@ function bindInput() {
         yellowCube.rotationY = event.target.value / 50
     })
 
-    document.getElementById("orangeRange").addEventListener("input", (event) => {
-        orangeCube.rotationY = event.target.value / 50
+    document.getElementById("blueRange").addEventListener("input", (event) => {
+        blueCube.rotationY = event.target.value / 50
     })
 
     document.getElementById("ambientRange").addEventListener("input", (event) => {
-        ambient = event.target.value
+        ambientIntensity = event.target.value
     })
+
+    document.getElementById("diffuseRange").addEventListener("input", (event) => {
+        diffuseIntensity = event.target.value * 10
+    })
+
 
     document.getElementById("lightXRange").addEventListener("input", (event) => {
         lightCube.position.x = event.target.value
