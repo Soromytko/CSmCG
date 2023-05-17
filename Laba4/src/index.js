@@ -101,6 +101,63 @@ var objects = [
     }
  `
 
+ var vertPhongSource = `
+ precision mediump float;
+
+ attribute vec3 a_VertexPosition;
+ attribute vec3 a_VertexNormal;
+
+ uniform mat4 u_Project;
+ uniform mat4 u_ViewMat;
+ uniform mat4 u_WorldMat;
+
+ varying vec3 v_VertexPosition;
+ varying vec3 v_VertexNormal;
+
+ void main()
+ {
+     vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition, 1.0);
+     gl_Position = u_ProjectMat * u_ViewMat * vertexGlobalPosition;
+
+     v_VertexPoition = vertexGlobalPosition.xyz;
+     v_VertexNormal = a_VertexNormal;
+ }
+`
+
+var fragPhongSource = `
+ precision medium float;
+
+ varying vec3 v_VertexPosition;
+ varying vec3 v_VertexNormal;
+
+ uniform vec4 u_Color;
+ uniform float u_AmbiendIntensity;
+ unoform float u_DiffuseIntensitys;
+
+ uniform vec3 u_LightPosition;
+ uniform float u_LightSize;
+
+ void main()
+ {
+     vec3 lightColor = vec3(1.0, 1.0, 1.0);
+
+     // Ambient Color
+     vec4 ambientColor = vec4(lightColor * u_AmbientIntensity, 1.0);
+     
+     // Diffuse Color
+     vec3 directionToLight = u_LightPosition - v_VertexPosition;
+     float distanceToLight = length(directionToLight);
+     directionToLight = normalize(directionToLight);
+     veec3 normal = normalize(u_VertexNormal)
+     float diffuse = max(0.0, dot(directionToLight, normal))
+     diffuse *= max(0.0, (1 - distanceToLigth / u_LightSize)); // Light attenuation
+     vec4 diffuseColor =  diffuse * u_DiffuseIntensity;
+
+     // Apply
+     gl_FragColor = (ambientColor + diffuseColor) * u_Color;
+ }
+`
+
  function init() {
     const canvas = document.getElementById('canvas')
     if (!canvas) {
