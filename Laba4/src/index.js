@@ -163,6 +163,9 @@ var fragPhongSource = `
 }
 `
 
+var lambertShaderProgram
+var phongShaderProgram
+
  function init() {
     const canvas = document.getElementById('canvas')
     if (!canvas) {
@@ -176,35 +179,27 @@ var fragPhongSource = `
         throw new Error()
     }
 
+    const lambertShader = new Shader()
+    const phongShader = new Shader()
+
+    const lambertShaderProgram = lambertShader.makeShaderProgram(gl, vertSource, fragSource)
+    const phongShaderProgram = phongShader.makeShaderProgram(gl, vertPhongSource, fragPhongSource)
+
+    if (!lambertShaderProgram || !phongShaderProgram)
+        throw new Error()
+
+    shaderProgram = lambertShaderProgram
+
+
     // CubeMesh is a singleton class, call this for an instance
     new CubeMesh().createBuffers(gl)
 
     bindInput()
 }
 
-function main() {
-    init()
+function setShaderProgram(newShaderProgram) {
+    shaderProgram = newShaderProgram
 
-    const vertexShaderSourceCode = vertSource
-    const fragmentShaderSourceCode = fragSource
-
-    const vertShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSourceCode)
-    const fragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceCode)
-
-    if (!vertShader || !fragShader)
-        throw new Error()
-
-    var shaderProgram = createShaderProgram(gl, vertShader, fragShader)
-
-    if (!shaderProgram)
-        throw new Error()
-   
-    gl.enable(gl.DEPTH_TEST)
-    gl.depthFunc(gl.LEQUAL)
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    
-
-    gl.useProgram(shaderProgram)
     const uProjectMatLoc = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
     const uViewMatLoc = gl.getUniformLocation(shaderProgram, 'u_ViewMat')
     const uWorldMatLoc = gl.getUniformLocation(shaderProgram, 'u_WorldMat')
@@ -216,6 +211,35 @@ function main() {
     const uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
     const vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
     const vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexNormal')
+
+    gl.useProgram(shaderProgram)
+}
+
+function main() {
+    init()
+
+    // const vertexShaderSourceCode = vertSource
+    // const fragmentShaderSourceCode = fragSource
+
+    // const vertShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSourceCode)
+    // const fragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceCode)
+
+    // if (!vertShader || !fragShader)
+    //     throw new Error()
+
+    // var shaderProgram = createShaderProgram(gl, vertShader, fragShader)
+
+    // if (!shaderProgram)
+    //     throw new Error()
+
+
+   
+    gl.enable(gl.DEPTH_TEST)
+    gl.depthFunc(gl.LEQUAL)
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+    
+
+
     
     gl.enableVertexAttribArray(vertexPositionAttribLoc)
     gl.enableVertexAttribArray(vertexNormalAttribLoc)
@@ -336,9 +360,9 @@ function bindInput() {
     document.getElementById("lightingModelSelect").addEventListener("change", (event) => {
         const model = event.target.value
         if (model == "Lambert") {
-            
+            shaderProgram = lambertShaderProgram
         } else if (model == "Phong") {
-
+            shaderProgram = phongShaderProgram
         } else {
             console.log("Unknown model: ", model)
         }
