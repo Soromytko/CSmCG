@@ -160,7 +160,7 @@ var fragPhongSource = `
 
     // Apply
     gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor), 1.0);
-    }
+}
 `
 
  function init() {
@@ -180,7 +180,7 @@ var fragPhongSource = `
     new CubeMesh().createBuffers(gl)
 
     bindInput()
- }
+}
 
 function main() {
     init()
@@ -331,6 +331,17 @@ function bindInput() {
 
     document.getElementById("lightZRange").addEventListener("input", (event) => {
         lightCube.position.z = event.target.value * 20 - 10 // [-10, 10]
+    })
+
+    document.getElementById("lightingModelSelect").addEventListener("change", (event) => {
+        const model = event.target.value
+        if (model == "Lambert") {
+            
+        } else if (model == "Phong") {
+
+        } else {
+            console.log("Unknown model: ", model)
+        }
     })
 }
 

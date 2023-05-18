@@ -40,11 +40,16 @@
 				<label for="temp">LightPositionZ:</label>
 				<input type="range" min="0" max="1" value="0.3" step="0.01" class="slider" id="lightZRange">
 			</div>
-				<div>
-					
-				</div>
-				
+			<div>
+				<label for="pet-select">Lighting model:</label>
+				<select name="pets" id="lightingModelSelect">
+				<option value="Lambert">Lambert</option>
+				<option value="Phong">Phong</option>
+			</select>
 			</div>
+				
+				
+		</div>
 		<script src="gl-matrix/dist/gl-matrix-min.js"></script>
 		<script src="src/CubeMesh.js"></script>
 		<script src="src/Cube.js"></script>
