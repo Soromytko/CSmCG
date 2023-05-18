@@ -58,7 +58,6 @@ var objects = [
     attribute vec3 vertexPosition;
     attribute vec3 vertexNormal;
 
-    uniform float u_Size;
     uniform mat4 u_ProjectMat;
     uniform mat4 u_ViewMat;
     uniform mat4 u_WorldMat;
@@ -71,8 +70,8 @@ var objects = [
 
     void main(void)
     {
-        vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition * u_Size, 1.0);
-        gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(vertexPosition * u_Size, 1.0);
+        vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition, 1.0);
+        gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(vertexPosition, 1.0);
 
         vec3 directionToLight = u_LightPosition - vertexGlobalPosition.xyz;
         vec3 rotatedNormal = (u_WorldMat * vec4(vertexNormal, 1.0)).xyz - (u_WorldMat * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
@@ -200,7 +199,6 @@ function main() {
     const uProjectMatLoc = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
     const uViewMatLoc = gl.getUniformLocation(shaderProgram, 'u_ViewMat')
     const uWorldMatLoc = gl.getUniformLocation(shaderProgram, 'u_WorldMat')
-    const uSizeLocation = gl.getUniformLocation(shaderProgram, "u_Size")
     const uColorLocation = gl.getUniformLocation(shaderProgram, "u_Color")
     const uAmbientIntensityLoc = gl.getUniformLocation(shaderProgram, "u_AmbientIntensity")
     const uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
@@ -216,13 +214,12 @@ function main() {
         const mesh = object.mesh
         mesh.setVertexAttributePointers(vertexPositionAttribLoc, vertexNormalAttribLoc)
 
-        // Local Matrix
-        const localMat = glMatrix.mat4.create()
-        glMatrix.mat4.translate(localMat, baseMatrix, [object.position.x, object.position.y, object.position.z, 0])
-        glMatrix.mat4.rotate(localMat, localMat, object.rotationY, [0, 1, 0])
-        gl.uniformMatrix4fv(uWorldMatLoc, false, localMat)
-        // Size
-        gl.uniform1f(uSizeLocation, object.size)
+        // World Matrix
+        const worldMat = glMatrix.mat4.create()
+        glMatrix.mat4.translate(worldMat, baseMatrix, [object.position.x, object.position.y, object.position.z, 0])
+        glMatrix.mat4.rotate(worldMat, worldMat, object.rotationY, [0, 1, 0])
+        glMatrix.mat4.scale(worldMat, worldMat, [object.size, object.size, object.size])
+        gl.uniformMatrix4fv(uWorldMatLoc, false, worldMat)
         // Color
         gl.uniform4f(uColorLocation, object.color.r, object.color.g, object.color.b, 1)
 
