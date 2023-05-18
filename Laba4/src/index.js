@@ -37,12 +37,13 @@ var pedestal = {
     rotY: 0,
 }
 var ambientIntensity = 0.1
-var diffuseIntensity = 0.5
+var diffuseIntensity = 2
 var redCube = new Cube({x: -2, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
 var greenCube = new Cube({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
 var yellowCube = new Cube({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
 var blueCube = new Cube({x: 1, y: 0, z: 0}, 0.3, {r: 0, g: 0, b: 1})
-var lightCube = new Cube({x: 0, y: 2, z: 0}, 0.1, {r: 1, g: 1, b: 1})
+var lightCube = new Cube({x: 0, y: 2, z: -5}, 0.1, {r: 1, g: 1, b: 1})
+var lightSize = 7
 
 var objects = [
     redCube,
@@ -65,8 +66,9 @@ var objects = [
     // Lights
     uniform vec3 u_LightPosition;
     uniform vec3 u_LightDirection;
+    uniform float u_LightSize;
 
-    varying float v_diffuseColor;
+    varying float v_Diffuse;
 
     void main(void)
     {
@@ -74,29 +76,33 @@ var objects = [
         gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(vertexPosition, 1.0);
 
         vec3 directionToLight = u_LightPosition - vertexGlobalPosition.xyz;
+        float distanceToLight = length(directionToLight);
+        directionToLight = normalize(directionToLight);
         vec3 rotatedNormal = (u_WorldMat * vec4(vertexNormal, 1.0)).xyz - (u_WorldMat * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
-        // rotatedNormal = vertexNormal;
-        float diff = max(0.0, dot(normalize(directionToLight), normalize(rotatedNormal)));
-        v_diffuseColor = diff / length(directionToLight);
+        rotatedNormal = normalize(rotatedNormal);
+        float diffuse = max(0.0, dot(directionToLight, rotatedNormal));
+        diffuse *= max(0.0, (1.0 - distanceToLight / u_LightSize));
+        v_Diffuse = diffuse;
     }
  `
  
  var fragSource = `
     precision mediump float;
 
-    uniform vec4 u_Color;
+    uniform vec3 u_Color;
     uniform float u_AmbientIntensity;
     uniform float u_DiffuseIntensity;
 
-    varying float v_diffuseColor;
+    varying float v_Diffuse;
  
     void main()
     {
         vec3 lightColor = vec3(1.0, 1.0, 1.0);
-        vec4 ambient = vec4(lightColor * u_AmbientIntensity, 1.0);
-        // gl_FragColor = ambient * u_Color;
-        // gl_FragColor = v_diffuseColor * u_Color;
-        gl_FragColor = (ambient + v_diffuseColor * u_DiffuseIntensity) * u_Color;
+
+        vec3 ambientColor = lightColor * u_AmbientIntensity;
+        vec3 diffuseColor = lightColor * (v_Diffuse * u_DiffuseIntensity);
+
+        gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor), 1.0);
     }
  `
 
@@ -115,11 +121,11 @@ var objects = [
 
  void main()
  {
-     vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition, 1.0);
-     gl_Position = u_ProjectMat * u_ViewMat * vertexGlobalPosition;
+    vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition, 1.0);
+    gl_Position = u_ProjectMat * u_ViewMat * vertexGlobalPosition;
 
-     v_VertexPoition = vertexGlobalPosition.xyz;
-     v_VertexNormal = a_VertexNormal;
+    v_VertexPoition = vertexGlobalPosition.xyz;
+    v_VertexNormal = a_VertexNormal;
  }
 `
 
@@ -129,7 +135,7 @@ var fragPhongSource = `
  varying vec3 v_VertexPosition;
  varying vec3 v_VertexNormal;
 
- uniform vec4 u_Color;
+ uniform vec3 u_Color;
  uniform float u_AmbiendIntensity;
  unoform float u_DiffuseIntensitys;
 
@@ -138,23 +144,23 @@ var fragPhongSource = `
 
  void main()
  {
-     vec3 lightColor = vec3(1.0, 1.0, 1.0);
+    vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
-     // Ambient Color
-     vec4 ambientColor = vec4(lightColor * u_AmbientIntensity, 1.0);
-     
-     // Diffuse Color
-     vec3 directionToLight = u_LightPosition - v_VertexPosition;
-     float distanceToLight = length(directionToLight);
-     directionToLight = normalize(directionToLight);
-     veec3 normal = normalize(u_VertexNormal)
-     float diffuse = max(0.0, dot(directionToLight, normal))
-     diffuse *= max(0.0, (1 - distanceToLigth / u_LightSize)); // Light attenuation
-     vec4 diffuseColor =  diffuse * u_DiffuseIntensity;
+    // Ambient Color
+    vec3 ambientColor = lightColor * u_AmbientIntensity;
+    
+    // Diffuse Color
+    vec3 directionToLight = u_LightPosition - v_VertexPosition;
+    float distanceToLight = length(directionToLight);
+    directionToLight = normalize(directionToLight);
+    vec3 normal = normalize(u_VertexNormal)
+    float diffuse = max(0.0, dot(directionToLight, normal))
+    diffuse *= max(0.0, (1 - distanceToLigth / u_LightSize)); // Light attenuation
+    vec3 diffuseColor = lightColor * (diffuse * u_DiffuseIntensity);
 
-     // Apply
-     gl_FragColor = (ambientColor + diffuseColor) * u_Color;
- }
+    // Apply
+    gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor), 1.0);
+    }
 `
 
  function init() {
@@ -179,8 +185,11 @@ var fragPhongSource = `
 function main() {
     init()
 
-    const vertShader = compileShader(gl, gl.VERTEX_SHADER, vertSource)
-    const fragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragSource)
+    const vertexShaderSourceCode = vertSource
+    const fragmentShaderSourceCode = fragSource
+
+    const vertShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSourceCode)
+    const fragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceCode)
 
     if (!vertShader || !fragShader)
         throw new Error()
@@ -204,6 +213,7 @@ function main() {
     const uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
     const uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
     const uLightDirectionLocation = gl.getUniformLocation(shaderProgram, "u_LightDirection")
+    const uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
     const vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
     const vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexNormal')
     
@@ -221,7 +231,7 @@ function main() {
         glMatrix.mat4.scale(worldMat, worldMat, [object.size, object.size, object.size])
         gl.uniformMatrix4fv(uWorldMatLoc, false, worldMat)
         // Color
-        gl.uniform4f(uColorLocation, object.color.r, object.color.g, object.color.b, 1)
+        gl.uniform3f(uColorLocation, object.color.r, object.color.g, object.color.b)
 
        
 
@@ -260,6 +270,7 @@ function main() {
         gl.uniform3f(uLightDirectionLocation, -1, -1, 0)
         gl.uniform3f(uLightPositionLoc, lightCube.position.x, lightCube.position.y, lightCube.position.z)
         gl.uniform1f(uDiffuseIntensityLoc, diffuseIntensity)
+        gl.uniform1f(uLightSizeLoc, lightSize)
         
         objects.forEach(object => {
             renderObject(object, baseMatrix)
@@ -306,17 +317,20 @@ function bindInput() {
         diffuseIntensity = event.target.value * 10
     })
 
+    document.getElementById("lightSizeRange").addEventListener("input", (event) => {
+        lightSize = event.target.value * 10
+    })
 
     document.getElementById("lightXRange").addEventListener("input", (event) => {
-        lightCube.position.x = event.target.value
+        lightCube.position.x = event.target.value * 20 - 10 // [-10, 10]
     })
 
     document.getElementById("lightYRange").addEventListener("input", (event) => {
-        lightCube.position.y = event.target.value
+        lightCube.position.y = event.target.value * 20 - 10 // [-10, 10]
     })
 
     document.getElementById("lightZRange").addEventListener("input", (event) => {
-        lightCube.position.z = event.target.value
+        lightCube.position.z = event.target.value * 20 - 10 // [-10, 10]
     })
 }
 
