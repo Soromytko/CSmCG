@@ -10,7 +10,7 @@ function compileShader(gl, type, source) {
     return shader;
 }
 
-function createShaderProgram(gl, vertexShader, fragmentShader) {
+function linkShaders(gl, vertexShader, fragmentShader) {
     const shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader); 
     gl.attachShader(shaderProgram, fragmentShader); 
@@ -20,6 +20,17 @@ function createShaderProgram(gl, vertexShader, fragmentShader) {
         return null; 
     } 
     return shaderProgram
+}
+
+function createShaderProgram(gl, vertexShaderSourceCode, fragmentShaderSourceCode) {
+    const vertexCompiledShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSourceCode)
+    const fragmentCompiledShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceCode)
+
+    if (!vertexCompiledShader || !fragmentCompiledShader) {
+        return undefined
+    }
+
+    return linkShaders(gl, vertexCompiledShader, fragmentCompiledShader)
 }
 
 var gl
@@ -121,7 +132,7 @@ var objects = [
 
  void main()
  {
-    vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition, 1.0);
+    vec4 vertexGlobalPosition = u_WorldMat * vec4(a_VertexPosition, 1.0);
     gl_Position = u_ProjectMat * u_ViewMat * vertexGlobalPosition;
 
     v_VertexPoition = vertexGlobalPosition.xyz;
@@ -166,7 +177,19 @@ var fragPhongSource = `
 var lambertShaderProgram
 var phongShaderProgram
 
- function init() {
+var uProjectMatLoc
+var uViewMatLoc
+var uWorldMatLoc
+var uColorLoc
+var uAmbientIntensityLoc
+var uDiffuseIntensityLoc
+var uLightPositionLoc
+var uLightDirectionLoc
+var uLightSizeLoc
+var vertexPositionAttribLoc
+var vertexNormalAttribLoc
+
+function init() {
     const canvas = document.getElementById('canvas')
     if (!canvas) {
         alert("Canvas not found")
@@ -179,17 +202,19 @@ var phongShaderProgram
         throw new Error()
     }
 
-    const lambertShader = new Shader()
-    const phongShader = new Shader()
-
-    const lambertShaderProgram = lambertShader.makeShaderProgram(gl, vertSource, fragSource)
-    const phongShaderProgram = phongShader.makeShaderProgram(gl, vertPhongSource, fragPhongSource)
-
-    if (!lambertShaderProgram || !phongShaderProgram)
+    lambertShaderProgram = createShaderProgram(gl, vertSource, fragSource)
+    if (!lambertShaderProgram) {
+        console.log("Lambert shader ERROR")
         throw new Error()
+    }
 
-    shaderProgram = lambertShaderProgram
+    // phongShaderProgram = createShaderProgram(gl, vertPhongSource, fragPhongSource)
+    // if (!phongShaderProgram) {
+    //     console.log("Phong shader ERROR")
+    //     throw new Error()
+    // }
 
+    setShaderProgram(lambertShaderProgram)
 
     // CubeMesh is a singleton class, call this for an instance
     new CubeMesh().createBuffers(gl)
@@ -200,17 +225,17 @@ var phongShaderProgram
 function setShaderProgram(newShaderProgram) {
     shaderProgram = newShaderProgram
 
-    const uProjectMatLoc = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
-    const uViewMatLoc = gl.getUniformLocation(shaderProgram, 'u_ViewMat')
-    const uWorldMatLoc = gl.getUniformLocation(shaderProgram, 'u_WorldMat')
-    const uColorLocation = gl.getUniformLocation(shaderProgram, "u_Color")
-    const uAmbientIntensityLoc = gl.getUniformLocation(shaderProgram, "u_AmbientIntensity")
-    const uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
-    const uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
-    const uLightDirectionLocation = gl.getUniformLocation(shaderProgram, "u_LightDirection")
-    const uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
-    const vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
-    const vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexNormal')
+    uProjectMatLoc = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
+    uViewMatLoc = gl.getUniformLocation(shaderProgram, 'u_ViewMat')
+    uWorldMatLoc = gl.getUniformLocation(shaderProgram, 'u_WorldMat')
+    uColorLoc = gl.getUniformLocation(shaderProgram, "u_Color")
+    uAmbientIntensityLoc = gl.getUniformLocation(shaderProgram, "u_AmbientIntensity")
+    uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
+    uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
+    uLightDirectionLoc = gl.getUniformLocation(shaderProgram, "u_LightDirection")
+    uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
+    vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
+    vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexNormal')
 
     gl.useProgram(shaderProgram)
 }
@@ -255,7 +280,7 @@ function main() {
         glMatrix.mat4.scale(worldMat, worldMat, [object.size, object.size, object.size])
         gl.uniformMatrix4fv(uWorldMatLoc, false, worldMat)
         // Color
-        gl.uniform3f(uColorLocation, object.color.r, object.color.g, object.color.b)
+        gl.uniform3f(uColorLoc, object.color.r, object.color.g, object.color.b)
 
        
 
@@ -291,7 +316,7 @@ function main() {
 
         // Lights
         gl.uniform1f(uAmbientIntensityLoc, ambientIntensity)
-        gl.uniform3f(uLightDirectionLocation, -1, -1, 0)
+        gl.uniform3f(uLightDirectionLoc, -1, -1, 0)
         gl.uniform3f(uLightPositionLoc, lightCube.position.x, lightCube.position.y, lightCube.position.z)
         gl.uniform1f(uDiffuseIntensityLoc, diffuseIntensity)
         gl.uniform1f(uLightSizeLoc, lightSize)
@@ -360,9 +385,11 @@ function bindInput() {
     document.getElementById("lightingModelSelect").addEventListener("change", (event) => {
         const model = event.target.value
         if (model == "Lambert") {
-            shaderProgram = lambertShaderProgram
+            setShaderProgram(lambertShaderProgram)
+            console.log("Lambert shader is set")
         } else if (model == "Phong") {
-            shaderProgram = phongShaderProgram
+            setShaderProgram(phongShaderProgram)
+            console.log("Phong shader is set")
         } else {
             console.log("Unknown model: ", model)
         }
