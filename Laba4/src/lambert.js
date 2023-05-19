@@ -1,5 +1,6 @@
 var vertLambertSource = `
 precision mediump float;
+
 attribute vec3 a_VertexPosition;
 attribute vec3 a_VertexNormal;
 
