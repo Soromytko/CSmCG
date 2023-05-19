@@ -65,57 +65,7 @@ var objects = [
 
 
  // Initialization =========================================================
- var vertSource = `
-    precision mediump float;
-    attribute vec3 vertexPosition;
-    attribute vec3 vertexNormal;
 
-    uniform mat4 u_ProjectMat;
-    uniform mat4 u_ViewMat;
-    uniform mat4 u_WorldMat;
-
-    // Lights
-    uniform vec3 u_LightPosition;
-    uniform vec3 u_LightDirection;
-    uniform float u_LightSize;
-
-    varying float v_Diffuse;
-
-    void main(void)
-    {
-        vec4 vertexGlobalPosition = u_WorldMat * vec4(vertexPosition, 1.0);
-        gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(vertexPosition, 1.0);
-
-        vec3 directionToLight = u_LightPosition - vertexGlobalPosition.xyz;
-        float distanceToLight = length(directionToLight);
-        directionToLight = normalize(directionToLight);
-        vec3 rotatedNormal = (u_WorldMat * vec4(vertexNormal, 1.0)).xyz - (u_WorldMat * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
-        rotatedNormal = normalize(rotatedNormal);
-        float diffuse = max(0.0, dot(directionToLight, rotatedNormal));
-        diffuse *= max(0.0, (1.0 - distanceToLight / u_LightSize));
-        v_Diffuse = diffuse;
-    }
- `
- 
- var fragSource = `
-    precision mediump float;
-
-    uniform vec3 u_Color;
-    uniform float u_AmbientIntensity;
-    uniform float u_DiffuseIntensity;
-
-    varying float v_Diffuse;
- 
-    void main()
-    {
-        vec3 lightColor = vec3(1.0, 1.0, 1.0);
-
-        vec3 ambientColor = lightColor * u_AmbientIntensity;
-        vec3 diffuseColor = lightColor * (v_Diffuse * u_DiffuseIntensity);
-
-        gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor), 1.0);
-    }
- `
 
  var vertPhongSource = `
  precision mediump float;
@@ -202,7 +152,7 @@ function init() {
         throw new Error()
     }
 
-    lambertShaderProgram = createShaderProgram(gl, vertSource, fragSource)
+    lambertShaderProgram = createShaderProgram(gl, vertLambertSource, fragSource)
     if (!lambertShaderProgram) {
         console.log("Lambert shader ERROR")
         throw new Error()
@@ -234,8 +184,8 @@ function setShaderProgram(newShaderProgram) {
     uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
     uLightDirectionLoc = gl.getUniformLocation(shaderProgram, "u_LightDirection")
     uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
-    vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexPosition')
-    vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'vertexNormal')
+    vertexPositionAttribLoc = gl.getAttribLocation(shaderProgram, 'a_VertexPosition')
+    vertexNormalAttribLoc = gl.getAttribLocation(shaderProgram, 'a_VertexNormal')
 
     gl.useProgram(shaderProgram)
 }
@@ -243,28 +193,9 @@ function setShaderProgram(newShaderProgram) {
 function main() {
     init()
 
-    // const vertexShaderSourceCode = vertSource
-    // const fragmentShaderSourceCode = fragSource
-
-    // const vertShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSourceCode)
-    // const fragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceCode)
-
-    // if (!vertShader || !fragShader)
-    //     throw new Error()
-
-    // var shaderProgram = createShaderProgram(gl, vertShader, fragShader)
-
-    // if (!shaderProgram)
-    //     throw new Error()
-
-
-   
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LEQUAL)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    
-
-
     
     gl.enableVertexAttribArray(vertexPositionAttribLoc)
     gl.enableVertexAttribArray(vertexNormalAttribLoc)
