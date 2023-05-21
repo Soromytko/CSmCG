@@ -65,8 +65,8 @@ function init() {
         throw new Error()
     }
 
-    setMaterial(lambertMaterial)
-    // setMaterial(lampMaterial)
+    // setMaterial(lambertMaterial)
+    setMaterial(lampMaterial)
 
     bindInput()
 }
@@ -137,6 +137,8 @@ function main() {
             
             const mesh = object.mesh
             mesh.setVertexAttributePointers(material._aVertexPositionLoc, material._aVertexNormalLoc)
+
+            // console.log(material._uColorLoc)
 
             gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0)
         })

@@ -85,7 +85,7 @@ class LambertMaterial extends Material {
         this._aVertexPositionLoc = gl.getAttribLocation(shaderProgram, 'a_VertexPosition')
         this._aVertexNormalLoc = gl.getAttribLocation(shaderProgram, 'a_VertexNormal')
 
-        gl.enableVertexAttribArray(this._aVertexPositionLoc)
-        gl.enableVertexAttribArray(this._aVertexNormalLoc)
+        // gl.enableVertexAttribArray(this._aVertexPositionLoc)
+        // gl.enableVertexAttribArray(this._aVertexNormalLoc)
     }
 }

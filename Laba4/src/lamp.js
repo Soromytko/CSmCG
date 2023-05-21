@@ -16,9 +16,11 @@ void main()
 var lampFragmentShaderSourceCode = `
 precision mediump float;
 
+uniform vec3 u_Color;
+
 void main()
 {
-    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+    gl_FragColor = vec4(u_Color, 1.0);
 }
 `
 
@@ -70,9 +72,10 @@ class LampMaterial extends Material{
         this._uViewMatLoc = gl.getUniformLocation(shaderProgram, 'u_ViewMat')
         this._uWorldMatLoc = gl.getUniformLocation(shaderProgram, 'u_WorldMat')
         this._uColorLoc = gl.getUniformLocation(shaderProgram, "u_Color")
-        
+
         // Attributes
         this._aVertexPositionLoc = gl.getAttribLocation(shaderProgram, 'a_VertexPosition')
+        this._aVertexNormalLoc = gl.getAttribLocation(shaderProgram, 'a_VertexNormal')
 
         gl.enableVertexAttribArray(this._aVertexPositionLoc)
     }
