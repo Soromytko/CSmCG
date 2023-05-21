@@ -22,7 +22,7 @@ void main(void)
 }
 `
 
-var fragSource = `
+var fragmentLambertSource = `
 precision mediump float;
 
 uniform vec3 u_Color;
@@ -54,3 +54,38 @@ void main()
     gl_FragColor = vec4(u_Color * (diffuseColor), 1.0);
 }
 `
+class LambertMaterial extends Material {
+    constructor() {
+        super()
+
+        if (this._instance) {
+            return this._instance
+        }
+
+        this._vertexShaderSourceCode = vertLambertSource
+        this._fragmentShaderSourceCode = fragmentLambertSource
+
+        this._instance = this
+    }
+
+    _init() {
+        const shaderProgram = this._shaderProgram
+        // Uniforms
+        this._uProjectMatLoc = gl.getUniformLocation(shaderProgram, 'u_ProjectMat')
+        this._uViewMatLoc = gl.getUniformLocation(shaderProgram, 'u_ViewMat')
+        this._uWorldMatLoc = gl.getUniformLocation(shaderProgram, 'u_WorldMat')
+        this._uColorLoc = gl.getUniformLocation(shaderProgram, "u_Color")
+        this._uAmbientIntensityLoc = gl.getUniformLocation(shaderProgram, "u_AmbientIntensity")
+        this._uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
+        this._uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
+        this._uLightDirectionLoc = gl.getUniformLocation(shaderProgram, "u_LightDirection")
+        this._uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
+
+        // Attributes
+        this._aVertexPositionLoc = gl.getAttribLocation(shaderProgram, 'a_VertexPosition')
+        this._aVertexNormalLoc = gl.getAttribLocation(shaderProgram, 'a_VertexNormal')
+
+        gl.enableVertexAttribArray(this._aVertexPositionLoc)
+        gl.enableVertexAttribArray(this._aVertexNormalLoc)
+    }
+}

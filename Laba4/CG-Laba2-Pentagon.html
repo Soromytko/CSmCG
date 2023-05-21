@@ -1,0 +1,116 @@
+<html>
+	<head>
+		<title>Triangle</title>
+	</head>
+	<body>
+		<canvas id="canvas" width="800" height="800">
+			Your browser does not support HTML5
+		</canvas>
+		<br />
+		<script>
+			var canvas = document.getElementById('canvas')
+			var gl = canvas.getContext('webgl')
+      
+			function loadShader(gl, type, source) { 
+				const shader = gl.createShader(type)
+				gl.shaderSource(shader, source) 
+				gl.compileShader(shader)
+				if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) { 
+					alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader))
+					gl.deleteShader(shader)
+					return null; 
+				} 
+				return shader;
+			}
+
+			function createShaderProgram(gl, vertexShader, fragmentShader) {
+				const shaderProgram = gl.createProgram();
+				gl.attachShader(shaderProgram, vertexShader); 
+				gl.attachShader(shaderProgram, fragmentShader); 
+				gl.linkProgram(shaderProgram); 
+				if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) { 
+					('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram)); 
+					return null; 
+				} 
+				return shaderProgram
+			}
+			
+			// Initialization =========================================================
+			var vertSource =
+			`
+			attribute vec2 vertexPosition;
+
+			void main(void)
+			{
+				gl_Position = vec4(vertexPosition, 0.0, 1.0);
+			}
+			`
+			var fragSource =
+			`
+			precision mediump float;
+
+			uniform vec3 u_Color;
+
+			void main()
+			{
+				gl_FragColor = vec4(u_Color, 1.0);
+			}
+			`
+			
+			const vertShader = loadShader(gl, gl.VERTEX_SHADER, vertSource)
+			const fragShader = loadShader(gl, gl.FRAGMENT_SHADER, fragSource)
+			
+			if (!vertShader || !fragShader)
+				throw new Error()
+
+			var shaderProgram = createShaderProgram(gl, vertShader, fragShader)
+			
+			if (!shaderProgram)
+				throw new Error()
+			
+			
+			// Drawing ================================================================
+			let vertices = [0, 0]
+			for (let deg = 0; deg <= 360; deg += 360 / 5) {
+				let rad = deg * Math.PI / 180
+				vertices.push(Math.cos(rad), Math.sin(rad))
+			}
+
+			function render() {
+
+				console.log("dsd")
+
+			var vertex_buffer = gl.createBuffer()
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer)
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+			
+			
+			gl.useProgram(shaderProgram)
+			
+			const float32Offset = Float32Array.BYTES_PER_ELEMENT
+			
+			
+			gl.clearColor(1.0, 1.0, 1.0, 1.0)
+			gl.enable(gl.DEPTH_TEST)
+			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+			gl.viewport(0, 0, canvas.width, canvas.height)
+			
+			var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vertexPosition")
+			gl.vertexAttribPointer(vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0)
+			gl.enableVertexAttribArray(vertexPositionAttribute)
+
+			uColorLoc = gl.getUniformLocation(shaderProgram, "u_Color")
+			gl.uniform3f(uColorLoc, 1.0, 0.0, 1.0)
+			
+			gl.drawArrays(gl.TRIANGLE_FAN, 0, 7);
+
+			// requestAnimationFrame(render)
+
+			}
+
+			render()
+
+			
+		</script>
+	</body>
+</html>
