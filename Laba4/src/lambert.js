@@ -78,7 +78,6 @@ class LambertMaterial extends Material {
         this._uAmbientIntensityLoc = gl.getUniformLocation(shaderProgram, "u_AmbientIntensity")
         this._uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
         this._uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
-        this._uLightDirectionLoc = gl.getUniformLocation(shaderProgram, "u_LightDirection")
         this._uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
 
         // Attributes

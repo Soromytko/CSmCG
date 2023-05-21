@@ -16,9 +16,9 @@ var redCube = new CubeObject({x: -2, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
 var greenCube = new CubeObject({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
 var yellowCube = new CubeObject({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
 var blueCube = new CubeObject({x: 1, y: 0, z: 0}, 0.3, {r: 0, g: 0, b: 1})
-var debugCube = new CubeObject({x: 0, y: 2, z: 0}, 0.3, {r: 1, g: 0, b: 1})
-// var lightCube = new CubeObject({x: 0, y: 2, z: -5}, 0.1, {r: 1, g: 1, b: 1})
-var lightCube = new CubeObject({x: 0, y: 2, z: -5}, 1, {r: 1, g: 1, b: 1})
+var lightCube = new CubeObject({x: 0, y: 0, z: -5}, 0.1, {r: 1, g: 1, b: 1})
+var debugCube = new CubeObject({x: 0, y: 0, z: 0}, 0.3, {r: 1, g: 0, b: 1})
+// var lightCube = new CubeObject({x: 0, y: 2, z: -5}, 1, {r: 1, g: 1, b: 1})
 var lightSize = 7
 
 var objects = [
@@ -26,8 +26,9 @@ var objects = [
     greenCube,
     yellowCube,
     blueCube,
-    blueCube,
-    debugCube,
+    lightCube,
+
+    // debugCube,
 ]
 
 var lambertMaterial
@@ -65,8 +66,8 @@ function init() {
         throw new Error()
     }
 
-    // setMaterial(lambertMaterial)
-    setMaterial(lampMaterial)
+    setMaterial(lambertMaterial)
+    // setMaterial(lampMaterial)
 
     bindInput()
 }
@@ -76,7 +77,8 @@ function setMaterial(material) {
         object.material = material
     })
 
-    // debugCube.material = lampMaterial
+    debugCube.material = lampMaterial
+    lightCube.material = lampMaterial
 }
 
 function main() {
@@ -91,7 +93,7 @@ function main() {
         gl.clearColor(0.0, 0.0, 0.0, 1.0)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-        const baseMatrix = glMatrix.mat4.create()
+        let baseMatrix = glMatrix.mat4.create()
         
         // Scene transformation
         glMatrix.mat4.translate(baseMatrix, baseMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
@@ -114,6 +116,13 @@ function main() {
         glMatrix.mat4.rotate(viewMatrix, viewMatrix, camera.rotX, [1, 0, 0])
         
         objects.forEach(object => {
+
+            if (object == lightCube) {
+                const lightCubeMatrix = glMatrix.mat4.create()
+                glMatrix.mat4.translate(lightCubeMatrix, lightCubeMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
+                baseMatrix = lightCubeMatrix
+            }
+
             // World Matrix
             const worldMat = glMatrix.mat4.create()
             glMatrix.mat4.translate(worldMat, baseMatrix, [object.position.x, object.position.y, object.position.z, 0])
@@ -128,7 +137,6 @@ function main() {
             gl.uniformMatrix4fv(material._uWorldMatLoc, false, worldMat)
             // Lights
             gl.uniform1f(material._uAmbientIntensityLoc, ambientIntensity)
-            gl.uniform3f(material._uLightDirectionLoc, -1, -1, 0)
             gl.uniform3f(material._uLightPositionLoc, lightCube.position.x, lightCube.position.y, lightCube.position.z)
             gl.uniform1f(material._uDiffuseIntensityLoc, diffuseIntensity)
             gl.uniform1f(material._uLightSizeLoc, lightSize)
@@ -138,9 +146,13 @@ function main() {
             const mesh = object.mesh
             mesh.setVertexAttributePointers(material._aVertexPositionLoc, material._aVertexNormalLoc)
 
-            // console.log(material._uColorLoc)
+            gl.enableVertexAttribArray(material._aVertexPositionLoc)
+            gl.enableVertexAttribArray(material._aVertexNormalLoc)
 
             gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0)
+
+            gl.disableVertexAttribArray(material._aVertexPositionLoc)
+            gl.disableVertexAttribArray(material._aVertexNormalLoc)
         })
 
         // const lightCubeMatrix = glMatrix.mat4.create()
