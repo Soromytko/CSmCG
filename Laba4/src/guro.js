@@ -47,14 +47,16 @@ void main()
     directionToLight = normalize(directionToLight);
     vec3 normal = normalize(v_VertexNormal);
     float diffuse = max(0.0, dot(directionToLight, normal));
-    diffuse *= max(0.0, (1.0 - distanceToLight / u_LightSize)); // Light attenuation
+    float attenuation = max(0.0, (1.0 - distanceToLight / u_LightSize)); // Light attenuation
+    diffuse *= attenuation;
     vec3 diffuseColor = lightColor * (diffuse * u_DiffuseIntensity);
     //Specular
     vec3 directionToCamera = u_CameraPosition - v_VertexPosition;
     directionToCamera = normalize(directionToCamera);
     vec3 reflectedLightDirection = reflect(-directionToLight, normal);
     float specular = max(0.0, dot(directionToCamera, reflectedLightDirection));
-    specular = pow(specular, 64.0);
+    specular = pow(specular, 128.0);
+    specular *= attenuation;
     vec3 specularColor = lightColor * (specular * u_SpecularIntensity);
 
     v_FragColor = u_Color * (ambientColor + diffuseColor + specularColor);

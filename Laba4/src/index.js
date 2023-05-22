@@ -17,7 +17,7 @@ var redCube = new CubeObject({x: -2, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
 var greenCube = new CubeObject({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
 var yellowCube = new CubeObject({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
 var blueCube = new CubeObject({x: 1, y: 0, z: 0}, 0.3, {r: 0, g: 0, b: 1})
-var lightCube = new CubeObject({x: 0, y: 0, z: -5}, 0.2, {r: 1, g: 1, b: 1})
+var lightCube = new CubeObject({x: 0, y: 0, z: -5}, 0.1, {r: 1, g: 1, b: 1})
 var debugCube = new CubeObject({x: 0, y: 0, z: 0}, 0.3, {r: 1, g: 0, b: 1})
 // var lightCube = new CubeObject({x: 0, y: 2, z: -5}, 1, {r: 1, g: 1, b: 1})
 var lightSize = 7
@@ -218,15 +218,15 @@ function bindInput() {
     })
 
     document.getElementById("lightXRange").addEventListener("input", (event) => {
-        lightCube.position.x = event.target.value * 20 - 10 // [-10, 10]
+        lightCube.position.x = event.target.value * 10 - 5 // [-5, 5]
     })
 
     document.getElementById("lightYRange").addEventListener("input", (event) => {
-        lightCube.position.y = event.target.value * 20 - 10 // [-10, 10]
+        lightCube.position.y = event.target.value * 10 - 5 // [-5, 5]
     })
 
     document.getElementById("lightZRange").addEventListener("input", (event) => {
-        lightCube.position.z = event.target.value * 20 - 10 // [-10, 10]
+        lightCube.position.z = event.target.value * 10 - 5 // [-5, 5]
     })
 
     document.getElementById("lightingModelSelect").addEventListener("change", (event) => {

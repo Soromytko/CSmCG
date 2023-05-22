@@ -39,30 +39,31 @@ uniform vec3 u_CameraPosition;
 
 void main()
 {
-   vec3 lightColor = vec3(1.0, 1.0, 1.0);
+    vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
-   // Ambient Color
-   vec3 ambientColor = lightColor * u_AmbientIntensity;
-   
-   // Diffuse Color
-   vec3 directionToLight = u_LightPosition - v_VertexPosition;
-   float distanceToLight = length(directionToLight);
-   directionToLight = normalize(directionToLight);
-   vec3 normal = normalize(v_VertexNormal);
-   float diffuse = max(0.0, dot(directionToLight, normal));
-   diffuse *= max(0.0, (1.0 - distanceToLight / u_LightSize)); // Light attenuation
-   vec3 diffuseColor = lightColor * (diffuse * u_DiffuseIntensity);
+    // Ambient Color
+    vec3 ambientColor = lightColor * u_AmbientIntensity;
 
-   //Specular
-   vec3 directionToCamera = u_CameraPosition - v_VertexPosition;
-   directionToCamera = normalize(directionToCamera);
-   vec3 reflectedLightDirection = reflect(-directionToLight, normal);
-   float specular = max(0.0, dot(directionToCamera, reflectedLightDirection));
-   specular = pow(specular, 64.0);
-   vec3 specularColor = lightColor * (specular * u_SpecularIntensity);
+    // Diffuse Color
+    vec3 directionToLight = u_LightPosition - v_VertexPosition;
+    float distanceToLight = length(directionToLight);
+    directionToLight = normalize(directionToLight);
+    vec3 normal = normalize(v_VertexNormal);
+    float diffuse = max(0.0, dot(directionToLight, normal));
+    float attenuation = max(0.0, (1.0 - distanceToLight / u_LightSize)); // Light attenuation
+    diffuse *= attenuation;
+    vec3 diffuseColor = lightColor * (diffuse * u_DiffuseIntensity);
 
-   // Apply
-   gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
+    //Specular
+    vec3 directionToCamera = u_CameraPosition - v_VertexPosition;
+    directionToCamera = normalize(directionToCamera);
+    vec3 reflectedLightDirection = reflect(-directionToLight, normal);
+    float specular = max(0.0, dot(directionToCamera, reflectedLightDirection));
+    specular = pow(specular, 128.0);
+    vec3 specularColor = lightColor * (specular * u_SpecularIntensity);
+
+    // Apply
+    gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
 }
 `
 
