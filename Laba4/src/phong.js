@@ -31,9 +31,11 @@ varying vec3 v_VertexNormal;
 uniform vec3 u_Color;
 uniform float u_AmbientIntensity;
 uniform float u_DiffuseIntensity;
+uniform float u_SpecularIntensity;
 
 uniform vec3 u_LightPosition;
 uniform float u_LightSize;
+uniform vec3 u_CameraPosition;
 
 void main()
 {
@@ -51,8 +53,16 @@ void main()
    diffuse *= max(0.0, (1.0 - distanceToLight / u_LightSize)); // Light attenuation
    vec3 diffuseColor = lightColor * (diffuse * u_DiffuseIntensity);
 
+   //Specular
+   vec3 directionToCamera = u_CameraPosition - v_VertexPosition;
+   directionToCamera = normalize(directionToCamera);
+   vec3 reflectedLightDirection = reflect(-directionToLight, normal);
+   float specular = max(0.0, dot(directionToCamera, reflectedLightDirection));
+   specular = pow(specular, 64.0);
+   vec3 specularColor = lightColor * (specular * u_SpecularIntensity);
+
    // Apply
-   gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor), 1.0);
+   gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
 }
 `
 
@@ -79,8 +89,10 @@ class PhongMaterial extends Material {
         this._uColorLoc = gl.getUniformLocation(shaderProgram, "u_Color")
         this._uAmbientIntensityLoc = gl.getUniformLocation(shaderProgram, "u_AmbientIntensity")
         this._uDiffuseIntensityLoc = gl.getUniformLocation(shaderProgram, "u_DiffuseIntensity")
+        this._uSpecularIntensityLoc = gl.getUniformLocation(shaderProgram, "u_SpecularIntensity")
         this._uLightPositionLoc = gl.getUniformLocation(shaderProgram, "u_LightPosition")
         this._uLightSizeLoc = gl.getUniformLocation(shaderProgram, "u_LightSize")
+        this._uCameraPositionLoc = gl.getUniformLocation(shaderProgram, "u_CameraPosition")
 
         // Attributes
         this._aVertexPositionLoc = gl.getAttribLocation(shaderProgram, 'a_VertexPosition')

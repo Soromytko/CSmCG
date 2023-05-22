@@ -12,6 +12,7 @@ var pedestal = {
 }
 var ambientIntensity = 0.1
 var diffuseIntensity = 2
+var specularIntensity = 0.5
 var redCube = new CubeObject({x: -2, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
 var greenCube = new CubeObject({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
 var yellowCube = new CubeObject({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
@@ -119,7 +120,6 @@ function main() {
 
             if (object == lightCube) {
                 const lightCubeMatrix = glMatrix.mat4.create()
-                glMatrix.mat4.translate(lightCubeMatrix, lightCubeMatrix, [scene.pos.x, scene.pos.y, scene.pos.z, 0])
                 baseMatrix = lightCubeMatrix
             }
 
@@ -140,6 +140,8 @@ function main() {
             gl.uniform3f(material._uLightPositionLoc, lightCube.position.x, lightCube.position.y, lightCube.position.z)
             gl.uniform1f(material._uDiffuseIntensityLoc, diffuseIntensity)
             gl.uniform1f(material._uLightSizeLoc, lightSize)
+            gl.uniform1f(material._uSpecularIntensityLoc, specularIntensity)
+            gl.uniform3f(material._uCameraPosition, -camera.pos.x, -camera.pos.y, -camera.pos.z)
             // Color
             gl.uniform3f(material._uColorLoc, object.color.r, object.color.g, object.color.b)
             
@@ -198,6 +200,11 @@ function bindInput() {
     document.getElementById("diffuseRange").addEventListener("input", (event) => {
         diffuseIntensity = event.target.value * 10
     })
+
+    document.getElementById("specularRange").addEventListener("input", (event) => {
+        specularIntensity = event.target.value
+    })
+
 
     document.getElementById("lightSizeRange").addEventListener("input", (event) => {
         lightSize = event.target.value * 10
