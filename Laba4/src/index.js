@@ -35,6 +35,7 @@ var objects = [
 var lambertMaterial
 var phongMaterial
 var lampMaterial
+var guroMaterial
 
 var uProjectMatLoc
 var uViewMatLoc
@@ -66,6 +67,12 @@ function init() {
         console.log("Phong shader error")
         throw new Error()
     }
+
+    guroMaterial = new GuroMaterial()
+    if (!guroMaterial.build()) {{
+        console.log("Guro shader error")
+        throw new Error()
+    }}
 
     setMaterial(lambertMaterial)
     // setMaterial(lampMaterial)
@@ -226,12 +233,15 @@ function bindInput() {
         const model = event.target.value
         if (model == "Lambert") {
             setMaterial(lambertMaterial)
-            console.log("Lambert shader is set")
+            console.log("Lambert material is set")
         } else if (model == "Phong") {
             setMaterial(phongMaterial)
-            // setMaterial(lampMaterial)
-            console.log("Phong shader is set")
-        } else {
+            console.log("Phong material is set")
+        } else if (model == "Guro") {
+            setMaterial(guroMaterial)
+            console.log("Guro material is set")
+        }
+        else {
             console.log("Unknown model: ", model)
         }
     })
