@@ -80,6 +80,25 @@ function init() {
     bindInput()
 }
 
+function createScene() {
+    const scene = new Object({x: 0, y: 0, z: 0}, 1)
+    pedestal = new Object({x: 0, y: 0, z: 0}, 1, scene)
+
+    redCube = new CubeObject({x: -2, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
+    greenCube = new CubeObject({x: -1, y: 0, z: 0}, 0.4, {r: 0, g: 1, b: 0})
+    yellowCube = new CubeObject({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
+    blueCube = new CubeObject({x: 1, y: 0, z: 0}, 0.3, {r: 0, g: 0, b: 1})
+    // lightCube = new CubeObject({x: 0, y: 0, z: -5}, 0.1, {r: 1, g: 1, b: 1})
+    // debugCube = new CubeObject({x: 0, y: 0, z: 0}, 0.3, {r: 1, g: 0, b: 1})
+
+
+    pedestal.parent = scene
+    redCube.parent = pedestal
+    greenCube.parent = pedestal
+    yellowCube.parent = pedestal
+    blueCube.parent = pedestal
+}
+
 function setMaterial(material) {
     objects.forEach(object => {
         object.material = material
@@ -96,10 +115,29 @@ function main() {
     gl.depthFunc(gl.LEQUAL)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
+    function renderRecursively(object) {
+        const matrix = object.parent ? object.parent.matrix : gl.mat4.create()
+        glMatrix.mat4.translate(matrix, matrix, [object.position.x, object.position.y, object.position.z, 0])
+        glMatrix.mat4.rotate(matrix, matrix, object.rotationY, [0, 1, 0])
+        glMatrix.mat4.scale(matrix, matrix, [object.size, object.size, object.size])
+        object.matrix = matrix
+
+        const meshRenderer = object.meshRenderer
+        if (meshRenderer) {
+            meshRenderer.render()
+        }
+
+        object._children.forEach(child => {
+            renderRecursively(child)
+        })
+    }
+
     renderLoop()
     function renderLoop() {
         gl.clearColor(0.0, 0.0, 0.0, 1.0)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+        //renderRecursively(scene)
 
         let baseMatrix = glMatrix.mat4.create()
         

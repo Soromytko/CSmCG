@@ -62,6 +62,13 @@ class LampMaterial extends Material{
         this._vertexShaderSourceCode = lampVertexShaderSourceCode
         this._fragmentShaderSourceCode = lampFragmentShaderSourceCode
 
+        this._uniforms = {
+            PROJECT_MATRIX_UNIFORM: PROJECT_MAT,
+            VIEW_MATRIX_UNIFORM: VIEW_MAT,
+            WORLD_MATRIX_UNIFORM: undefined,
+            COLOR_UNIFORM: undefined,
+        }
+
         this._instance = this
     }
 

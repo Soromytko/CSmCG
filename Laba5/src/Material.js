@@ -1,4 +1,10 @@
+var LIGHT_POSITION
+
 class Material {
+    constructor() {
+        this._uniforms = {}
+    }
+
     set vertexShaderSourceCode(sourceCode) {
         this._vertexShaderSourceCode = sourceCode
     }
@@ -36,6 +42,15 @@ class Material {
         }
 
         gl.useProgram(this._shaderProgram)
+    }
+
+    bind() {
+        this._shader.bind()
+        
+    }
+
+    _initUniformLocations() {
+
     }
 
     // setUniform(uniformType, value) {
