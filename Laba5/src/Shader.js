@@ -3,7 +3,12 @@ class Shader {
         this._vertexShaderSourceCode = vertexShaderSourceCode
         this._fragmentShaderSourceCode = fragmentShaderSourceCode
 
+        this._attributes = {}
         this._uniforms = {}
+    }
+
+    get isBuilt() {
+        return this._shaderProgram ? true : false
     }
 
     build() {
@@ -11,7 +16,7 @@ class Shader {
         const compiledFragmentShader = this._compileShader(gl.FRAGMENT_SHADER, this._fragmentShaderSourceCode)
 
         if (!compiledVertexShader || !compiledFragmentShader) {
-            return undefined
+            return false
         }
 
         this._shaderProgram = this._linkShaders(compiledVertexShader, compiledFragmentShader)
@@ -67,23 +72,24 @@ class Shader {
             return
         }
 
-        gl.useProgram(this._shaderProgram)
-
         this._uniforms.forEach(uniform => {
             switch(uniform.type) {
                 case UNIFORM_TYPES.FLOAT_1F: {
-                    gl.uniform1f(uniform.location, uniform.buffer[0])
+                    gl.uniform1f(uniform.location, uniform.buffer.data[0])
                     return
                 }
                 case UNIFORM_TYPES.FLOAT_2F: {
-                    gl.uniform2f(uniform.location, uniform.buffer[0], unifrom.buffer[1])
+                    gl.uniform2f(uniform.location, uniform.buffer.data[0], unifrom.buffer.data[1])
+                    return
                 }
                 case UNIFORM_TYPES.FLOAT_3F: {
-                    gl.uniform3f(uniform.location, uniform.buffer[0], uniform.buffer[1], uniform.buffer[3])
+                    gl.uniform3f(uniform.location, uniform.buffer.data[0], uniform.buffer.data[1], uniform.buffer.data[3])
                     return 
                 }
             }
         })
+
+        gl.useProgram(this._shaderProgram)
     }
 
     _compileShader(type, source) { 

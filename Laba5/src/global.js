@@ -111,9 +111,8 @@ class VertexArray {
 }
 
 class UniformBuffer {
-    constructor(type, data) {
-        this._type = type
-        this._data = []
+    constructor(data = []) {
+        this._data = data 
     }
 
     get data() {
