@@ -56,7 +56,7 @@ class VertexArray {
     }
 
     setLayout(layout) {
-
+        
     }
 
     bind() {
