@@ -41,15 +41,19 @@ function main() {
     const fragSrc = `
     precision mediump float;
 
+    uniform vec3 u_Color;
+
     void main() {
-        gl_FragColor = vec4(1.0, 1.0, 0.5, 1.0);
+        gl_FragColor = vec4(u_Color, 1.0);
     }
 
     `
     
     const shader = new Shader(vertSrc, fragSrc)
-
     if (!shader.build()) return
+
+    const uniformColorBuffer = new UniformBuffer([1.0, 0.3, 0.5])
+    shader.addUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", uniformColorBuffer)
 
     const mesh = new TriangleMesh()
 
@@ -59,10 +63,27 @@ function main() {
     vertexArray.setIndexBuffer(new IndexBuffer(mesh.indices))
     
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    gl.clearColor(0.0, 0.0, 0.0, 1.0)
-    gl.clear(gl.COLOR_BUFFER_BIT)
     
-    shader.bind()
-    vertexArray.draw()
+    let dir = 1
+    let g = 0.3
+    renderLoop()
+    function renderLoop() {
+        gl.clearColor(0.0, 0.0, 0.0, 1.0)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+
+        shader.bind()
+        vertexArray.draw()
+
+        if (g >= 1.0) {
+            dir = -1
+        }
+        else if (g <= 0.0) {
+            dir = 1
+        }
         
+        g += 0.05 * dir
+        uniformColorBuffer.data[1] = g
+
+        requestAnimationFrame(renderLoop)
+    }
 }
