@@ -3,7 +3,6 @@ class Shader {
         this._vertexShaderSourceCode = vertexShaderSourceCode
         this._fragmentShaderSourceCode = fragmentShaderSourceCode
 
-        this._attributes = {}
         this._uniforms = {}
     }
 
@@ -29,48 +28,31 @@ class Shader {
         return false
     }
 
+    addAttributeLocation(name) {
+        return gl.getAttribLocation(this._shaderProgram, name)
+    }
+
     addUniform(type, name, buffer) {
         const location = gl.getUniformLocation(this._shaderProgram, name)
         if (location == -1) {
             console.log(name, " uniform not found")
             return
         }
+
         this._uniforms.push({
             location: location,
             type: type,
             buffer: buffer
         })
-
-
-        switch(type) {
-            case UNIFORM_TYPES.FLOAT1: {
-                const location = gl.getUniformLocation(this._shaderProgram, name)
-                if (location == -1) {
-                    console.log(type, " uniform not found")
-                    return
-                }
-                this._uniforms.push({
-                    type: type,
-                })
-            }
-            case UNIFORM_TYPES.FLOAT3: {
-                const location = gl.getUniformLocation(this._shaderProgram, name)
-                if (location == -1) {
-                    console.log(type, " uniform not found")
-                    return
-                }
-                this._uniforms.push({
-                    type: type,
-                })
-            }
-        }
     }
 
     bind() {
         if (!this._shaderProgram) {
-            console.log("The shader program is undefined")
+            console.error("The shader program is undefined")
             return
         }
+
+        gl.useProgram(this._shaderProgram)
 
         this._uniforms.forEach(uniform => {
             switch(uniform.type) {
@@ -83,13 +65,15 @@ class Shader {
                     return
                 }
                 case UNIFORM_TYPES.FLOAT_3F: {
-                    gl.uniform3f(uniform.location, uniform.buffer.data[0], uniform.buffer.data[1], uniform.buffer.data[3])
+                    gl.uniform3f(uniform.location, uniform.buffer.data[0], uniform.buffer.data[1], uniform.buffer.data[2])
                     return 
+                }
+                case UNIFORM_TYPES.MAT_4F: {
+                    gl.uniformMatrix4fv(uniform.location, false, uniform.buffer.data)
+                    return
                 }
             }
         })
-
-        gl.useProgram(this._shaderProgram)
     }
 
     _compileShader(type, source) { 

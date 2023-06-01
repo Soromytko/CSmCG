@@ -8,10 +8,6 @@ class Material {
         this._shader
     }
 
-    get shaderProgram() {
-        return this._shaderProgram
-    }
-
     get shader() {
         return this._shader
     }
@@ -23,17 +19,7 @@ class Material {
         this._shader = shader
     }
 
-    use() {
-        if (!this._shaderProgram) {
-            console.log("The shader program is undefined")
-            return
-        }
-
-        gl.useProgram(this._shaderProgram)
-    }
-
     bind() {
-        COLOR_UNIFORM_BUFFER.data = this._properties.color
         this._shader.bind()
     }
 }

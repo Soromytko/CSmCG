@@ -1,7 +1,7 @@
 class MeshRenderer {
-    constructor(mesh) {
+    constructor(mesh, material) {
         this._mesh = mesh
-        this._material
+        this._material = material
     }
 
     get mesh() {
@@ -14,6 +14,10 @@ class MeshRenderer {
 
     get material() {
         return this._material
+    }
+
+    set material(material) {
+        this._material = material
     }
 
     beind() {
@@ -31,10 +35,10 @@ class MeshRenderer {
     }
 
     render() {
-        // this._material.use()
         this._material.bind()
         
         // specifying shader uniforms
+        
         this._mesh.vertexArray.draw()
     }
 }

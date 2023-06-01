@@ -1,4 +1,4 @@
-var gl = getGl()
+const gl = getGl()
 
 function getGl() {
     const canvas = document.getElementById('canvas')
@@ -16,110 +16,39 @@ function getGl() {
     return gl
 }
 
-var POSITION_ATTRIBUTE_LOCATION = 0
-var NORMAL_ATTRIBUTE_LOCATION = 1
-var COLOR_ATTRIBUTE_LOCATION = 2
-
-var COLOR_UNIFORM
+const POSITION_ATTRIBUTE_LOCATION = 0
+const NORMAL_ATTRIBUTE_LOCATION = 1
+const COLOR_ATTRIBUTE_LOCATION = 2
 
 const UNIFORM_TYPES = {
-    FLOAT_1F: "FLOAT_1F",
-    FLOAT_2F: "FLOAT_2F",
-    FLOAT_3F: "FLOAT_3F",
+    FLOAT_1F:   "FLOAT_1F",
+    FLOAT_2F:   "FLOAT_2F",
+    FLOAT_3F:   "FLOAT_3F",
+    MAT_4F:     "MAT_4F",
 }
 
-class VertexBuffer {
-    constructor(attributeLocation, data) {
-        this._attributeLocation = attributeLocation
-        this._data = data
-        this._bufferId = gl.createBuffer()
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._bufferId)
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW)
+const lambertShader = new Shader(vertexShaderSourceCode, fragmentShaderSourceCode)
+const phongShader = new Shader(vertPhongSource, fragPhongSource)
+
+const PROJECT_MATRIX_UNIFORM_BUFFER = new UniformBuffer()
+const VIEW_MATRIX_UNIFORM_BUFFER = new UniformBuffer()
+const WORLD_MATRIX_UNIFORM_BUFFER = new UniformBuffer()
+
+function buildAllShaders() {
+    if (!lambertShader.build()) {
+        console.log("Lambert shader error")
+        return false
+    }
+    if (!phongShader.build()) {
+        console.log("Phong shader error")
+        return false
     }
 
-    get attributeLocation() {
-        return this._attributeLocation
-    }
+    lambertShader.addUniform(UNIFORM_TYPES.MAT_4F, "u_ProjectMat", PROJECT_MATRIX_UNIFORM_BUFFER)
+    lambertShader.addUniform(UNIFORM_TYPES.MAT_4F, "u_ViewMat", VIEW_MATRIX_UNIFORM_BUFFER)
+    lambertShader.addUniform(UNIFORM_TYPES.MAT_4F, "u_WorldMat", WORLD_MATRIX_UNIFORM_BUFFER)
 
-    bind() {
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._bufferId)
-    }
-
-    unbind() {
-        gl.bindBuffer(gl.ARRAY_BUFFER, 0)
-    }
-}
-
-class IndexBuffer {
-    constructor(data) {
-        this._data = data
-        this._bufferId = gl.createBuffer()
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._bufferId)
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), gl.STATIC_DRAW)
-    }
-
-    bind() {
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._bufferId)
-    }
-
-    unbind() {
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
-    }
-
-    get count() {
-        return this._data.length
-    }
-}
-
-class VertexArray {
-    constructor() {
-        this._vertexBuffers = []
-        this._indexBuffer
-    }
-
-    addVertexBuffer(vertexBuffer) {
-        this._vertexBuffers.push(vertexBuffer)
-    }
-
-    setIndexBuffer(indexBuffer) {
-        this._indexBuffer = indexBuffer
-    }
-
-    bind() {
-        this._vertexBuffers.forEach(vertexBuffer => {
-            vertexBuffer.bind()
-            gl.vertexAttribPointer(vertexBuffer.attributeLocation, 3, gl.FLOAT, gl.FALSE, 0, 0)
-            gl.enableVertexAttribArray(vertexBuffer.attributeLocation)
-        })
-        this._indexBuffer.bind()
-    }
-
-    unbind() {
-        this._vertexBuffers.forEach(vertexBuffer => {
-            vertexBuffer.unbind()
-            gl.disableVertexAttribArray(vertexBuffer.attributeLocation)
-        })
-        this._indexBuffer.unbind()
-    }
-
-    // Call useProgram() before calling
-    draw() {
-        this.bind()
-        gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0)
-        this.unbind()
-    }
-}
-
-class UniformBuffer {
-    constructor(data = []) {
-        this._data = data 
-    }
-
-    get data() {
-        return this._data
-    }
-
-    set data(valueArray) {
-        this._data = valueArray
-    }
+    phongShader.addUniform(UNIFORM_TYPES.MAT_4F, "u_ProjectMat", PROJECT_MATRIX_UNIFORM_BUFFER)
+    phongShader.addUniform(UNIFORM_TYPES.MAT_4F, "u_ViewMat", VIEW_MATRIX_UNIFORM_BUFFER)
+    phongShader.addUniform(UNIFORM_TYPES.MAT_4F, "u_WorldMat", WORLD_MATRIX_UNIFORM_BUFFER)
 }
