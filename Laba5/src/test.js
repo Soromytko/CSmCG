@@ -64,8 +64,12 @@ function main() {
     
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     
-    let dir = 1
+    let r = 1.0
+    let dirR = 1
     let g = 0.3
+    let dirG = 1
+    let b = 0.3
+    let dirB = 1
     renderLoop()
     function renderLoop() {
         gl.clearColor(0.0, 0.0, 0.0, 1.0)
@@ -74,15 +78,28 @@ function main() {
         shader.bind()
         vertexArray.draw()
 
-        if (g >= 1.0) {
-            dir = -1
+        const reflect = function(value, dir) {
+            if (value >= 1.0) {
+                return -1
+            }
+            else if (value <= 0.0) {
+                return 1
+            }
+
+            return dir
         }
-        else if (g <= 0.0) {
-            dir = 1
-        }
-        
-        g += 0.05 * dir
+
+        dirR = reflect(r, dirR)
+        dirG = reflect(g, dirG)
+        dirB = reflect(g, dirB)
+
+        r += 0.02 * dirR
+        g += 0.05 * dirG
+        b += 0.03 * dirB
+
+        uniformColorBuffer.data[0] = r
         uniformColorBuffer.data[1] = g
+        uniformColorBuffer.data[2] = b
 
         requestAnimationFrame(renderLoop)
     }
