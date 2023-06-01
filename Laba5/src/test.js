@@ -56,11 +56,7 @@ function main() {
     shader.addUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", uniformColorBuffer)
 
     const mesh = new TriangleMesh()
-
-    const vertexArray = new VertexArray()
-    vertexArray.addVertexBuffer(new VertexBuffer(mesh.vertices))
-    // vertexArray.addVertexBuffer(new VertexBuffer(mesh.normals))
-    vertexArray.setIndexBuffer(new IndexBuffer(mesh.indices))
+    const vertexArray = mesh.vertexArray
     
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     

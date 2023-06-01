@@ -31,9 +31,9 @@ class Mesh {
 
     _createBuffers() {
         this._vertexArray = new VertexArray()
-        this._vertexArray.addVertexBuffer(new VertexBuffer(VERTEX_ATTRIBUTE, this._vertices))
-        this._vertexArray.addVertexBuffer(new VertexBuffer(NORMAL_ATTRIBUTE, this._normals))
-        this._vertexArray.addIndexBuffer(new IndexBuffer(this._indices))
+        this._vertexArray.addVertexBuffer(new VertexBuffer(this._vertices))
+        // this._vertexArray.addVertexBuffer(new VertexBuffer(this._normals))
+        this._vertexArray.setIndexBuffer(new IndexBuffer(this._indices))
 
 
         return

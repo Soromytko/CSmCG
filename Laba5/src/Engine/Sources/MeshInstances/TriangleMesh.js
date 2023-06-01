@@ -25,7 +25,7 @@ class TriangleMesh extends Mesh {
             0, 1, 2,
         ]
 
-        // this._createBuffers()
+        this._createBuffers()
     
         TriangleMesh._instance = this
     }
