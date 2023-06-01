@@ -11,6 +11,10 @@ class VertexBuffer {
         return this._attributeLocation
     }
 
+    setLayoutBuffer(layoutBuffer) {
+        
+    }
+
     bind() {
         gl.bindBuffer(gl.ARRAY_BUFFER, this._bufferId)
     }
@@ -38,6 +42,32 @@ class IndexBuffer {
 
     get count() {
         return this._data.length
+    }
+}
+
+class LayoutBuffer {
+    constructor(attributes) {
+        this._attributes = []
+
+
+        attributes.forEach(attribute => {
+
+        })
+    }
+
+    get attributes() {
+        return this._attributes
+    }
+
+    addAttribute(location, size, type, normalized, stride, offset) {
+        this._attributes.push({
+            location: location,
+            size: size,
+            type: type,
+            normalized: normalized,
+            stride: stride,
+            offset: offset,
+        })
     }
 }
 

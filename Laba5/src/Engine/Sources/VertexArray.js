@@ -2,6 +2,7 @@ class VertexArray {
     constructor() {
         this._vertexBuffers = []
         this._indexBuffer
+        this._layoutBuffer
     }
 
     addVertexBuffer(vertexBuffer) {
@@ -12,17 +13,35 @@ class VertexArray {
         this._indexBuffer = indexBuffer
     }
 
-    setLayout(layout) {
-        
+    setLayoutBuffer(layoutBuffer) {
+        this._layoutBuffer = layoutBuffer
     }
 
     bind() {
+        let index = 0
         this._vertexBuffers.forEach(vertexBuffer => {
             vertexBuffer.bind()
-            gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
+            const layout = this._layoutBuffer.attributes[index]
+            // gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
+            gl.vertexAttribPointer(
+                layout.location,
+                layout.size,
+                layout.normalized,
+                layout.stride,
+                layout.offset)
             gl.enableVertexAttribArray(0)
+            index++
         })
         this._indexBuffer.bind()
+
+        this._layout.forEach(layout => {
+            gl.vertexAttribPointer(
+                layout.location,
+                layout.size,
+                layout.normalized,
+                layout.stride,
+                layout.offset)
+        })
     }
 
     unbind() {
@@ -38,11 +57,5 @@ class VertexArray {
         this.bind()
         gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0)
         this.unbind()
-    }
-}
-
-class Layout {
-    constructor(location, ) {
-
     }
 }
