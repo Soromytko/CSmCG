@@ -1,18 +1,20 @@
 class Mesh {
     constructor() {
         this._vertexArray = []
+        this._normals = []
+        this._indices = []
     }
 
     get vertices() {
         return this._vertices
     }
     
-    get indices() {
-        return this._indices
-    }
-
     get normals() {
         return this._normals
+    }
+
+    get indices() {
+        return this._indices
     }
 
     get vertexArray() {
@@ -29,7 +31,7 @@ class Mesh {
 
     _createBuffers() {
         this._vertexArray = new VertexArray()
-        this._vertexArray.addVertexBuffer(new VertexArray(VERTEX_ATTRIBUTE, this._vertices))
+        this._vertexArray.addVertexBuffer(new VertexBuffer(VERTEX_ATTRIBUTE, this._vertices))
         this._vertexArray.addVertexBuffer(new VertexBuffer(NORMAL_ATTRIBUTE, this._normals))
         this._vertexArray.addIndexBuffer(new IndexBuffer(this._indices))
 

@@ -3,7 +3,7 @@ class Shader {
         this._vertexShaderSourceCode = vertexShaderSourceCode
         this._fragmentShaderSourceCode = fragmentShaderSourceCode
 
-        this._uniforms = {}
+        this._uniforms = []
     }
 
     get isBuilt() {
@@ -21,7 +21,6 @@ class Shader {
         this._shaderProgram = this._linkShaders(compiledVertexShader, compiledFragmentShader)
 
         if (this._shaderProgram) {
-            this._init()
             return true
         }
 
