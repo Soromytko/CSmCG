@@ -31,6 +31,10 @@ class Shader {
         return gl.getAttribLocation(this._shaderProgram, name)
     }
 
+    bindVertexBuffer(name, buffer) {
+        
+    }
+
     addUniform(type, name, buffer) {
         const location = gl.getUniformLocation(this._shaderProgram, name)
         if (location == -1) {

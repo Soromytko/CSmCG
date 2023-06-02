@@ -48,15 +48,36 @@ function main() {
     }
 
     `
-    
+
+    const vertices = [
+        -0.5, -0.5, +0.0,
+        +0.5, -0.5, +0.0,
+        +0.5, +0.5, +0.0,
+    ]
+
+    const indices = [
+        0, 1, 2
+    ]
+
+
     const shader = new Shader(vertSrc, fragSrc)
     if (!shader.build()) return
 
     const uniformColorBuffer = new UniformBuffer([1.0, 0.3, 0.5])
     shader.addUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", uniformColorBuffer)
 
-    const mesh = new TriangleMesh()
-    const vertexArray = mesh.vertexArray
+    // const mesh = new TriangleMesh()
+    // const vertexArray = mesh.vertexArray
+    const vertexBuffer = new VertexBuffer(vertices)
+    vertexBuffer.addLayout(3, gl.FLOAT, gl.FALSE, 0, 0)
+    const indexBuffer = new IndexBuffer(indices)
+    const vertexArray = new VertexArray()
+    vertexArray.addVertexBuffer(vertexBuffer)
+    vertexArray.setIndexBuffer(indexBuffer)
+    vertexArray.addAttributePointers([
+        [0],
+        [0], 
+    ])
     
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
@@ -105,6 +126,19 @@ function main() {
     }
 }
 
+class AttributePointer {
+    constructor(location, type, size) {
+    }
+}
+
+
+
+const loc = shader.getArributeLocation("a_VertexPositoin")
+vertexArray.addAttributePointers([
+    [shader.getArributeLocation("a_VertexPositoin")],
+    [shader.getArributeLocation("a_vertexPosition")],
+]
+)
 /*
 
 const material

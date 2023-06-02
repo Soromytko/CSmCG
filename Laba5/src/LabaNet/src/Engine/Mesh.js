@@ -31,10 +31,10 @@ class Mesh {
 
     _createBuffers() {
         const vertexPositionBuffer = new VertexBuffer(this._vertices)
-        vertexPositionBuffer.addLayout(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
+        vertexPositionBuffer.addLayout(3, gl.FLOAT, gl.FALSE, 0, 0)
 
         const vertexNormalBuffer = new VertexArray(this._normals)
-        vertexNormalBuffer.addLayout(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
+        vertexNormalBuffer.addLayout(3, gl.FLOAT, gl.FALSE, 0, 0)
 
         this._vertexArray = new VertexArray()
         this._vertexArra.addVertexBuffer(vertexPositionBuffer)

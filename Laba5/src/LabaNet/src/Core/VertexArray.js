@@ -22,6 +22,7 @@ class VertexArray {
         this._vertexBuffers.forEach(vertexBuffer => {
             vertexBuffer.bind()
             // const layout = this._layoutBuffer.attributes[index]
+            const layout = vertexBuffer.layout
             // gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
             gl.vertexAttribPointer(
                 layout.location,
