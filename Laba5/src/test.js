@@ -58,8 +58,9 @@ function main() {
     const mesh = new TriangleMesh()
     const vertexArray = mesh.vertexArray
     
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    
+    const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
+    renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
+
     let r = 1.0
     let dirR = 1
     let g = 0.3
@@ -68,11 +69,14 @@ function main() {
     let dirB = 1
     renderLoop()
     function renderLoop() {
-        gl.clearColor(0.0, 0.0, 0.0, 1.0)
-        gl.clear(gl.COLOR_BUFFER_BIT)
+        // gl.clearColor(0.0, 0.0, 0.0, 1.0)
+        // gl.clear(gl.COLOR_BUFFER_BIT)
 
-        shader.bind()
-        vertexArray.draw()
+        renderer.clear(gl.COLOR_BUFFER_BIT)
+        renderer.submit(shader, vertexArray)
+        renderer.render()
+        // shader.bind()
+        // vertexArray.draw()
 
         const reflect = function(value, dir) {
             if (value >= 1.0) {
@@ -100,3 +104,37 @@ function main() {
         requestAnimationFrame(renderLoop)
     }
 }
+
+/*
+
+const material
+
+material.setFloat4("u_Color", 1.0, 0.5, 1.0, 1.0)
+
+const location = material.getFloat4Location("u_Color")
+
+
+
+class Material {
+    constructor() {
+        this._attributeLocations = []
+    }
+    
+    setFloat4(name, data) {
+        this._getAttributeLocation
+    }
+
+    _getAttributeLocation(name) {
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+
+        if (location == -1) {
+            console.warn("Uniform ${name} not found")
+        }
+
+        return location
+    }
+}
+
+
+
+ */

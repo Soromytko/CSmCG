@@ -12,7 +12,7 @@ class VertexBuffer {
     }
 
     setLayoutBuffer(layoutBuffer) {
-        
+        this._layoutBuffer = layoutBuffer
     }
 
     bind() {
@@ -45,13 +45,26 @@ class IndexBuffer {
     }
 }
 
+class Attribute {
+    constructor(location, attributeType) {
+        this._location = location
+        this._type = attributeType
+
+        this._size = 0
+        this._stride = 0
+        this._offset = 0
+    }
+}
+
 class LayoutBuffer {
     constructor(attributes) {
-        this._attributes = []
+        this._attributes = attributes
 
 
+        let stride = 0
+        let offset = 0
         attributes.forEach(attribute => {
-
+            
         })
     }
 

@@ -51,11 +51,4 @@ class VertexArray {
         })
         this._indexBuffer.unbind()
     }
-
-    // Call useProgram() before calling
-    draw() {
-        this.bind()
-        gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0)
-        this.unbind()
-    }
 }
