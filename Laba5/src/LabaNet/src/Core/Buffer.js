@@ -3,12 +3,32 @@ class VertexBuffer {
         // this._attributeLocation = attributeLocation
         this._data = data
         this._bufferId = gl.createBuffer()
+        this._layout = []
         gl.bindBuffer(gl.ARRAY_BUFFER, this._bufferId)
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW)
     }
 
     get attributeLocation() {
         return this._attributeLocation
+    }
+
+    addLayout(size, type, normalized, stride, offset) {
+        _layout.push({
+            size: size,
+            type: type,
+            normalized: normalized,
+            stride: stride,
+            offset: offset,
+        })
+        
+        // TODO
+
+        // const stride = this._rules.length > 0 ? this._rules[this._rules.length - 1].stride : 0
+
+        // this._rules.push({
+        //     type: type,
+        //     stride: stride
+        // })
     }
 
     setLayoutBuffer(layoutBuffer) {

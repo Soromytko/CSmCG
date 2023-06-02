@@ -30,6 +30,20 @@ class Mesh {
     }
 
     _createBuffers() {
+        const vertexPositionBuffer = new VertexBuffer(this._vertices)
+        vertexPositionBuffer.addLayout(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
+
+        const vertexNormalBuffer = new VertexArray(this._normals)
+        vertexNormalBuffer.addLayout(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
+
+        this._vertexArray = new VertexArray()
+        this._vertexArra.addVertexBuffer(vertexPositionBuffer)
+        this._vertexArray.addVertexBuffer(vertexNormalBuffer)
+        this._vertexArray.setIndexBuffer(new IndexBuffer(this._indices))
+
+
+        return
+
         this._vertexArray = new VertexArray()
         this._vertexArray.addVertexBuffer(new VertexBuffer(this._vertices))
         // this._vertexArray.addVertexBuffer(new VertexBuffer(this._normals))
