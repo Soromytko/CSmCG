@@ -95,29 +95,6 @@ class Shader {
         }
 
         gl.useProgram(this._shaderProgram)
-
-        return
-
-        this._uniforms.forEach(uniform => {
-            switch(uniform.type) {
-                case UNIFORM_TYPES.FLOAT_1F: {
-                    gl.uniform1f(uniform.location, uniform.buffer.data[0])
-                    return
-                }
-                case UNIFORM_TYPES.FLOAT_2F: {
-                    gl.uniform2f(uniform.location, uniform.buffer.data[0], unifrom.buffer.data[1])
-                    return
-                }
-                case UNIFORM_TYPES.FLOAT_3F: {
-                    gl.uniform3f(uniform.location, uniform.buffer.data[0], uniform.buffer.data[1], uniform.buffer.data[2])
-                    return 
-                }
-                case UNIFORM_TYPES.MAT_4F: {
-                    gl.uniformMatrix4fv(uniform.location, false, uniform.buffer.data)
-                    return
-                }
-            }
-        })
     }
 
     _compileShader(type, source) { 

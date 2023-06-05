@@ -57,7 +57,6 @@ function main() {
         0, 1, 2
     ]
 
-
     const shader = new Shader(vertSrc, fragSrc)
     if (!shader.build()) return
 
@@ -103,43 +102,3 @@ function main() {
         requestAnimationFrame(renderLoop)
     }
 }
-
-class AttributePointer {
-    constructor(location, type, size) {
-    }
-}
-
-
-/*
-
-const material
-
-material.setFloat4("u_Color", 1.0, 0.5, 1.0, 1.0)
-
-const location = material.getFloat4Location("u_Color")
-
-
-
-class Material {
-    constructor() {
-        this._attributeLocations = []
-    }
-    
-    setFloat4(name, data) {
-        this._getAttributeLocation
-    }
-
-    _getAttributeLocation(name) {
-        const location = gl.getUniformLocation(this._shaderProgram, name)
-
-        if (location == -1) {
-            console.warn("Uniform ${name} not found")
-        }
-
-        return location
-    }
-}
-
-
-
- */
