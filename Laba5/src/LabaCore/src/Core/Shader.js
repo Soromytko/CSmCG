@@ -27,12 +27,20 @@ class Shader {
         return false
     }
 
-    addAttributeLocation(name) {
+    getAttributeLocation(name) {
         return gl.getAttribLocation(this._shaderProgram, name)
     }
 
-    bindVertexBuffer(name, buffer) {
-        
+    createVertexArray(vertexBuffers) {
+        const vertexArray = new VertexArray()
+        vertexBuffers.forEach(vertexBuffer => {
+            const locations = new  Array(vertexBuffer.layout.length)
+            for (let i = 0; i < locations.length; i++) {
+                locatoins[i] = gl.getAttribLocation(veretxBuffer.layout[i].name)
+            }
+            vertexArray.addVertexBuffer(locations, vertexBuffer) 
+        })
+        return vertexArray
     }
 
     addUniform(type, name, buffer) {
@@ -49,6 +57,15 @@ class Shader {
         })
     }
 
+    getUniformLocation(name) {
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+        if (location == -1) {
+            console.log(name, " uniform not found")
+        }
+
+        return location
+    }
+
     bind() {
         if (!this._shaderProgram) {
             console.error("The shader program is undefined")
@@ -56,6 +73,8 @@ class Shader {
         }
 
         gl.useProgram(this._shaderProgram)
+
+        return
 
         this._uniforms.forEach(uniform => {
             switch(uniform.type) {
@@ -103,3 +122,35 @@ class Shader {
         return shaderProgram
     }
 }
+
+
+
+/*
+
+
+const shader = new Shader()
+
+const vertexArray = shader.createVertexArray({
+    "a_Position": positionBuffer,
+    "a_Color", colorBuffer,
+})
+
+
+const vertexArray
+vertexArray.addVertexBuffer(shader.getLocation(), vertexBuffer)
+shader.setVertexArray(vertexArray)
+shader.bind()
+
+
+shader.setVertexArray(vertexArray)
+shader.setIndexArray(indexArray)
+// shader.setUniformArray(uniformArray)
+
+shader.bind()
+shader.unfind()
+
+
+
+shader.setVertexArray()
+
+*/

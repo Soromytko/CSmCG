@@ -64,21 +64,23 @@ function main() {
     if (!shader.build()) return
 
     const uniformColorBuffer = new UniformBuffer([1.0, 0.3, 0.5])
-    shader.addUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", uniformColorBuffer)
+    // shader.addUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", uniformColorBuffer)
+    uniformColorBuffer.setLayout(shader.getUniformLocation("u_Color"), UNIFORM_TYPES.FLOAT_3F)
+
 
     // const mesh = new TriangleMesh()
     // const vertexArray = mesh.vertexArray
     const vertexBuffer = new VertexBuffer(vertices)
-    vertexBuffer.addLayout(3, gl.FLOAT, gl.FALSE, 0, 0)
+    vertexBuffer.setLayoutBuffer(new LayoutBuffer([
+        new Attribute(shader.getAttributeLocation("a_VertexPosition"), 3, gl.FLOAT, gl.FALSE, 0, 0)
+    ]))
     const indexBuffer = new IndexBuffer(indices)
-    const vertexArray = new VertexArray()
-    vertexArray.addVertexBuffer(vertexBuffer)
-    vertexArray.setIndexBuffer(indexBuffer)
-    vertexArray.addAttributePointers([
-        [0],
-        [0], 
-    ])
-    
+
+    vertexBuffer.bind()
+    indexBuffer.bind()
+    shader.bind()
+    uniformColorBuffer.bind()
+
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
 
@@ -94,10 +96,10 @@ function main() {
         // gl.clear(gl.COLOR_BUFFER_BIT)
 
         renderer.clear(gl.COLOR_BUFFER_BIT)
-        renderer.submit(shader, vertexArray)
+        // renderer.submit(shader, vertexArray)
+        renderer._indexBuffer = indexBuffer
         renderer.render()
         // shader.bind()
-        // vertexArray.draw()
 
         const reflect = function(value, dir) {
             if (value >= 1.0) {
@@ -121,6 +123,7 @@ function main() {
         uniformColorBuffer.data[0] = r
         uniformColorBuffer.data[1] = g
         uniformColorBuffer.data[2] = b
+        uniformColorBuffer.bind()
 
         requestAnimationFrame(renderLoop)
     }
@@ -132,13 +135,6 @@ class AttributePointer {
 }
 
 
-
-const loc = shader.getArributeLocation("a_VertexPositoin")
-vertexArray.addAttributePointers([
-    [shader.getArributeLocation("a_VertexPositoin")],
-    [shader.getArributeLocation("a_vertexPosition")],
-]
-)
 /*
 
 const material

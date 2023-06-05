@@ -23,7 +23,9 @@ class Renderer {
 
         this._shader = shader
         this._vertexArray = vertexArray
-
+        
+        this._shader.bind()
+        this._vertexArray.bind()
     }
 
     clear(mask) {
@@ -32,12 +34,10 @@ class Renderer {
     }
 
     render() {
-        this._shader.bind()
-        this._vertexArray.bind()
-        
-        gl.drawElements(gl.TRIANGLES, this._vertexArray._indexBuffer.count, gl.UNSIGNED_SHORT, 0)
+        gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0)
+        // gl.drawElements(gl.TRIANGLES, this._vertexArray._indexBuffer.count, gl.UNSIGNED_SHORT, 0)
         
         // this._shader.unbind()        
-        this._vertexArray.unbind()
+        // this._vertexArray.unbind()
     }
 }

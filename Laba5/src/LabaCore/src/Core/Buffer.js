@@ -3,7 +3,6 @@ class VertexBuffer {
         // this._attributeLocation = attributeLocation
         this._data = data
         this._bufferId = gl.createBuffer()
-        this._layout = []
         gl.bindBuffer(gl.ARRAY_BUFFER, this._bufferId)
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW)
     }
@@ -12,31 +11,13 @@ class VertexBuffer {
         return this._attributeLocation
     }
 
-    addLayout(size, type, normalized, stride, offset) {
-        _layout.push({
-            size: size,
-            type: type,
-            normalized: normalized,
-            stride: stride,
-            offset: offset,
-        })
-        
-        // TODO
-
-        // const stride = this._rules.length > 0 ? this._rules[this._rules.length - 1].stride : 0
-
-        // this._rules.push({
-        //     type: type,
-        //     stride: stride
-        // })
-    }
-
     setLayoutBuffer(layoutBuffer) {
         this._layoutBuffer = layoutBuffer
     }
 
     bind() {
         gl.bindBuffer(gl.ARRAY_BUFFER, this._bufferId)
+        this._layoutBuffer.bind()
     }
 
     unbind() {
@@ -66,20 +47,31 @@ class IndexBuffer {
 }
 
 class Attribute {
-    constructor(location, attributeType) {
+    constructor(location, size, type, normalized, stride, offset) {
         this._location = location
-        this._type = attributeType
+        this._size = size
+        this._type = type
+        this._normalized = normalized
+        this._stride = stride
+        this._offset = offset
+    }
 
-        this._size = 0
-        this._stride = 0
-        this._offset = 0
+    bind() {
+        gl.vertexAttribPointer(
+            this._location,
+            this._size,
+            this._type,
+            this._normalized,
+            this._stride,
+            this._offset,
+        )
+        gl.enableVertexAttribArray(this.location)
     }
 }
 
 class LayoutBuffer {
     constructor(attributes) {
         this._attributes = attributes
-
 
         let stride = 0
         let offset = 0
@@ -88,19 +80,8 @@ class LayoutBuffer {
         })
     }
 
-    get attributes() {
-        return this._attributes
-    }
-
-    addAttribute(location, size, type, normalized, stride, offset) {
-        this._attributes.push({
-            location: location,
-            size: size,
-            type: type,
-            normalized: normalized,
-            stride: stride,
-            offset: offset,
-        })
+    bind() {
+        this._attributes.forEach(attribute => attribute.bind())
     }
 }
 
@@ -115,5 +96,31 @@ class UniformBuffer {
 
     set data(valueArray) {
         this._data = valueArray
+    }
+
+    setLayout(location, type) {
+        this._location = location
+        this._type = type
+    }
+
+    bind() {
+        switch(this._type) {
+            case UNIFORM_TYPES.FLOAT_1F: {
+                gl.uniform1f(this._location, this._data[0])
+                return
+            }
+            case UNIFORM_TYPES.FLOAT_2F: {
+                gl.uniform2f(this._location, this._data[0], this._data[1])
+                return
+            }
+            case UNIFORM_TYPES.FLOAT_3F: {
+                gl.uniform3f(this._location, this._data[0], this._data[1], this._data[2])
+                return 
+            }
+            case UNIFORM_TYPES.MAT_4F: {
+                gl.uniformMatrix4fv(this._location, false, this._data)
+                return
+            }
+        }
     }
 }
