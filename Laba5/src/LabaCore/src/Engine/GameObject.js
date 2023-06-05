@@ -1,4 +1,4 @@
-class Object {
+class GameObject {
     constructor(position, size = 1, color) {
         this._position = position
         this._rotationY = 0
