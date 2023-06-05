@@ -27,6 +27,28 @@ class Shader {
         return false
     }
 
+    setUniform(unifromType, name, value) {
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+        switch(unifromType) {
+            case UNIFORM_TYPES.FLOAT_1F: {
+                gl.uniform1f(location, value[0])
+                return
+            }
+            case UNIFORM_TYPES.FLOAT_2F: {
+                gl.uniform2f(location, value[0], value[1])
+                return
+            }
+            case UNIFORM_TYPES.FLOAT_3F: {
+                gl.uniform3f(location, value[0], value[1], value[2])
+                return 
+            }
+            case UNIFORM_TYPES.MAT_4F: {
+                gl.uniformMatrix4fv(location, false, value)
+                return
+            }
+        }
+    }
+
     getAttributeLocation(name) {
         return gl.getAttribLocation(this._shaderProgram, name)
     }

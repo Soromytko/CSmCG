@@ -35,15 +35,15 @@ class Mesh {
             new Attribute(0, 3, gl.FLOAT, gl.GALSE, 0, 0)
         ]))
 
-        const vertexNormalBuffer = new VertexArray(this._normals)
+        const vertexNormalBuffer = new VertexBuffer(this._normals)
         vertexNormalBuffer.setLayoutBuffer(new LayoutBuffer([
-            new Attribute(0, 3, gl.FLOAT, gl.GALSE, 0, 0)
+            new Attribute(1, 3, gl.FLOAT, gl.GALSE, 0, 0)
         ]))
 
         const indexBuffer = new IndexBuffer(this._indices)
 
         this._vertexArray = new VertexArray()
-        this._vertexArra.addVertexBuffer(vertexPositionBuffer)
+        this._vertexArray.addVertexBuffer(vertexPositionBuffer)
         this._vertexArray.addVertexBuffer(vertexNormalBuffer)
         this._vertexArray.setIndexBuffer(new IndexBuffer(this._indices))
 

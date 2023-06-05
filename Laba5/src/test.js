@@ -25,8 +25,6 @@ function buildAllShaders() {
 }
 
 function main() {
-    // buildAllShaders()
-
     const vertSrc = `
     precision mediump float;
 
@@ -63,23 +61,8 @@ function main() {
     const shader = new Shader(vertSrc, fragSrc)
     if (!shader.build()) return
 
-    const uniformColorBuffer = new UniformBuffer([1.0, 0.3, 0.5])
-    // shader.addUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", uniformColorBuffer)
-    uniformColorBuffer.setLayout(shader.getUniformLocation("u_Color"), UNIFORM_TYPES.FLOAT_3F)
-
-
-    // const mesh = new TriangleMesh()
-    // const vertexArray = mesh.vertexArray
-    const vertexBuffer = new VertexBuffer(vertices)
-    vertexBuffer.setLayoutBuffer(new LayoutBuffer([
-        new Attribute(shader.getAttributeLocation("a_VertexPosition"), 3, gl.FLOAT, gl.FALSE, 0, 0)
-    ]))
-    const indexBuffer = new IndexBuffer(indices)
-
-    vertexBuffer.bind()
-    indexBuffer.bind()
-    shader.bind()
-    uniformColorBuffer.bind()
+    const mesh = new TriangleMesh()
+    const vertexArray = mesh.vertexArray
 
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
@@ -92,14 +75,9 @@ function main() {
     let dirB = 1
     renderLoop()
     function renderLoop() {
-        // gl.clearColor(0.0, 0.0, 0.0, 1.0)
-        // gl.clear(gl.COLOR_BUFFER_BIT)
-
         renderer.clear(gl.COLOR_BUFFER_BIT)
-        // renderer.submit(shader, vertexArray)
-        renderer._indexBuffer = indexBuffer
+        renderer.submit(shader, vertexArray)
         renderer.render()
-        // shader.bind()
 
         const reflect = function(value, dir) {
             if (value >= 1.0) {
@@ -120,10 +98,7 @@ function main() {
         g += 0.05 * dirG
         b += 0.03 * dirB
 
-        uniformColorBuffer.data[0] = r
-        uniformColorBuffer.data[1] = g
-        uniformColorBuffer.data[2] = b
-        uniformColorBuffer.bind()
+        shader.setUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", [r, g, b])
 
         requestAnimationFrame(renderLoop)
     }
