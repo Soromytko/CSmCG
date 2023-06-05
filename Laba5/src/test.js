@@ -5,6 +5,13 @@ const WORLD_MATRIX_UNIFORM_BUFFER = new UniformBuffer()
 // const lambertShader = new Shader(vertexShaderSourceCode, fragmentShaderSourceCode)
 // const phongShader = new Shader(vertPhongSource, fragPhongSource)
 
+const PROJECT_MATRIX = glMatrix.mat4.create()
+const VIEW_MATRIX = glMatrix.mat4.create()
+
+glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
+// glMatrix.mat4.translate(viewMatrix, viewMatrix, [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
+// glMatrix.mat4.rotate(viewMatrix, viewMatrix, camera.rotX, [1, 0, 0])
+
 function buildAllShaders() {
     if (!lambertShader.build()) {
         console.log("Lambert shader error")
@@ -30,8 +37,13 @@ function main() {
 
     attribute vec3 a_VertexPosition;
 
+    uniform mat4 u_ProjectMat;
+    uniform mat4 u_ViewMat;
+    uniform mat4 u_WorldMat;
+
     void main() {
-        gl_Position = vec4(a_VertexPosition, 1.0);
+        // gl_Position = vec4(a_VertexPosition, 1.0);
+        gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(a_VertexPosition, 1.0);
     }
     
     `
@@ -66,6 +78,29 @@ function main() {
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
 
+    let cube = new CubeObject({x: 0, y: 0, z: -5})
+    cube.meshRenderer.shader = shader
+
+    const renderObjectRecursively = function(object) {
+        const matrix = object.parent ? object.parent.matrix : glMatrix.mat4.create()
+        glMatrix.mat4.translate(matrix, matrix, [object.position.x, object.position.y, object.position.z, 0])
+        glMatrix.mat4.rotate(matrix, matrix, object.rotationY, [0, 1, 0])
+        glMatrix.mat4.scale(matrix, matrix, [object.size, object.size, object.size])
+        object.matrix = matrix
+
+        const meshRenderer = object.meshRenderer
+        if (meshRenderer) {
+            shader.setMat4("u_ProjectMat", PROJECT_MATRIX)
+            shader.setMat4("u_ViewMat", VIEW_MATRIX)
+            shader.setMat4("u_WorldMat", matrix)
+            meshRenderer.render()
+        }
+
+        object._children.forEach(child => {
+            renderRecursively(child)
+        })
+    }
+
     let r = 1.0
     let dirR = 1
     let g = 0.3
@@ -74,9 +109,13 @@ function main() {
     let dirB = 1
     renderLoop()
     function renderLoop() {
-        renderer.clear(gl.COLOR_BUFFER_BIT)
+        renderer.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
         renderer.submit(shader, vertexArray)
-        renderer.render()
+
+        renderObjectRecursively(cube)
+
+
+        // renderer.render()
 
         const reflect = function(value, dir) {
             if (value >= 1.0) {
@@ -88,6 +127,8 @@ function main() {
 
             return dir
         }
+
+        cube.rotationY += 0.01
 
         dirR = reflect(r, dirR)
         dirG = reflect(g, dirG)

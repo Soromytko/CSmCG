@@ -20,21 +20,20 @@ class MeshRenderer {
         this._material = material
     }
 
-    beind() {
-        const mesh = this._mesh
-        mesh.attributes.forEach(attribute => {
-            attribute.enable()
-        })
-    }
-
-    unbind() {
-        const mesh = this._mesh
-        mesh.attributes.forEach(attribute => {
-            attribute.disable()
-        })
+    set shader(shader) {
+        this._shader = shader
     }
 
     render() {
+        const vertexArray = this._mesh.vertexArray
+        const shader = this._shader
+
+        const renderer = new Renderer()
+        renderer.submit(shader, vertexArray)
+        renderer.render()
+        return
+
+
         this._material.bind()
         
         // specifying shader uniforms

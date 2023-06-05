@@ -1,12 +1,14 @@
 class Renderer {
     constructor(x, y, width, height) {
-        if (this._instance) {
-            return
+        if (Renderer._instance) {
+            return this._instance
         }
 
         gl.viewport(x, y, width, height)
+        gl.enable(gl.DEPTH_TEST)
+        gl.depthFunc(gl.LEQUAL)
 
-        this._instance = this
+        Renderer._instance = this
     }
 
     set cleaningColor(color) {

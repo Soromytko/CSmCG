@@ -49,6 +49,11 @@ class Shader {
         }
     }
 
+    setMat4(name, value) {
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+        gl.uniformMatrix4fv(location, false, value)
+    }
+
     getAttributeLocation(name) {
         return gl.getAttribLocation(this._shaderProgram, name)
     }
