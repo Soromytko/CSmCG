@@ -1,3 +1,8 @@
+const KEY_CODE_MAP = {
+    "A": 12,
+}
+
+
 class Engine {
     constructor() {
         if (Engine._instance) {
@@ -11,6 +16,10 @@ class Engine {
 
 
         Engine._instance = this
+    }
+
+    addEventListener(event, callback) {
+        document.addEventListener(event, callback)
     }
 
 }

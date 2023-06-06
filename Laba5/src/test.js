@@ -65,13 +65,21 @@ const camera = {
     pos: {
         x: 0,
         y: 0,
-        z: 0
+        z: 0,
     },
     rot: {
         x: 0,
         y: 0,
-        z: 0
+        z: 0,
     },
+}
+
+const cameraTarget = {
+    pos: {
+        x: 0,
+        y: 0,
+        z: 0,
+    }
 }
 
 
@@ -130,9 +138,77 @@ function createScene() {
     lightCube.meshRenderer.material.shader = SHADERS.lamp
 }
 
+function bindInput() {
+    const engine = new Engine()
+    engine.addEventListener("keyup", (e) => {
+        console.log("AAAAAQ")
+    })
+
+    window.onkeydown = function(e) {
+        const key = e.key.toUpperCase()
+        switch(key) {
+            case "A": {
+                cameraTarget.pos.x -= 0.1
+                return
+            }
+            case "D": {
+                cameraTarget.pos.x += 0.1
+                return
+            }
+            case "Q": {
+                cameraTarget.pos.y -= 0.1
+                return
+            }
+            case "E": {
+                cameraTarget.pos.y += 0.1
+                return
+            }
+            case "S": {
+                cameraTarget.pos.z += 0.1
+                return
+            }
+            case "W": {
+                cameraTarget.pos.z -= 0.1
+                return
+            }
+        }        
+    }
+    
+}
+
+function length(vector) {
+    return Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
+}
+
+function normalize(vector) {
+    const l = length(vector)
+    // const result = {x: vector.x / l, y: vector.y / l, z: vector.z / l}
+    return {x: vector.x / l, y: vector.y / l, z: vector.z / l}
+}
+
+function move(from, to, speed) {
+    const delta = {
+        x: to.x - from.x,
+        y: to.y - from.y,
+        z: to.z - from.z,
+    }
+    
+    const l = length(delta)
+    if(l == 0) {
+        return from
+    }
+    
+    const direction = normalize(delta)
+    const x = from.x + direction.x * speed * l
+    const y = from.y + direction.y * speed * l
+    const z = from.z + direction.z * speed * l
+    return {x: x, y: y, z: z}
+}
+
 function main() {
     buildShaders()
     createScene()
+    bindInput()
 
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
@@ -166,9 +242,15 @@ function main() {
 
     renderLoop()
     function renderLoop() {
+        // const n = move(camera.pos, cameraTarget.pos, 0.1)
+        // camera.pos = n
+        // console.log(n)
+
+        camera.pos = move(camera.pos, cameraTarget.pos, 0.1)
+
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
-        glMatrix.mat4.translate(VIEW_MATRIX, VIEW_MATRIX, [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
+        glMatrix.mat4.translate(VIEW_MATRIX, glMatrix.mat4.create(), [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
         glMatrix.mat4.rotate(VIEW_MATRIX, VIEW_MATRIX, camera.rot.y, [1, 0, 0])
 
         renderer.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
