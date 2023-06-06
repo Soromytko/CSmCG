@@ -24,7 +24,6 @@ class VertexArray {
     unbind() {
         this._vertexBuffers.forEach(vertexBuffer => {
             vertexBuffer.unbind()
-            gl.disableVertexAttribArray(0)
         })
         this._indexBuffer.unbind()
     }

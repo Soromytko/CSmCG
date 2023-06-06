@@ -49,6 +49,21 @@ class Shader {
         }
     }
 
+    setFloat1(name, value) {
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+        gl.uniform1f(location, value)
+    }
+
+    setFloat2(name, value) {
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+        gl.uniform2f(location, value)
+    }
+
+    setFloat3(name, value) {
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+        gl.uniform3f(location, value)
+    }
+
     setMat4(name, value) {
         const location = gl.getUniformLocation(this._shaderProgram, name)
         gl.uniformMatrix4fv(location, false, value)
@@ -100,6 +115,10 @@ class Shader {
         }
 
         gl.useProgram(this._shaderProgram)
+    }
+
+    unbind() {
+        
     }
 
     _compileShader(type, source) { 

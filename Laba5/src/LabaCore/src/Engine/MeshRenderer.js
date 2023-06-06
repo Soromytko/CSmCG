@@ -20,25 +20,11 @@ class MeshRenderer {
         this._material = material
     }
 
-    set shader(shader) {
-        this._shader = shader
-    }
-
-    render() {
-        const vertexArray = this._mesh.vertexArray
-        const shader = this._shader
-
-        const renderer = new Renderer()
-        renderer.submit(shader, vertexArray)
-        renderer.render()
-        return
-
-
-        this._material.bind()
-        
-        // specifying shader uniforms
-        
-        this._mesh.vertexArray.draw()
-    }
+    // render() {
+    //     const renderer = new Renderer()
+    //     renderer.submit(this._material.shader, this._mesh.vertexArray)
+    //     this.material.apply()
+    //     renderer.render()
+    // }
 }
 

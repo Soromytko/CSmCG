@@ -23,6 +23,13 @@ class Renderer {
             consoel.warn("The vertexArray is  undefined")
         }
 
+        if (this._shader) {
+            this._shader.unbind()
+        }
+        if (this._vertexArray) {
+            this._vertexArray.unbind()
+        }
+
         this._shader = shader
         this._vertexArray = vertexArray
         

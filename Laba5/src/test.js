@@ -1,6 +1,63 @@
 // const lambertShader = new Shader(vertexShaderSourceCode, fragmentShaderSourceCode)
 // const phongShader = new Shader(vertPhongSource, fragPhongSource)
 
+const vertSrc = `
+precision mediump float;
+
+attribute vec3 a_VertexPosition;
+
+uniform mat4 u_ProjectMat;
+uniform mat4 u_ViewMat;
+uniform mat4 u_WorldMat;
+
+void main() {
+    // gl_Position = vec4(a_VertexPosition, 1.0);
+    gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(a_VertexPosition, 1.0);
+}
+
+`
+
+const fragSrc = `
+precision mediump float;
+
+uniform vec3 u_Color;
+
+void main() {
+    gl_FragColor = vec4(u_Color, 1.0);
+}
+
+`
+
+const fragSrc2 = `
+precision mediump float;
+
+uniform vec3 u_Color;
+
+void main() {
+    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+}
+
+`
+
+const fragSrc3 = `
+precision mediump float;
+
+uniform vec3 u_Color;
+
+void main() {
+    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+}
+
+`
+
+const SHADERS = {
+    lambert: new Shader(lambertVertSouce, lambertFragSouce),
+    phong: new Shader(vertPhongSource, fragPhongSource),
+    lamp: new Shader(lampVertexShaderSourceCode, lampFragmentShaderSourceCode),
+    test2: new Shader(vertSrc, fragSrc2),
+    test3: new Shader(vertSrc, fragSrc3),
+}
+
 const PROJECT_MATRIX = glMatrix.mat4.create()
 const VIEW_MATRIX = glMatrix.mat4.create()
 
@@ -33,46 +90,16 @@ let blueCube
 
 
 
-const vertSrc = `
-precision mediump float;
-
-attribute vec3 a_VertexPosition;
-
-uniform mat4 u_ProjectMat;
-uniform mat4 u_ViewMat;
-uniform mat4 u_WorldMat;
-
-void main() {
-    // gl_Position = vec4(a_VertexPosition, 1.0);
-    gl_Position = u_ProjectMat * u_ViewMat * u_WorldMat * vec4(a_VertexPosition, 1.0);
-}
-
-`
-
-const fragSrc = `
-precision mediump float;
-
-uniform vec3 u_Color;
-
-void main() {
-    gl_FragColor = vec4(u_Color, 1.0);
-}
-
-`
-
-const shader = new Shader(vertSrc, fragSrc)
 
 function buildShaders() {
-    // if (!lambertShader.build()) {
-    //     console.log("Lambert shader error")
-    //     return false
-    // }
-    // if (!phongShader.build()) {
-    //     console.log("Phong shader error")
-    //     return false
-    // }
+    for (const shader in SHADERS) {
+        if (!SHADERS[shader].build()) {
+            console.log(shader, " shader error")
+            return false
+        }
+    }
 
-    if (!shader.build()) return  
+    return true
 }
 
 function createScene() {
@@ -80,32 +107,27 @@ function createScene() {
     pedestal = new GameObject({x: 0, y: 0, z: -2}, 1)
     
     redCube = new CubeObject({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 0, b: 0})
-    redCube.meshRenderer.shader = shader
-
     greenCube = new CubeObject({x: -0.5, y: 0, z: 0}, 0.5, {r: 0, g: 1, b: 0})
-    greenCube.meshRenderer.shader = shader
-
     yellowCube = new CubeObject({x: 0.5, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
-    yellowCube.meshRenderer.shader = shader
-
     blueCube = new CubeObject({x: 0, y: 0.5, z: 0}, 0.5, {r: 0, g: 0, b: 1})
-    blueCube.meshRenderer.shader = shader
-    
     // lightCube = new CubeObject({x: 0, y: 0, z: -5}, 0.1, {r: 1, g: 1, b: 1})
+    lightCube = new CubeObject({x: 0, y: 0, z: -5}, 1, {r: 1, g: 1, b: 1})
     // debugCube = new CubeObject({x: 0, y: 0, z: 0}, 0.3, {r: 1, g: 0, b: 1})
-
-    // redCube = new CubeObject({x: 0, y: 0, z: 0}, 0.2, {r: 1, g: 0, b: 0})
-
     
     pedestal.parent = scene
     redCube.parent = pedestal
     greenCube.parent = pedestal
     yellowCube.parent = pedestal
     blueCube.parent = pedestal
-
-    // redCube.parent = scene
+    lightCube.parent = scene
 
     rootObject = scene
+
+    redCube.meshRenderer.material.shader = SHADERS.test2
+    greenCube.meshRenderer.material.shader = SHADERS.test3
+    yellowCube.meshRenderer.material.shader = SHADERS.test3
+    blueCube.meshRenderer.material.shader = SHADERS.test3
+    lightCube.meshRenderer.material.shader = SHADERS.lamp
 }
 
 function main() {
@@ -126,10 +148,15 @@ function main() {
 
         const meshRenderer = object.meshRenderer
         if (meshRenderer) {
-            shader.setMat4("u_ProjectMat", PROJECT_MATRIX)
-            shader.setMat4("u_ViewMat", VIEW_MATRIX)
-            shader.setMat4("u_WorldMat", matrix)
-            meshRenderer.render()
+            meshRenderer.material.setMat4("u_ProjectMat", PROJECT_MATRIX)
+            meshRenderer.material.setMat4("u_ViewMat", VIEW_MATRIX)
+            meshRenderer.material.setMat4("u_WorldMat", matrix)
+
+            renderer.submit(meshRenderer.material.shader, meshRenderer.mesh.vertexArray)
+            meshRenderer.material.apply()
+            renderer.render()
+
+            // meshRenderer.render()
         }
 
         object._children.forEach(child => {
@@ -137,12 +164,6 @@ function main() {
         })
     }
 
-    let r = 1.0
-    let dirR = 1
-    let g = 0.3
-    let dirG = 1
-    let b = 0.3
-    let dirB = 1
     renderLoop()
     function renderLoop() {
 
@@ -150,33 +171,9 @@ function main() {
         glMatrix.mat4.translate(VIEW_MATRIX, VIEW_MATRIX, [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
         glMatrix.mat4.rotate(VIEW_MATRIX, VIEW_MATRIX, camera.rot.y, [1, 0, 0])
 
-
         renderer.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-        // renderObjectRecursively(cube)
         renderObjectRecursively(rootObject)
-        // renderObjectRecursively(redCube)
-
-        const reflect = function(value, dir) {
-            if (value >= 1.0) {
-                return -1
-            }
-            else if (value <= 0.0) {
-                return 1
-            }
-
-            return dir
-        }
-
-        dirR = reflect(r, dirR)
-        dirG = reflect(g, dirG)
-        dirB = reflect(b, dirB)
-
-        r += 0.02 * dirR
-        g += 0.05 * dirG
-        b += 0.03 * dirB
-
-        shader.setUniform(UNIFORM_TYPES.FLOAT_3F, "u_Color", [r, g, b])
 
         requestAnimationFrame(renderLoop)
     }

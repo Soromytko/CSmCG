@@ -22,6 +22,7 @@ class VertexBuffer {
 
     unbind() {
         gl.bindBuffer(gl.ARRAY_BUFFER, undefined)
+        this._layoutBuffer.unbind()
     }
 }
 
@@ -65,7 +66,11 @@ class Attribute {
             this._stride,
             this._offset,
         )
-        gl.enableVertexAttribArray(this.location)
+        gl.enableVertexAttribArray(this._location)
+    }
+
+    unbind() {
+        gl.disableVertexAttribArray(this._location)
     }
 }
 
@@ -82,6 +87,10 @@ class LayoutBuffer {
 
     bind() {
         this._attributes.forEach(attribute => attribute.bind())
+    }
+
+    unbind() {
+        this._attributes.forEach(attribute => attribute.unbind())
     }
 }
 

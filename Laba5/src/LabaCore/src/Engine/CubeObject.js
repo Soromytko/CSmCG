@@ -3,7 +3,7 @@ class CubeObject extends GameObject {
         super(position, size, color)
         this._mesh = new CubeMesh()
 
-        this._meshRenderer = new MeshRenderer(new CubeMesh())
+        this._meshRenderer = new MeshRenderer(new CubeMesh(), new Material())
     }
 
 }
