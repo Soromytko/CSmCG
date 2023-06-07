@@ -36,8 +36,8 @@ const camera = {
 const cameraTarget = {
     pos: {
         x: 0,
-        y: 0,
-        z: 0,
+        y: 2,
+        z: 3,
     }
 }
 
@@ -69,6 +69,7 @@ let redCube
 let greenCube
 let yellowCube
 let blueCube
+let plane
 
 function buildShaders() {
     for (const shader in SHADERS) {
@@ -91,6 +92,16 @@ function createCube(pos, size, color) {
     return cube
 }
 
+function createPlane(pos, size, color) {
+    const material = new Material(SHADERS.simple)
+    material.setFloat3("u_Color", [color.r, color.g, color.b])
+    
+    const plane = new GameObject(pos, size)
+    plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
+
+    return plane
+}
+
 function createScene() {
     // Create objects
     scene = new GameObject({x: 0, y: 0, z: -3}, 1)
@@ -107,6 +118,9 @@ function createScene() {
     yellowCube.parent = pedestal
     blueCube.parent = pedestal
     lightCube.parent = scene
+
+    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, 10, {r: 1.0, g: 1.1, b: 1.0})
+    plane.parent = scene
 }
 
 function length(vector) {

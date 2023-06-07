@@ -109,6 +109,7 @@ function bindGUI() {
             greenCube.meshRenderer.material.shader = shader
             yellowCube.meshRenderer.material.shader = shader
             blueCube.meshRenderer.material.shader = shader
+            plane.meshRenderer.material.shader = shader
         }
 
         const model = event.target.value
