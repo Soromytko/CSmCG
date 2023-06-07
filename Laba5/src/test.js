@@ -2,10 +2,11 @@
 // const phongShader = new Shader(vertPhongSource, fragPhongSource)
 
 const SHADERS = {
-    lambert: new Shader(lambertVertSouce, lambertFragSouce),
-    phong: new Shader(vertPhongSource, fragPhongSource),
-    lamp: new Shader(lampVertexShaderSourceCode, lampFragmentShaderSourceCode),
-    simple: new Shader(simpleVertShaderSrc, simpleFragShaderSrc),
+    simple: new Shader(simpleVertSrc, simpleFragSrc),
+    lambert: new Shader(lambertVertSrc, lambertFragSrc),
+    phong: new Shader(phongVertSrc, phongFragSrc),
+    guro: new Shader(guroVertSrc, guroFragSrc),
+    lamp: new Shader(lampVertSrc, lampFragSrc),
     test2: new Shader(vertSrc, fragSrc2),
     test3: new Shader(vertSrc, fragSrc3),
 }
@@ -209,7 +210,7 @@ function bindGUI() {
             setShader(SHADERS.phong)
             console.log("Phong material is set")
         } else if (model == "Guro") {
-            setShader(SHADERS.lambert)
+            setShader(SHADERS.guro)
             console.log("Guro material is set")
         }
         else {
