@@ -1,7 +1,7 @@
 class GameObject {
     constructor(position, size = 1, color) {
         this._position = position
-        this._rotationY = 0
+        this._rotation = {x: 0, y: 0, z: 0}
         this._size = size
         this._color = color
 
@@ -23,12 +23,33 @@ class GameObject {
         this._position = value
     }
 
+    get globalPosition() {
+        if (!this._parent) {
+            return this._position
+        }
+        const parentGlobalPosition = this._parent.globalPosition
+
+        return {
+            x: parentGlobalPosition.x + this._position.x,
+            y: parentGlobalPosition.y + this._position.y,
+            z: parentGlobalPosition.z + this._position.z,
+        }
+    }
+
     get rotationY() {
         return this._rotationY
     }
 
     set rotationY(value) {
         this._rotationY = value
+    }
+
+    get rotation() {
+        return this._rotation
+    }
+
+    set rotation(value) {
+        this._rotation = value
     }
 
     get size() {
@@ -39,24 +60,12 @@ class GameObject {
         this._size = value
     }
 
-    get color() {
-        return this._color
+    get meshRenderer() {
+        return this._meshRenderer
     }
 
-    set color(value) {
-        this._color = value
-    }
-
-    get mesh() {
-        return this._mesh
-    }
-
-    get material() {
-        return this._material
-    }
-
-    set material(material) {
-        this._material = material
+    set meshRenderer(value) {
+        this._meshRenderer = value
     }
 
     get matrix() {
@@ -72,7 +81,6 @@ class GameObject {
     }
 
     set parent(newParent) {
-
         if (newParent) {
             if (newParent == this) {
                 console.log("The new parent object is the same object")
@@ -93,9 +101,7 @@ class GameObject {
         this._parent = newParent
     }
 
-    get meshRenderer() {
-        return this._meshRenderer
-    }
+
 
     _addChild(newChild) {
         if (!newChild) {

@@ -1,11 +1,7 @@
 var LIGHT_POSITION
 
 class Material {
-    constructor() {
-        this._properties = {
-            color: [1.0, 1.0, 1.0],
-        }
-        
+    constructor(shader) {
         this._data = {
             float1: {},
             float2: {},
@@ -13,7 +9,7 @@ class Material {
             mat4: {},
         }
         
-        this._shader
+        this._shader = shader
     }
 
     get shader() {
@@ -31,13 +27,13 @@ class Material {
         this._shader.bind()
 
         for (const [key, value] of Object.entries(this._data.float1)) {
-            this._shader.setFlaot1(key, value)
+            this._shader.setFloat1(key, value)
         }
         for (const [key, value] of Object.entries(this._data.float2)) {
-            this._shader.setFloat2(key, value)
+            this._shader.setFloat2(key, value[0], value[1])
         }
         for (const [key, value] of Object.entries(this._data.float3)) {
-            this._shader.setFloat3(key, value)
+            this._shader.setFloat3(key, value[0], value[1], value[2])
         }
         for(const [key, value] of Object.entries(this._data.mat4)) {
             this._shader.setMat4(key, value)

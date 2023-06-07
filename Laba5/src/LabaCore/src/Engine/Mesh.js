@@ -24,12 +24,12 @@ class Mesh {
     _createBuffers() {
         const vertexPositionBuffer = new VertexBuffer(this._vertices)
         vertexPositionBuffer.setLayoutBuffer(new LayoutBuffer([
-            new Attribute(0, 3, gl.FLOAT, gl.GALSE, 0, 0)
+            new Attribute(0, 3, gl.FLOAT, gl.FALSE, 0, 0)
         ]))
 
         const vertexNormalBuffer = new VertexBuffer(this._normals)
         vertexNormalBuffer.setLayoutBuffer(new LayoutBuffer([
-            new Attribute(1, 3, gl.FLOAT, gl.GALSE, 0, 0)
+            new Attribute(1, 3, gl.FLOAT, gl.FALSE, 0, 0)
         ]))
 
         const indexBuffer = new IndexBuffer(this._indices)

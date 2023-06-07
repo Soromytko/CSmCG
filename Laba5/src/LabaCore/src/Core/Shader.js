@@ -49,19 +49,19 @@ class Shader {
         }
     }
 
-    setFloat1(name, value) {
+    setFloat1(name, v0) {
         const location = gl.getUniformLocation(this._shaderProgram, name)
-        gl.uniform1f(location, value)
+        gl.uniform1f(location, v0)
     }
 
-    setFloat2(name, value) {
+    setFloat2(name, v0, v1) {
         const location = gl.getUniformLocation(this._shaderProgram, name)
-        gl.uniform2f(location, value)
+        gl.uniform2f(location, v0, v1)
     }
 
-    setFloat3(name, value) {
+    setFloat3(name, v0, v1, v2) {
         const location = gl.getUniformLocation(this._shaderProgram, name)
-        gl.uniform3f(location, value)
+        gl.uniform3f(location, v0, v1, v2)
     }
 
     setMat4(name, value) {

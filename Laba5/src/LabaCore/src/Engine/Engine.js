@@ -1,8 +1,3 @@
-const KEY_CODE_MAP = {
-    "A": 12,
-}
-
-
 class Engine {
     constructor() {
         if (Engine._instance) {
