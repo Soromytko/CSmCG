@@ -9,7 +9,6 @@ function bindInput() {
     }
     canvas.onmouseup = function(e) {
         isLooking = false
-        console.log(isLooking)
     }
     canvas.onmousemove = function(e) {
         cursor.pos = {
@@ -18,34 +17,43 @@ function bindInput() {
         }
     }
 
-    window.onkeydown = function(e) {
-        const key = e.key.toUpperCase()
+    function processKey(key, isPress) {
         switch(key) {
             case "A": {
-                cameraTarget.pos.x -= 0.1
+                camera.input.a = isPress
                 return
             }
             case "D": {
-                cameraTarget.pos.x += 0.1
+                camera.input.d = isPress
                 return
             }
             case "Q": {
-                cameraTarget.pos.y -= 0.1
+                camera.input.q = isPress
                 return
             }
             case "E": {
-                cameraTarget.pos.y += 0.1
+                camera.input.e = isPress
                 return
             }
             case "S": {
-                cameraTarget.pos.z += 0.1
+                camera.input.s = isPress
                 return
             }
             case "W": {
-                cameraTarget.pos.z -= 0.1
+                camera.input.w = isPress
                 return
             }
-        }        
+        }      
+    }
+
+    window.onkeyup = function(e) {
+        const key = e.key.toUpperCase()
+        processKey(key, false)
+    }
+
+    window.onkeydown = function(e) {
+        const key = e.key.toUpperCase()
+        processKey(key, true)
     }
 }
 

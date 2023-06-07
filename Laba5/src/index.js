@@ -14,30 +14,19 @@ const VIEW_MATRIX = glMatrix.mat4.create()
 const camera = {
     pos: {
         x: 0,
-        y: 0,
-        z: 0,
+        y: 2,
+        z: 3,
     },
     rot: {
         x: 0,
         y: 0,
         z: 0,
     },
-    //looking
-    oldDelta: {
-        x: 0,
-        y: 0,
-    },
-    delta : {
-        x: 0,
-        y: 0,
-    }
-}
-
-const cameraTarget = {
-    pos: {
-        x: 0,
-        y: 2,
-        z: 3,
+    input: {
+        a: false,
+        d: false,
+        s: false,
+        w: false,
     }
 }
 
@@ -124,49 +113,6 @@ function createScene() {
     plane.parent = scene
 }
 
-function length(vector) {
-    return Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
-}
-
-function normalize(vector) {
-    const l = length(vector)
-    return {x: vector.x / l, y: vector.y / l, z: vector.z / l}
-}
-
-function move(from, to, speed) {
-    const delta = {
-        x: to.x - from.x,
-        y: to.y - from.y,
-        z: to.z - from.z,
-    }
-    
-    const l = length(delta)
-    if(l == 0) {
-        return from
-    }
-    
-    const direction = normalize(delta)
-    const x = from.x + direction.x * speed * l
-    const y = from.y + direction.y * speed * l
-    const z = from.z + direction.z * speed * l
-    return {x: x, y: y, z: z}
-}
-
-function looking() {
-    cursor.speed = {
-        x: cursor.pos.x - cursor.oldPos.x,
-        y: cursor.pos.y - cursor.oldPos.y,
-    }
-    cursor.oldPos = {
-        x: cursor.pos.x,
-        y: cursor.pos.y,
-    }
-    camera.rot = {
-        x: camera.rot.x + cursor.speed.x * 0.01,
-        y: camera.rot.y + cursor.speed.y * 0.01,
-    }
-}
-
 function main() {
     buildShaders()
     createScene()
@@ -213,10 +159,7 @@ function main() {
 
     renderLoop()
     function renderLoop() {
-        camera.pos = move(camera.pos, cameraTarget.pos, 0.1)
-        if (isLooking) {
-            looking()
-        }
+        cameraScript()
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.rotate(VIEW_MATRIX, glMatrix.mat4.create(), camera.rot.y, [1, 0, 0])
