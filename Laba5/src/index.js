@@ -1,9 +1,9 @@
 const SHADERS = {
-    simple: new Shader(simpleVertSrc, simpleFragSrc),
     lambert: new Shader(lambertVertSrc, lambertFragSrc),
     phong: new Shader(phongVertSrc, phongFragSrc),
     guro: new Shader(guroVertSrc, guroFragSrc),
     lamp: new Shader(lampVertSrc, lampFragSrc),
+    simple: new Shader(simpleVertSrc, simpleFragSrc),
     test2: new Shader(vertSrc, fragSrc2),
     test3: new Shader(vertSrc, fragSrc3),
 }
@@ -83,7 +83,7 @@ function buildShaders() {
 }
 
 function createCube(pos, size, color) {
-    const material = new Material(SHADERS.simple)
+    const material = new Material(SHADERS.lambert)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     
     const cube = new GameObject(pos, size)
@@ -93,7 +93,7 @@ function createCube(pos, size, color) {
 }
 
 function createPlane(pos, size, color) {
-    const material = new Material(SHADERS.simple)
+    const material = new Material(SHADERS.lambert)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     
     const plane = new GameObject(pos, size)
@@ -110,7 +110,8 @@ function createScene() {
     greenCube = createCube({x: -0.5, y: 0, z: 0}, 0.5, {r: 0, g: 1, b: 0})
     yellowCube = createCube({x: 0.5, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
     blueCube = createCube({x: 0, y: 0.5, z: 0}, 0.5, {r: 0, g: 0, b: 1})
-    lightCube = createCube({x: 0, y: 1, z: -1}, 0.1, {r: 1, g: 1, b: 1})
+    lightCube = createCube({x: 0, y: 2, z: 1}, 0.1, {r: 1, g: 1, b: 1})
+    lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
     redCube.parent = pedestal
