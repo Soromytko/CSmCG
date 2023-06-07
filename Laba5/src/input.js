@@ -16,6 +16,9 @@ function bindInput() {
             y: e.clientY,
         }
     }
+    canvas.onmouseleave = function(e) {
+        isLooking = false
+    }
 
     function processKey(key, isPress) {
         switch(key) {
