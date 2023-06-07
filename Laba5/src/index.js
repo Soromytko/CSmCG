@@ -22,6 +22,15 @@ const camera = {
         y: 0,
         z: 0,
     },
+    //looking
+    oldDelta: {
+        x: 0,
+        y: 0,
+    },
+    delta : {
+        x: 0,
+        y: 0,
+    }
 }
 
 const cameraTarget = {
@@ -31,6 +40,23 @@ const cameraTarget = {
         z: 0,
     }
 }
+
+const cursor = {
+    pos: {
+        x: 0,
+        y: 0,
+    },
+    oldPos: {
+        x: 0,
+        y: 0,
+    },
+    speed: {
+        x: 0,
+        y: 0,
+    }
+}
+
+let isLooking = false
 
 let lightSize = 7
 let ambientIntensity = 0.1
@@ -111,6 +137,21 @@ function move(from, to, speed) {
     return {x: x, y: y, z: z}
 }
 
+function looking() {
+    cursor.speed = {
+        x: cursor.pos.x - cursor.oldPos.x,
+        y: cursor.pos.y - cursor.oldPos.y,
+    }
+    cursor.oldPos = {
+        x: cursor.pos.x,
+        y: cursor.pos.y,
+    }
+    camera.rot = {
+        x: camera.rot.x + cursor.speed.x * 0.01,
+        y: camera.rot.y + cursor.speed.y * 0.01,
+    }
+}
+
 function main() {
     buildShaders()
     createScene()
@@ -158,10 +199,14 @@ function main() {
     renderLoop()
     function renderLoop() {
         camera.pos = move(camera.pos, cameraTarget.pos, 0.1)
+        if (isLooking) {
+            looking()
+        }
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
-        glMatrix.mat4.translate(VIEW_MATRIX, glMatrix.mat4.create(), [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
-        glMatrix.mat4.rotate(VIEW_MATRIX, VIEW_MATRIX, camera.rot.y, [1, 0, 0])
+        glMatrix.mat4.rotate(VIEW_MATRIX, glMatrix.mat4.create(), camera.rot.y, [1, 0, 0])
+        glMatrix.mat4.rotate(VIEW_MATRIX, VIEW_MATRIX, camera.rot.x, [0, 1, 0])
+        glMatrix.mat4.translate(VIEW_MATRIX, VIEW_MATRIX, [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
 
         renderer.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 

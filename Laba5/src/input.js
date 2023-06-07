@@ -1,5 +1,23 @@
-
 function bindInput() {
+    const canvas = document.getElementById('canvas')
+    canvas.onmousedown = function(e) {
+        isLooking = true
+        cursor.oldPos = {
+            x: e.clientX,
+            y: e.clientY,
+        }
+    }
+    canvas.onmouseup = function(e) {
+        isLooking = false
+        console.log(isLooking)
+    }
+    canvas.onmousemove = function(e) {
+        cursor.pos = {
+            x: e.clientX,
+            y: e.clientY,
+        }
+    }
+
     window.onkeydown = function(e) {
         const key = e.key.toUpperCase()
         switch(key) {
