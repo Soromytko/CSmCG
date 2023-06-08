@@ -7,6 +7,7 @@ class Material {
             float2: {},
             float3: {},
             mat4: {},
+            texture: {},
         }
         
         this._shader = shader
@@ -35,8 +36,11 @@ class Material {
         for (const [key, value] of Object.entries(this._data.float3)) {
             this._shader.setFloat3(key, value[0], value[1], value[2])
         }
-        for(const [key, value] of Object.entries(this._data.mat4)) {
+        for (const [key, value] of Object.entries(this._data.mat4)) {
             this._shader.setMat4(key, value)
+        }
+        for (const [key, value] of Object.entries(this._data.texture)) {
+            this._shader.setTexture(key, value)
         }
           
     }
@@ -51,6 +55,10 @@ class Material {
 
     setMat4(name, value) {
         this._data.mat4[name] = value
+    }
+
+    setTexture(name, value) {
+
     }
 
 }

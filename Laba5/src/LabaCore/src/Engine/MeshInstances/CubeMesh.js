@@ -82,6 +82,10 @@ class CubeMesh extends Mesh {
             -1, 0, 0,
             -1, 0, 0,
         ]
+
+        this._uv = [
+            
+        ]
     
         this._indices = [
             0, 1, 2, 0, 2, 3, // front

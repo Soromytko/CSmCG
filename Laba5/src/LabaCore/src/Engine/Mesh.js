@@ -3,6 +3,7 @@ class Mesh {
         this._vertexArray = []
         this._normals = []
         this._indices = []
+        this._uv = []
     }
 
     get vertices() {
@@ -32,11 +33,16 @@ class Mesh {
             new Attribute(1, 3, gl.FLOAT, gl.FALSE, 0, 0)
         ]))
 
+        const uvBuffer = new VertexBuffer(this._uv)
+        uvBuffer.setLayoutBuffer(new LayoutBuffer([
+            new Attribute(2, 2, gl.FLOAT, gl.FALSE, 0, 0)
+        ]))
+
         const indexBuffer = new IndexBuffer(this._indices)
 
         this._vertexArray = new VertexArray()
         this._vertexArray.addVertexBuffer(vertexPositionBuffer)
         this._vertexArray.addVertexBuffer(vertexNormalBuffer)
-        this._vertexArray.setIndexBuffer(new IndexBuffer(this._indices))
+        this._vertexArray.setIndexBuffer(indexBuffer)
     }
 }

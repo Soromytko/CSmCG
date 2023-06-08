@@ -107,6 +107,22 @@ function main() {
 
     // const imgage = document.getElementById("image")
 
+
+    var boxTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, boxTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(
+        gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        document.getElementById('crate-image')
+    );
+    // gl.bindTexture(gl.TEXTURE_2D, null);
+
+
+
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
 
@@ -120,6 +136,10 @@ function main() {
 
         const meshRenderer = object.meshRenderer
         if (meshRenderer) {
+
+            
+
+
             const material = meshRenderer.material
             material.setMat4("u_ProjectMat", PROJECT_MATRIX)
             material.setMat4("u_ViewMat", VIEW_MATRIX)
@@ -132,6 +152,8 @@ function main() {
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
             material.setFloat1("u_SpecularIntensity", specularIntensity)
+            //Texture
+            // material.setSample2D("u_Sample2D", )
 
             renderer.submit(meshRenderer.material.shader, meshRenderer.mesh.vertexArray)
             meshRenderer.material.apply()
@@ -145,14 +167,14 @@ function main() {
         })
     }
 
-    loadFile("res/Shaders/LambertVert.txt")
+    // loadFile("res/Shaders/LambertVert.txt")
 
     renderLoop()
     function renderLoop() {
         cameraScript()
 
-        if (input.getKey("G"))
-        loadFile()
+        // if (input.getKey("G"))
+        // loadFile()
 
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)

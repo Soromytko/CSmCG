@@ -69,6 +69,12 @@ class Shader {
         gl.uniformMatrix4fv(location, false, value)
     }
 
+    setTexture(name, value) {
+        const location = gl.getUniformLocatio(this._shaderProgram, name)
+        // gl.uniform
+    }
+
+
     getAttributeLocation(name) {
         return gl.getAttribLocation(this._shaderProgram, name)
     }

@@ -99,6 +99,7 @@ precision mediump float;
 
 attribute vec3 a_VertexPosition;
 attribute vec3 a_VertexNormal;
+attribute vec2 a_uvTexture;
 
 uniform mat4 u_ProjectMat;
 uniform mat4 u_ViewMat;
@@ -106,6 +107,7 @@ uniform mat4 u_WorldMat;
 
 varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;
+varying vec2 v_uvTexture;
 
 void main()
 {
@@ -123,11 +125,13 @@ precision mediump float;
 
 varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;
+varying vec2 v_uvTexture;
 
 uniform vec3 u_Color;
 uniform float u_AmbientIntensity;
 uniform float u_DiffuseIntensity;
 uniform float u_SpecularIntensity;
+uniform sampler2D u_Sampler2D;
 
 uniform vec3 u_LightPosition;
 uniform float u_LightSize;
@@ -159,7 +163,9 @@ void main()
     vec3 specularColor = lightColor * (specular * u_SpecularIntensity);
 
     // Apply
-    gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
+    // gl_FragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
+    // vec4 fragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
+    gl_FragColor = texture2D(u_Sampler2D, v_uvTexture);
 }
 `
 
