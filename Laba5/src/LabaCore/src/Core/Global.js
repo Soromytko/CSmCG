@@ -30,3 +30,14 @@ const UNIFORM_TYPES = {
     FLOAT_3F:   "FLOAT_3F",
     MAT_4F:     "MAT_4F",
 }
+
+function loadFile(path) {
+    const url = 'test.txt'
+
+    // fetch('http://localhost/test.txt')
+    fetch(url)
+    .then(response => response.text())
+    .then((data) => {
+    console.log(data)
+  })
+}

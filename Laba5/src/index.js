@@ -96,6 +96,16 @@ function main() {
     buildShaders()
     createScene()
     bindGUI()
+    
+
+    // const img = new Image();
+    // // img.crossOrigin = "anonymous";
+    // img.src = "sintum116.jpg";
+    // console.log(img)
+
+    
+
+    // const imgage = document.getElementById("image")
 
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
@@ -138,6 +148,10 @@ function main() {
     renderLoop()
     function renderLoop() {
         cameraScript()
+
+        if (input.getKey("G"))
+        loadFile()
+
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.rotate(VIEW_MATRIX, glMatrix.mat4.create(), camera.rot.y, [1, 0, 0])
