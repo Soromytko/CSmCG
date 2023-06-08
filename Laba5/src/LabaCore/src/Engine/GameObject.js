@@ -1,18 +1,17 @@
 class GameObject {
-    constructor(position, size = 1, color) {
+    constructor(position = {x: 0, y: 0, z: 0}, scale = {x: 1, y: 1, z: 1}) {
         this._position = position
         this._rotation = {x: 0, y: 0, z: 0}
-        this._size = size
-        this._color = color
+        this._scale = scale
 
         this._parent
         this._children = []
         this._hierarchyIndex = 0
 
-        this._matrix
-
         // Components
         this._meshRenderer
+        
+        this._matrix
     }
 
     get position() {
@@ -36,14 +35,6 @@ class GameObject {
         }
     }
 
-    get rotationY() {
-        return this._rotationY
-    }
-
-    set rotationY(value) {
-        this._rotationY = value
-    }
-
     get rotation() {
         return this._rotation
     }
@@ -52,12 +43,12 @@ class GameObject {
         this._rotation = value
     }
 
-    get size() {
-        return this._size
+    get scale() {
+        return this._scale
     }
 
-    set size(value) {
-        this._size = value
+    set scale(value) {
+        this._scale = value
     }
 
     get meshRenderer() {

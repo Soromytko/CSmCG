@@ -33,7 +33,6 @@ let scene
 let pedestal
 let redCube
 let greenCube
-let yellowCube
 let blueCube
 let plane
 
@@ -48,21 +47,21 @@ function buildShaders() {
     return true
 }
 
-function createCube(pos, size, color) {
+function createCube(pos, scale, color) {
     const material = new Material(SHADERS.lambert)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     
-    const cube = new GameObject(pos, size)
+    const cube = new GameObject(pos, scale)
     cube.meshRenderer = new MeshRenderer(new CubeMesh(), material)
 
     return cube
 }
 
-function createPlane(pos, size, color) {
+function createPlane(pos, scale, color) {
     const material = new Material(SHADERS.lambert)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     
-    const plane = new GameObject(pos, size)
+    const plane = new GameObject(pos, scale)
     plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
 
     return plane
@@ -70,23 +69,21 @@ function createPlane(pos, size, color) {
 
 function createScene() {
     // Create objects
-    scene = new GameObject({x: 0, y: 0, z: -3}, 1)
-    pedestal = new GameObject({x: 0, y: 0, z: -2}, 1)
-    redCube = createCube({x: 0, y: 0, z: 0}, 0.5, {r: 1, g: 0, b: 0})
-    greenCube = createCube({x: -0.5, y: 0, z: 0}, 0.5, {r: 0, g: 1, b: 0})
-    yellowCube = createCube({x: 0.5, y: 0, z: 0}, 0.5, {r: 1, g: 1, b: 0})
-    blueCube = createCube({x: 0, y: 0.5, z: 0}, 0.5, {r: 0, g: 0, b: 1})
-    lightCube = createCube({x: 0, y: 2, z: 1}, 0.1, {r: 1, g: 1, b: 1})
+    scene = new GameObject({x: 0, y: 0, z: -3})
+    pedestal = new GameObject({x: 0, y: 0, z: -2})
+    redCube = createCube({x: 0, y: 0, z: 0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1, g: 0, b: 0})
+    greenCube = createCube({x: -1.0, y: -0.1, z: 0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0, g: 1, b: 0})
+    blueCube = createCube({x: 1.0, y: -0.2, z: 0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0, g: 0, b: 1})
+    lightCube = createCube({x: 0, y: 2, z: 1}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1, g: 1, b: 1})
     lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
     redCube.parent = pedestal
     greenCube.parent = pedestal
-    yellowCube.parent = pedestal
     blueCube.parent = pedestal
     lightCube.parent = scene
 
-    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, 10, {r: 1.0, g: 1.1, b: 1.0})
+    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 10, y:10, z: 10}, {r: 1.0, g: 1.1, b: 1.0})
     plane.parent = scene
 }
 
@@ -103,7 +100,7 @@ function main() {
         const matrix = glMatrix.mat4.create()
         glMatrix.mat4.translate(matrix, parentMatrix, [object.position.x, object.position.y, object.position.z, 0])
         glMatrix.mat4.rotate(matrix, matrix, object.rotation.y, [0, 1, 0])
-        glMatrix.mat4.scale(matrix, matrix, [object.size, object.size, object.size])
+        glMatrix.mat4.scale(matrix, matrix, [object.scale.x, object.scale.y, object.scale.z])
         object.matrix = matrix
 
         const meshRenderer = object.meshRenderer
