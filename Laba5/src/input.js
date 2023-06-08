@@ -15,10 +15,6 @@ function bindGUI() {
         greenCube.rotation.y = event.target.value / 50
     })
 
-    document.getElementById("yellowRange").addEventListener("input", (event) => {
-        yellowCube.rotation.y = event.target.value / 50
-    })
-
     document.getElementById("blueRange").addEventListener("input", (event) => {
         blueCube.rotation.y = event.target.value / 50
     })
@@ -56,7 +52,6 @@ function bindGUI() {
         const setShader = function(shader) {
             redCube.meshRenderer.material.shader = shader
             greenCube.meshRenderer.material.shader = shader
-            yellowCube.meshRenderer.material.shader = shader
             blueCube.meshRenderer.material.shader = shader
             plane.meshRenderer.material.shader = shader
         }

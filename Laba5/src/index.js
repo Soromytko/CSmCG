@@ -36,6 +36,8 @@ let greenCube
 let blueCube
 let plane
 
+const objects = []
+
 function buildShaders() {
     for (const shader in SHADERS) {
         if (!SHADERS[shader].build()) {
@@ -69,22 +71,25 @@ function createPlane(pos, scale, color) {
 
 function createScene() {
     // Create objects
-    scene = new GameObject({x: 0, y: 0, z: -3})
-    pedestal = new GameObject({x: 0, y: 0, z: -2})
-    redCube = createCube({x: 0, y: 0, z: 0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1, g: 0, b: 0})
-    greenCube = createCube({x: -1.0, y: -0.1, z: 0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0, g: 1, b: 0})
-    blueCube = createCube({x: 1.0, y: -0.2, z: 0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0, g: 0, b: 1})
-    lightCube = createCube({x: 0, y: 2, z: 1}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1, g: 1, b: 1})
+    scene = new GameObject({x: 0.0, y: 0.0, z: -3.0})
+    pedestal = new GameObject({x: 0.0, y: 0.0, z: -2.0})
+    redCube = createCube({x: 0.0, y: 0.0, z: 0.0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1.0, g: 0.0, b: 0.0})
+    greenCube = createCube({x: -1.0, y: -0.1, z: 0.0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0.0, g: 1.0, b: 0.0})
+    blueCube = createCube({x: 1.0, y: -0.2, z: 0.0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0.0, g: 0.0, b: 1.0})
+    lightCube = createCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1.0, g: 1.0, b: 1.0})
     lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
     redCube.parent = pedestal
     greenCube.parent = pedestal
     blueCube.parent = pedestal
-    lightCube.parent = scene
+    // lightCube.parent = scene
 
-    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 10, y:10, z: 10}, {r: 1.0, g: 1.1, b: 1.0})
+    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 10, y:10, z: 10}, {r: 1.0, g: 1.0, b: 1.0})
     plane.parent = scene
+
+    objects.push(scene)
+    objects.push(lightCube)
 }
 
 function main() {
@@ -141,7 +146,9 @@ function main() {
 
         renderer.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-        renderObjectRecursively(scene)
+        objects.forEach(object => {
+            renderObjectRecursively(object)
+        })
 
         requestAnimationFrame(renderLoop)
     }
