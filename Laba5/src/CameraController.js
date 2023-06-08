@@ -1,3 +1,5 @@
+const input = new Input()
+
 function length(vector) {
     return Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
 }
@@ -27,29 +29,23 @@ function move(from, to, speed) {
 }
 
 function looking() {
-    cursor.speed = {
-        x: cursor.pos.x - cursor.oldPos.x,
-        y: cursor.pos.y - cursor.oldPos.y,
-    }
-    cursor.oldPos = {
-        x: cursor.pos.x,
-        y: cursor.pos.y,
-    }
+    input.update()
+
     camera.rot = {
-        x: camera.rot.x + cursor.speed.x * 0.01,
-        y: camera.rot.y + cursor.speed.y * 0.01,
+        x: camera.rot.x + input.mouse.delta.x * 0.01,
+        y: camera.rot.y + input.mouse.delta.y * 0.01,
     }
 }
 
 function cameraScript() {
-    const h = camera.input.a ? -1 : camera.input.d ? 1 : 0
+    const h = input.getKey("A") ? -1 : input.getKey("D") ? 1 : 0
     const right = {
         x: Math.cos(camera.rot.x) * Math.cos(camera.rot.y) * h,
         y: Math.sin(camera.rot.y) * h * 0,
         z: -Math.sin(camera.rot.x) * Math.cos(camera.rot.y) * h,
     }
 
-    const v = camera.input.s ? -1 : camera.input.w ? 1 : 0
+    const v = input.getKey("S") ? -1 : input.getKey("W") ? 1 : 0
     const forward = {
         x: Math.sin(camera.rot.x) * Math.cos(camera.rot.y) * v,
         y: Math.sin(camera.rot.y) * v,
@@ -71,7 +67,7 @@ function cameraScript() {
     camera.pos.z -= direction.z * 0.05
 
     // camera.pos = move(camera.pos, cameraTarget.pos, 0.1)
-    if (isLooking) {
+    if (input.mouse.isHoldButton) {
         looking()
     }
 }

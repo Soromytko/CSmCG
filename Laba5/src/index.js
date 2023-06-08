@@ -22,30 +22,7 @@ const camera = {
         y: 0,
         z: 0,
     },
-    input: {
-        a: false,
-        d: false,
-        s: false,
-        w: false,
-    }
 }
-
-const cursor = {
-    pos: {
-        x: 0,
-        y: 0,
-    },
-    oldPos: {
-        x: 0,
-        y: 0,
-    },
-    speed: {
-        x: 0,
-        y: 0,
-    }
-}
-
-let isLooking = false
 
 let lightSize = 7
 let ambientIntensity = 0.1
@@ -116,7 +93,6 @@ function createScene() {
 function main() {
     buildShaders()
     createScene()
-    bindInput()
     bindGUI()
 
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
