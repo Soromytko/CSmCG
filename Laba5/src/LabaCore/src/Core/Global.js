@@ -32,7 +32,8 @@ const UNIFORM_TYPES = {
 }
 
 function loadFile(path) {
-    const url = 'test.txt'
+    // const url = 'test.txt'
+    const url = path
 
     // fetch('http://localhost/test.txt')
     fetch(url)

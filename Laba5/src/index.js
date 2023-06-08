@@ -145,6 +145,8 @@ function main() {
         })
     }
 
+    loadFile("res/Shaders/LambertVert.txt")
+
     renderLoop()
     function renderLoop() {
         cameraScript()
