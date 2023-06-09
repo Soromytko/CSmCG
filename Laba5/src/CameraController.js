@@ -38,14 +38,14 @@ function looking() {
 }
 
 function cameraScript() {
-    const h = input.getKey("A") ? -1 : input.getKey("D") ? 1 : 0
+    const h = input.getKey("A") ? -1.0 : input.getKey("D") ? 1.0 : 0.0
     const right = {
-        x: Math.cos(camera.rot.x) * Math.cos(camera.rot.y) * h,
-        y: Math.sin(camera.rot.y) * h * 0,
-        z: -Math.sin(camera.rot.x) * Math.cos(camera.rot.y) * h,
+        x: Math.cos(camera.rot.x) * h,
+        y: 0.0,
+        z: -Math.sin(camera.rot.x) * h,
     }
 
-    const v = input.getKey("S") ? -1 : input.getKey("W") ? 1 : 0
+    const v = input.getKey("S") ? -1.0 : input.getKey("W") ? 1.0 : 0.0
     const forward = {
         x: Math.sin(camera.rot.x) * Math.cos(camera.rot.y) * v,
         y: Math.sin(camera.rot.y) * v,
