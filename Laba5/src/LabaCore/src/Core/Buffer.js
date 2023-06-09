@@ -1,6 +1,6 @@
 class VertexBuffer {
     constructor(data) {
-        // this._attributeLocation = attributeLocation
+        this._layoutBuffer = new LayoutBuffer()
         this._data = data
         this._bufferId = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, this._bufferId)
@@ -75,7 +75,7 @@ class Attribute {
 }
 
 class LayoutBuffer {
-    constructor(attributes) {
+    constructor(attributes = []) {
         this._attributes = attributes
 
         let stride = 0

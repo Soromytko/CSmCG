@@ -69,6 +69,9 @@ function bindGUI() {
         } else if (model == "Guro") {
             setShader(SHADERS.guro)
             console.log("Guro material is set")
+        } else if (model == "Texture") {
+            setShader(SHADERS.texture)
+            console.log("Texture shader is set")
         }
         else {
             console.log("Unknown model: ", model)

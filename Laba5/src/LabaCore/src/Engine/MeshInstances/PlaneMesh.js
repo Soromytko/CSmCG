@@ -29,8 +29,8 @@ class PlaneMesh extends Mesh {
         ]
     
         this._indices = [
-            0, 1, 2,
-            0, 2, 3,
+            1, 2, 3,
+            1, 3, 0,
         ]
 
         this._createBuffers()

@@ -43,6 +43,7 @@ class Mesh {
         this._vertexArray = new VertexArray()
         this._vertexArray.addVertexBuffer(vertexPositionBuffer)
         this._vertexArray.addVertexBuffer(vertexNormalBuffer)
+        this._vertexArray.addVertexBuffer(uvBuffer)
         this._vertexArray.setIndexBuffer(indexBuffer)
     }
 }

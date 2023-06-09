@@ -1,9 +1,10 @@
 const SHADERS = {
-    lambert: new Shader(lambertVertSrc, lambertFragSrc),
     phong: new Shader(phongVertSrc, phongFragSrc),
+    lambert: new Shader(lambertVertSrc, lambertFragSrc),
     guro: new Shader(guroVertSrc, guroFragSrc),
     lamp: new Shader(lampVertSrc, lampFragSrc),
     simple: new Shader(simpleVertSrc, simpleFragSrc),
+    texture: new Shader(textureVertSrc, textureFragSrc),
     test2: new Shader(vertSrc, fragSrc2),
     test3: new Shader(vertSrc, fragSrc3),
 }
@@ -50,7 +51,7 @@ function buildShaders() {
 }
 
 function createCube(pos, scale, color) {
-    const material = new Material(SHADERS.lambert)
+    const material = new Material(SHADERS.phong)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     
     const cube = new GameObject(pos, scale)
@@ -60,7 +61,7 @@ function createCube(pos, scale, color) {
 }
 
 function createPlane(pos, scale, color) {
-    const material = new Material(SHADERS.lambert)
+    const material = new Material(SHADERS.phong)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     
     const plane = new GameObject(pos, scale)
