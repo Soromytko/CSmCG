@@ -158,7 +158,9 @@ void main()
     //Specular
     vec3 directionToCamera = u_CameraPosition - v_VertexPosition;
     directionToCamera = normalize(directionToCamera);
-    vec3 reflectedLightDirection = reflect(-directionToLight, normal);
+    vec3 lightDirection = v_VertexPosition - u_LightPosition;
+    lightDirection = normalize(lightDirection);
+    vec3 reflectedLightDirection = reflect(lightDirection, normal);
     float specular = max(0.0, dot(directionToCamera, reflectedLightDirection));
     specular = pow(specular, 128.0);
     vec3 specularColor = lightColor * (specular * u_SpecularIntensity);

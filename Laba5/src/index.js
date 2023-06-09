@@ -147,7 +147,7 @@ function main() {
             material.setMat4("u_WorldMat", matrix)
             //Light
             const lightPos = lightCube.globalPosition
-            material.setFloat3("u_CameraPosition", [-camera.pos.x, -camera.pos.y, -camera.pos.z])
+            material.setFloat3("u_CameraPosition", [camera.pos.x, camera.pos.y, camera.pos.z])
             material.setFloat3("u_LightPosition", [lightPos.x, lightPos.y, lightPos.z])
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
