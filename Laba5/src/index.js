@@ -137,10 +137,6 @@ function main() {
 
         const meshRenderer = object.meshRenderer
         if (meshRenderer) {
-
-            
-
-
             const material = meshRenderer.material
             material.setMat4("u_ProjectMat", PROJECT_MATRIX)
             material.setMat4("u_ViewMat", VIEW_MATRIX)
