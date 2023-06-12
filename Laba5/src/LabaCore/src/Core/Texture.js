@@ -1,6 +1,6 @@
 class Texture {
     constructor(image) {
-        image = document.getElementById('crate-image')
+        // image = document.getElementById('crate-image')
 
         // Texture Block (TEXTURE0, TEXTURE1, TEXTURE2, ...)
         this._counter = Texture.COUNTER
