@@ -4,10 +4,12 @@ class Texture {
     constructor(image) {
         image = document.getElementById('crate-image')
 
-        this._texture = gl.createTexture();
-        this._count = Texture.COUNTER
+        // Texture Block (TEXTURE0, TEXTURE1, TEXTURE2, ...)
+        this._counter = Texture.COUNTER
         Texture.COUNTER += 1
-
+        
+        this._texture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0 + this._counter);
         gl.bindTexture(gl.TEXTURE_2D, this._texture);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -20,8 +22,13 @@ class Texture {
         );
     }
 
-    bind(index) {
-        gl.uniform1f(index, this._count)
+    bind(slot) {
+        // gl.uniform1f(slot, this._counter)
+        gl.activeTexture(gl.TEXTURE0 + this._counter)
         gl.bindTexture(gl.TEXTURE_2D, this._texture)
+    }
+
+    unbind() {
+
     }
 }

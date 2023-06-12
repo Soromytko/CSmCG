@@ -27,6 +27,14 @@ class Shader {
         return false
     }
 
+    getAttributeLocation(name) {
+        return gl.getAttribLocation(this._shaderProgram, name)
+    }
+
+    getUniformLocation(name) {
+        return gl.getUniformLocation(this._shaderProgram, name)
+    }
+
     setUniform(unifromType, name, value) {
         const location = gl.getUniformLocation(this._shaderProgram, name)
         switch(unifromType) {
@@ -47,6 +55,10 @@ class Shader {
                 return
             }
         }
+    }
+
+    setInt1(name, value) {
+
     }
 
     setFloat1(name, v0) {
@@ -75,9 +87,7 @@ class Shader {
     }
 
 
-    getAttributeLocation(name) {
-        return gl.getAttribLocation(this._shaderProgram, name)
-    }
+ 
 
     createVertexArray(vertexBuffers) {
         const vertexArray = new VertexArray()

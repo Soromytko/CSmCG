@@ -28,6 +28,7 @@ class Material {
         this._shader.bind()
 
         for (const [key, value] of Object.entries(this._data.float1)) {
+            const location = this._shader.getUniformLocation(key)
             this._shader.setFloat1(key, value)
         }
         for (const [key, value] of Object.entries(this._data.float2)) {
@@ -40,9 +41,11 @@ class Material {
             this._shader.setMat4(key, value)
         }
         for (const [key, value] of Object.entries(this._data.textures)) {
-            // this._shader.setTexture(key, value)
+            // TODO
+            const location = this._shader.getUniformLocation(key)
+            this._shader.setInt1(location, location)
+            value.bind()
         }
-          
     }
 
     setFloat1(name, value) {

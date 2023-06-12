@@ -61,8 +61,11 @@ function createCube(pos, scale, color) {
 }
 
 function createPlane(pos, scale, color) {
+    const texture = new Texture('crate-image')
+    
     const material = new Material(SHADERS.phong)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
+    material.setTexture("u_MainTexture", texture)
     
     const plane = new GameObject(pos, scale)
     plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
