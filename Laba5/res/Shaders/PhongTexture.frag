@@ -43,7 +43,9 @@ void main()
 
     // Apply
     vec4 lightFragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
-    vec4 textureFragColor = texture2D(u_MainTexture, v_uvTexture);
+    vec2 uv = v_uvTexture;
+    uv.y = 1.0 - uv.y; // Flip horizontally
+    vec4 textureFragColor = texture2D(u_MainTexture, uv);
 
     gl_FragColor = lightFragColor * textureFragColor;
 }

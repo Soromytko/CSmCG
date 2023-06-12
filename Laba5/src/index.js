@@ -71,8 +71,9 @@ function buildShaders() {
     return true
 }
 
-function createCube(pos, scale, color) {
-    const texture = new Texture(document.getElementById('cube-image'))
+function createCube(pos, scale, color, image) {
+    const texture = new Texture(image ? image : IMAGES.one)
+    // const texture = new Texture(document.getElementById('cube3-image'))
     
     const material = new Material(SHADERS.phongTexture)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
@@ -98,15 +99,20 @@ function createPlane(pos, scale, color) {
 }
 
 function createScene() {
+    //Textures
+    const one = document.getElementById("cube1-image")
+    const two = document.getElementById("cube2-image")
+    const three = document.getElementById("cube3-image")
+
     // Create objects
     scene = new GameObject({x: 0.0, y: 0.0, z: -3.0})
     pedestal = new GameObject({x: 0.0, y: 0.0, z: -2.0})
-    redCube = createCube({x: 0.0, y: 0.0, z: 0.0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1.0, g: 0.0, b: 0.0})
-    greenCube = createCube({x: -1.0, y: -0.1, z: 0.0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0.0, g: 1.0, b: 0.0})
-    blueCube = createCube({x: 1.0, y: -0.2, z: 0.0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0.0, g: 0.0, b: 1.0})
-    // lightCube = createCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1.0, g: 1.0, b: 1.0})
-    lightCube = new GameObject({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1})
-    // lightCube.meshRenderer.material = new Material(SHADERS.lamp)
+    redCube = createCube({x: 0.0, y: 0.0, z: 0.0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1.0, g: 0.0, b: 0.0}, one)
+    greenCube = createCube({x: -1.0, y: -0.1, z: 0.0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0.0, g: 1.0, b: 0.0}, two)
+    blueCube = createCube({x: 1.0, y: -0.2, z: 0.0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0.0, g: 0.0, b: 1.0}, three)
+    lightCube = createCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1.0, g: 1.0, b: 1.0}, one)
+    // lightCube = new GameObject({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1})
+    lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
     redCube.parent = pedestal
