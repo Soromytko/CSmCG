@@ -71,13 +71,24 @@ function buildShaders() {
     return true
 }
 
-function createCube(pos, scale, color, image) {
-    const texture = new Texture(image ? image : IMAGES.one)
-    // const texture = new Texture(document.getElementById('cube3-image'))
+function createCube(pos, scale, color, primaryImage, secondaryImage) {
+    const primaryTexture = new Texture(primaryImage)
+    const secondaryTexture = new Texture(secondaryImage)
     
     const material = new Material(SHADERS.phongTexture)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
-    material.setTexture("u_MainTexture", texture)
+    material.setTexture("u_MainTexture", primaryTexture)
+    material.setTexture("u_SecondaryTexture", secondaryTexture)
+    
+    const cube = new GameObject(pos, scale)
+    cube.meshRenderer = new MeshRenderer(new CubeMesh(), material)
+
+    return cube
+}
+
+function createLampCube(pos, scale) {
+    const material = new Material(SHADERS.phongTexture)
+    material.setFloat3("u_Color", [1.0, 1.0, 1.0])
     
     const cube = new GameObject(pos, scale)
     cube.meshRenderer = new MeshRenderer(new CubeMesh(), material)
@@ -86,11 +97,13 @@ function createCube(pos, scale, color, image) {
 }
 
 function createPlane(pos, scale, color) {
-    const texture = new Texture(document.getElementById('plane-image'))
+    const texture1 = new Texture(document.getElementById('ground-image'))
+    const texture2 = new Texture(document.getElementById('ground-image'))
     
     const material = new Material(SHADERS.phongTexture)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
-    material.setTexture("u_MainTexture", texture)
+    material.setTexture("u_MainTexture", texture1)
+    material.setTexture("u_SecondaryTexture", texture2)
     
     const plane = new GameObject(pos, scale)
     plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
@@ -103,22 +116,23 @@ function createScene() {
     const one = document.getElementById("cube1-image")
     const two = document.getElementById("cube2-image")
     const three = document.getElementById("cube3-image")
+    const fire = document.getElementById("fire-image")
+    const grass = document.getElementById("grass-image")
+    const marble = document.getElementById("marble-image")
 
     // Create objects
     scene = new GameObject({x: 0.0, y: 0.0, z: -3.0})
     pedestal = new GameObject({x: 0.0, y: 0.0, z: -2.0})
-    redCube = createCube({x: 0.0, y: 0.0, z: 0.0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1.0, g: 0.0, b: 0.0}, one)
-    greenCube = createCube({x: -1.0, y: -0.1, z: 0.0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0.0, g: 1.0, b: 0.0}, two)
-    blueCube = createCube({x: 1.0, y: -0.2, z: 0.0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0.0, g: 0.0, b: 1.0}, three)
-    lightCube = createCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1.0, g: 1.0, b: 1.0}, one)
-    // lightCube = new GameObject({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1})
+    redCube = createCube({x: 0.0, y: 0.0, z: 0.0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1.0, g: 0.0, b: 0.0}, one, fire)
+    greenCube = createCube({x: -1.0, y: -0.1, z: 0.0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0.0, g: 1.0, b: 0.0}, two, grass)
+    blueCube = createCube({x: 1.0, y: -0.2, z: 0.0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0.0, g: 0.0, b: 1.0}, three, marble)
+    lightCube = createLampCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1})
     lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
     redCube.parent = pedestal
     greenCube.parent = pedestal
     blueCube.parent = pedestal
-    // lightCube.parent = scene
 
     plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 10, y:10, z: 10}, {r: 1.0, g: 1.0, b: 1.0})
     plane.parent = scene
@@ -133,35 +147,6 @@ async function main() {
     buildShaders()
     createScene()
     bindGUI()
-
-    // const sh = await loadFile("res/Shaders/Phong.frag")
-    // console.log(sh)
-    
-
-    // const img = new Image();
-    // // img.crossOrigin = "anonymous";
-    // img.src = "sintum116.jpg";
-    // console.log(img)
-
-    
-
-    // const imgage = document.getElementById("image")
-
-
-    // var boxTexture = gl.createTexture();
-    // gl.bindTexture(gl.TEXTURE_2D, boxTexture);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    // gl.texImage2D(
-    //     gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
-    //     gl.UNSIGNED_BYTE,
-    //     document.getElementById('crate-image')
-    // );
-    // gl.bindTexture(gl.TEXTURE_2D, null);
-
-
 
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
