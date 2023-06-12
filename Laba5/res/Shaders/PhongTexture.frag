@@ -12,6 +12,7 @@ uniform float u_SpecularIntensity;
 // Texture
 uniform sampler2D u_MainTexture;
 uniform sampler2D u_SecondaryTexture;
+uniform float u_MixingTextures;
 
 uniform vec3 u_LightPosition;
 uniform float u_LightSize;
@@ -44,12 +45,15 @@ void main()
     specular = pow(specular, 128.0);
     vec3 specularColor = lightColor * (specular * u_SpecularIntensity);
 
-    // Apply
+    // Texture
     vec4 lightFragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
     vec2 uv = vec2(v_uvTexture.x, 1.0 - v_uvTexture.y);
     vec4 textureFragColor = texture2D(u_MainTexture, uv);
     vec4 secondaryFragColor = texture2D(u_SecondaryTexture, uv);
 
-    gl_FragColor = lightFragColor * textureFragColor * secondaryFragColor;
+    vec4 mix = vec4(1.0, 1.0, 1.0, 1.0);
+
+    // Apply
+    gl_FragColor = lightFragColor * textureFragColor * secondaryFragColor * u_MixingTextures;
 }
 

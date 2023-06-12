@@ -1,11 +1,10 @@
 const SHADERS = {
     phongTexture: undefined,
-    phong: undefined,// new Shader(aaa, phongFragSrc),
+    phong: undefined,
     lambert: new Shader(lambertVertSrc, lambertFragSrc),
     guro: new Shader(guroVertSrc, guroFragSrc),
     lamp: new Shader(lampVertSrc, lampFragSrc),
     simple: new Shader(simpleVertSrc, simpleFragSrc),
-    texture: new Shader(textureVertSrc, textureFragSrc),
     test2: new Shader(vertSrc, fragSrc2),
     test3: new Shader(vertSrc, fragSrc3),
 }
@@ -39,6 +38,7 @@ let lightSize = 7
 let ambientIntensity = 0.1
 let diffuseIntensity = 2
 let specularIntensity = 0.5
+let mixingTextures = 1.0
 
 let scene
 let pedestal
@@ -174,7 +174,7 @@ async function main() {
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
             material.setFloat1("u_SpecularIntensity", specularIntensity)
             //Texture
-            // material.setSample2D("u_Sample2D", )
+            material.setFloat1("u_MixingTextures", mixingTextures)
 
             renderer.submit(meshRenderer.material.shader, meshRenderer.mesh.vertexArray)
             meshRenderer.material.apply()

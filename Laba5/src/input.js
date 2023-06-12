@@ -48,6 +48,10 @@ function bindGUI() {
         lightCube.position.z = event.target.value * 10 - 5 // [-5, 5]
     })
 
+    document.getElementById("mixRange").addEventListener("input", (event) => {
+        mixingTextures = event.target.value
+    })
+
     document.getElementById("lightingModelSelect").addEventListener("change", (event) => {
         const setShader = function(shader) {
             redCube.meshRenderer.material.shader = shader
@@ -72,9 +76,6 @@ function bindGUI() {
         } else if (model == "Guro") {
             setShader(SHADERS.guro)
             console.log("Guro shader is set")
-        } else if (model == "Texture") {
-            setShader(SHADERS.texture)
-            console.log("Texture shader is set")
         }
         else {
             console.log("Unknown model: ", model)
