@@ -1,5 +1,6 @@
 const SHADERS = {
-    phong: new Shader(phongVertSrc, phongFragSrc),
+    phongTexture: undefined,
+    phong: undefined,// new Shader(aaa, phongFragSrc),
     lambert: new Shader(lambertVertSrc, lambertFragSrc),
     guro: new Shader(guroVertSrc, guroFragSrc),
     lamp: new Shader(lampVertSrc, lampFragSrc),
@@ -7,6 +8,15 @@ const SHADERS = {
     texture: new Shader(textureVertSrc, textureFragSrc),
     test2: new Shader(vertSrc, fragSrc2),
     test3: new Shader(vertSrc, fragSrc3),
+}
+
+const SHADER_SRCS = {
+    phonTexture: { vert: "", frag: "" },
+    phong: { vert: "", frag: "" },
+    lambert: { vert: "", frag: "" },
+    guro: { vert: "", frag: "" },
+    lamp: { vert: "", frag: "" },
+    simple: { vert: "", frag: "" },
 }
 
 const PROJECT_MATRIX = glMatrix.mat4.create()
@@ -39,6 +49,18 @@ let plane
 
 const objects = []
 
+async function loadShaders() {
+    const loadShader = async function(shaderFileName) {
+        const url = "res/Shaders/" + shaderFileName
+        // e.g. url = res/Shaders/Phong.vert
+        return await loadFile(url)
+    }
+    SHADERS.phongTexture = new Shader(await loadShader("PhongTexture.vert"), await loadShader("PhongTexture.frag"))
+    SHADERS.phong = new Shader(await loadShader("Phong.vert"), await loadShader("Phong.frag"))
+    // SHADERS.lambert = new Shader(await loadFile("res/Shaders/Lambert.vert"), await loadFile("res/Shaders/Lambert.frag"))
+
+}
+
 function buildShaders() {
     for (const shader in SHADERS) {
         if (!SHADERS[shader].build()) {
@@ -51,7 +73,7 @@ function buildShaders() {
 }
 
 function createCube(pos, scale, color) {
-    const material = new Material(SHADERS.phong)
+    const material = new Material(SHADERS.phongTexture)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     
     const cube = new GameObject(pos, scale)
@@ -61,11 +83,11 @@ function createCube(pos, scale, color) {
 }
 
 function createPlane(pos, scale, color) {
-    const texture = new Texture('crate-image')
+    // const texture = new Texture('crate-image')
     
-    const material = new Material(SHADERS.phong)
+    const material = new Material(SHADERS.phongTexture)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
-    material.setTexture("u_MainTexture", texture)
+    // material.setTexture("u_MainTexture", texture)
     
     const plane = new GameObject(pos, scale)
     plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
@@ -96,10 +118,14 @@ function createScene() {
     objects.push(lightCube)
 }
 
-function main() {
+async function main() {
+    await loadShaders()
     buildShaders()
     createScene()
     bindGUI()
+
+    // const sh = await loadFile("res/Shaders/Phong.frag")
+    // console.log(sh)
     
 
     // const img = new Image();

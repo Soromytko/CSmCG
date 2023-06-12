@@ -1,5 +1,3 @@
-Texture.COUNTER = 0
-
 class Texture {
     constructor(image) {
         image = document.getElementById('crate-image')
@@ -32,3 +30,5 @@ class Texture {
 
     }
 }
+
+Texture.COUNTER = 0

@@ -57,18 +57,20 @@ function bindGUI() {
         }
 
         const model = event.target.value
-        if (model == "Simple") {
+        if (model == "Phong (Texture)") {
+            console.log("Phong (Texture) shader is set")
+        } else if (model == "Simple") {
             setShader(SHADERS.simple)
-            console.log("Simple material is set")
+            console.log("Simple shader is set")
         } else if (model == "Lambert") {
             setShader(SHADERS.lambert)
-            console.log("Lambert material is set")
+            console.log("Lambert shader is set")
         } else if (model == "Phong") {
             setShader(SHADERS.phong)
-            console.log("Phong material is set")
+            console.log("Phong shader is set")
         } else if (model == "Guro") {
             setShader(SHADERS.guro)
-            console.log("Guro material is set")
+            console.log("Guro shader is set")
         } else if (model == "Texture") {
             setShader(SHADERS.texture)
             console.log("Texture shader is set")

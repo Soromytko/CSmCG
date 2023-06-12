@@ -31,14 +31,18 @@ const UNIFORM_TYPES = {
     MAT_4F:     "MAT_4F",
 }
 
-function loadFile(path) {
+async function loadFile(path) {
     // const url = 'test.txt'
     const url = path
 
-    // fetch('http://localhost/test.txt')
+    return await fetch(url).then(response => response.text()).then(data => data)
+
     fetch(url)
     .then(response => response.text())
     .then((data) => {
-    console.log(data)
+        result = data
+        console.log(result)
+        return result
   })
+
 }
