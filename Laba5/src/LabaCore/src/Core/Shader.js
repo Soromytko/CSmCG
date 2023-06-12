@@ -58,7 +58,8 @@ class Shader {
     }
 
     setInt1(name, value) {
-
+        const location = gl.getUniformLocation(this._shaderProgram, name)
+        gl.uniform1i(location, value)
     }
 
     setFloat1(name, v0) {
@@ -81,10 +82,10 @@ class Shader {
         gl.uniformMatrix4fv(location, false, value)
     }
 
-    setTexture(name, value) {
-        const location = gl.getUniformLocatio(this._shaderProgram, name)
-        // gl.uniform
-    }
+    // setTexture(name, value) {
+    //     const location = gl.getUniformLocatio(this._shaderProgram, name)
+    //     // gl.uniform
+    // }
 
 
  

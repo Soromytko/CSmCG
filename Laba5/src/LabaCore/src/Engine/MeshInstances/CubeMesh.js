@@ -84,9 +84,36 @@ class CubeMesh extends Mesh {
         ]
 
         this._uv = [
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
             
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
         ]
-        this._uv = new Array(this._vertices.length)
     
         this._indices = [
             0, 1, 2, 0, 2, 3, // front

@@ -42,8 +42,8 @@ class Material {
         }
         for (const [key, value] of Object.entries(this._data.textures)) {
             // TODO
-            const location = this._shader.getUniformLocation(key)
-            this._shader.setInt1(location, location)
+            // const location = this._shader.getUniformLocation(key)
+            this._shader.setInt1(key, value._counter)
             value.bind()
         }
     }

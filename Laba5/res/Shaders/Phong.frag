@@ -2,13 +2,11 @@ precision mediump float;
 
 varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;
-varying vec2 v_uvTexture;
 
 uniform vec3 u_Color;
 uniform float u_AmbientIntensity;
 uniform float u_DiffuseIntensity;
 uniform float u_SpecularIntensity;
-uniform sampler2D u_Sampler2D;
 
 uniform vec3 u_LightPosition;
 uniform float u_LightSize;
@@ -43,7 +41,5 @@ void main()
 
     // Apply
     vec4 lightFragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
-    vec4 textureFragColor = texture2D(u_Sampler2D, v_uvTexture);
-
-    gl_FragColor = lightFragColor * textureFragColor;
+    gl_FragColor = lightFragColor;
 }

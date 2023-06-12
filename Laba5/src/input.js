@@ -58,6 +58,7 @@ function bindGUI() {
 
         const model = event.target.value
         if (model == "Phong (Texture)") {
+            setShader(SHADERS.phongTexture)
             console.log("Phong (Texture) shader is set")
         } else if (model == "Simple") {
             setShader(SHADERS.simple)

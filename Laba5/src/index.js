@@ -58,7 +58,6 @@ async function loadShaders() {
     SHADERS.phongTexture = new Shader(await loadShader("PhongTexture.vert"), await loadShader("PhongTexture.frag"))
     SHADERS.phong = new Shader(await loadShader("Phong.vert"), await loadShader("Phong.frag"))
     // SHADERS.lambert = new Shader(await loadFile("res/Shaders/Lambert.vert"), await loadFile("res/Shaders/Lambert.frag"))
-
 }
 
 function buildShaders() {
@@ -72,9 +71,12 @@ function buildShaders() {
     return true
 }
 
-function createCube(pos, scale, color, imageId) {
+function createCube(pos, scale, color) {
+    const texture = new Texture(document.getElementById('cube-image'))
+    
     const material = new Material(SHADERS.phongTexture)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
+    material.setTexture("u_MainTexture", texture)
     
     const cube = new GameObject(pos, scale)
     cube.meshRenderer = new MeshRenderer(new CubeMesh(), material)
@@ -102,8 +104,9 @@ function createScene() {
     redCube = createCube({x: 0.0, y: 0.0, z: 0.0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1.0, g: 0.0, b: 0.0})
     greenCube = createCube({x: -1.0, y: -0.1, z: 0.0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0.0, g: 1.0, b: 0.0})
     blueCube = createCube({x: 1.0, y: -0.2, z: 0.0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0.0, g: 0.0, b: 1.0})
-    lightCube = createCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1.0, g: 1.0, b: 1.0})
-    lightCube.meshRenderer.material = new Material(SHADERS.lamp)
+    // lightCube = createCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1}, {r: 1.0, g: 1.0, b: 1.0})
+    lightCube = new GameObject({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1})
+    // lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
     redCube.parent = pedestal
@@ -114,6 +117,7 @@ function createScene() {
     plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 10, y:10, z: 10}, {r: 1.0, g: 1.0, b: 1.0})
     plane.parent = scene
 
+    // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
     objects.push(lightCube)
 }
