@@ -18,6 +18,13 @@ uniform vec3 u_LightPosition;
 uniform float u_LightSize;
 uniform vec3 u_CameraPosition;
 
+vec4 mixColors(vec4 color1, vec4 color2, float weight)
+{
+    // 50% of the color1 and 50% of the color2
+    weight *= 0.5;
+    return vec4(color1.xyz * (1.0 - weight) + color2.xyz * weight, 1.0);
+}
+
 void main()
 {
     vec3 lightColor = vec3(1.0, 1.0, 1.0);
@@ -46,14 +53,12 @@ void main()
     vec3 specularColor = lightColor * (specular * u_SpecularIntensity);
 
     // Texture
-    vec4 lightFragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
     vec2 uv = vec2(v_uvTexture.x, 1.0 - v_uvTexture.y);
-    vec4 textureFragColor = texture2D(u_MainTexture, uv);
-    vec4 secondaryFragColor = texture2D(u_SecondaryTexture, uv);
-
-    vec4 mix = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 mainTextureFragColor = texture2D(u_MainTexture, uv);
+    vec4 secondaryTextureFragColor = texture2D(u_SecondaryTexture, uv);
 
     // Apply
-    gl_FragColor = lightFragColor * textureFragColor * secondaryFragColor * u_MixingTextures;
+    vec4 lightFragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
+    gl_FragColor = mixColors(lightFragColor * mainTextureFragColor, secondaryTextureFragColor, u_MixingTextures);
 }
 
