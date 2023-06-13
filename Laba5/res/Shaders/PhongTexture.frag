@@ -58,7 +58,10 @@ void main()
     vec4 secondaryTextureFragColor = texture2D(u_SecondaryTexture, uv);
 
     // Apply
-    vec4 lightFragColor = vec4(u_Color * (ambientColor + diffuseColor + specularColor), 1.0);
-    gl_FragColor = mixColors(lightFragColor * mainTextureFragColor, secondaryTextureFragColor, u_MixingTextures);
+    vec4 lightFragColor = vec4(ambientColor + diffuseColor + specularColor, 1.0);
+    vec4 textureFragColor = mixColors(mainTextureFragColor, secondaryTextureFragColor, u_MixingTextures);
+    vec4 fragColor = vec4(u_Color.xyz, 1.0);
+
+    gl_FragColor = fragColor * lightFragColor * textureFragColor; 
 }
 
