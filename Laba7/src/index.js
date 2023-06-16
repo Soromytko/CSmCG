@@ -1,21 +1,11 @@
 const SHADERS = {
+    standard: undefined,
     phongTexture: undefined,
     phong: undefined,
-    lambert: new Shader(lambertVertSrc, lambertFragSrc),
-    guro: new Shader(guroVertSrc, guroFragSrc),
-    lamp: new Shader(lampVertSrc, lampFragSrc),
-    simple: new Shader(simpleVertSrc, simpleFragSrc),
-    test2: new Shader(vertSrc, fragSrc2),
-    test3: new Shader(vertSrc, fragSrc3),
-}
-
-const SHADER_SRCS = {
-    phonTexture: { vert: "", frag: "" },
-    phong: { vert: "", frag: "" },
-    lambert: { vert: "", frag: "" },
-    guro: { vert: "", frag: "" },
-    lamp: { vert: "", frag: "" },
-    simple: { vert: "", frag: "" },
+    lambert: undefined,
+    guro: undefined,
+    lamp: undefined,
+    simple: undefined,
 }
 
 const PROJECT_MATRIX = glMatrix.mat4.create()
@@ -55,9 +45,13 @@ async function loadShaders() {
         // e.g. url = res/Shaders/Phong.vert
         return await loadFile(url)
     }
+    SHADERS.standard = new Shader(await loadShader("Standard.vert"), await loadShader("Standard.frag"))
     SHADERS.phongTexture = new Shader(await loadShader("PhongTexture.vert"), await loadShader("PhongTexture.frag"))
     SHADERS.phong = new Shader(await loadShader("Phong.vert"), await loadShader("Phong.frag"))
-    // SHADERS.lambert = new Shader(await loadFile("res/Shaders/Lambert.vert"), await loadFile("res/Shaders/Lambert.frag"))
+    SHADERS.lambert = new Shader(await loadShader("Lambert.vert"), await loadShader("Lambert.frag"))
+    SHADERS.guro = new Shader(await loadShader("Guro.vert"), await loadShader("Guro.frag"))
+    SHADERS.lamp = new Shader(await loadShader("Lamp.vert"), await loadShader("Lamp.frag"))
+    SHADERS.simple = new Shader(await loadShader("Simple.vert"), await loadShader("Simple.frag"))
 }
 
 function buildShaders() {
@@ -173,6 +167,7 @@ async function main() {
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
             material.setFloat1("u_SpecularIntensity", specularIntensity)
+            
             //Texture
             material.setFloat1("u_MixingTextures", mixingTextures)
 
