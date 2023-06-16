@@ -8,6 +8,7 @@ class Material {
             float3: {},
             mat4: {},
             textures: {},
+            pointLights: {},
         }
         
         this._shader = shader
@@ -46,6 +47,11 @@ class Material {
             this._shader.setInt1(key, value._counter)
             value.bind()
         }
+        for (const [key, value] of Object.entries(this._data.pointLights)) {
+            this._shader.setFloat3(key + "position", value.position[0], value.position[1], value.position[2])
+            this._shader.setFloat3(key + "color", value.color[0], value.color[1], value.color[2])
+            this._shader.setFloat1(key + "size", value.size)
+        }
     }
 
     setFloat1(name, value) {
@@ -62,6 +68,15 @@ class Material {
 
     setTexture(name, value) {
         this._data.textures[name] = value
+    }
+
+    setLightInfo(index, position, color, size) {
+        const key = "u_LightInfos[" + index + "]."
+        this._data.pointLights[key] = {
+            position: position,
+            color: color,
+            size: size,
+        }
     }
 
 }
