@@ -36,13 +36,4 @@ async function loadFile(path) {
     const url = path
 
     return await fetch(url).then(response => response.text()).then(data => data)
-
-    fetch(url)
-    .then(response => response.text())
-    .then((data) => {
-        result = data
-        console.log(result)
-        return result
-  })
-
 }
