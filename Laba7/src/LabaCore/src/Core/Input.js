@@ -37,6 +37,8 @@ class Input {
     }
 
     getKey(key) {
+        key = key.toUpperCase()
+        if (this._keys.hold[key]) console.log(key, "is pressed")
         return this._keys.hold[key]
     }
 
