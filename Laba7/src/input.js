@@ -52,7 +52,7 @@ function bindGUI() {
         mixingTextures = event.target.value
     })
 
-    document.getElementById("lightingModelSelect").addEventListener("change", (event) => {
+    document.getElementById("shaderSelector").addEventListener("change", (event) => {
         const setShader = function(shader) {
             redCube.meshRenderer.material.shader = shader
             greenCube.meshRenderer.material.shader = shader
@@ -61,7 +61,10 @@ function bindGUI() {
         }
 
         const model = event.target.value
-        if (model == "Phong (Texture)") {
+        if (model == "Standard") {
+            setShader(SHADERS.standard)
+            console.log("Standard shader is set")
+        } else if (model == "Phong (Texture)") {
             setShader(SHADERS.phongTexture)
             console.log("Phong (Texture) shader is set")
         } else if (model == "Simple") {

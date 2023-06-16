@@ -69,7 +69,7 @@ function createCube(pos, scale, color, primaryImage, secondaryImage) {
     const primaryTexture = new Texture(primaryImage)
     const secondaryTexture = new Texture(secondaryImage)
     
-    const material = new Material(SHADERS.phongTexture)
+    const material = new Material(SHADERS.standard)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     material.setTexture("u_MainTexture", primaryTexture)
     material.setTexture("u_SecondaryTexture", secondaryTexture)
@@ -81,7 +81,7 @@ function createCube(pos, scale, color, primaryImage, secondaryImage) {
 }
 
 function createLampCube(pos, scale) {
-    const material = new Material(SHADERS.phongTexture)
+    const material = new Material(SHADERS.standard)
     material.setFloat3("u_Color", [1.0, 1.0, 1.0])
     
     const cube = new GameObject(pos, scale)
@@ -94,7 +94,7 @@ function createPlane(pos, scale, color) {
     const texture1 = new Texture(document.getElementById('ground-image'))
     const texture2 = new Texture(document.getElementById('ground-image'))
     
-    const material = new Material(SHADERS.phongTexture)
+    const material = new Material(SHADERS.standard)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     material.setTexture("u_MainTexture", texture1)
     material.setTexture("u_SecondaryTexture", texture2)
