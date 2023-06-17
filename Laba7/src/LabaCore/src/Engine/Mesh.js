@@ -1,6 +1,7 @@
 class Mesh {
     constructor() {
         this._vertexArray = []
+        this._vertices = []
         this._normals = []
         this._indices = []
         this._uv = []
@@ -9,17 +10,33 @@ class Mesh {
     get vertices() {
         return this._vertices
     }
+
+    set vertices(value) {
+        this._vertices = value
+    }
     
     get normals() {
         return this._normals
+    }
+
+    set normals(value) {
+        this._normals = value
     }
 
     get indices() {
         return this._indices
     }
 
+    set indices(value) {
+        this._indices = value
+    }
+
     get vertexArray() {
         return this._vertexArray
+    }
+
+    build() {
+        this._createBuffers()
     }
 
     _createBuffers() {

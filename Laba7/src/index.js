@@ -1,3 +1,5 @@
+const OBJ_LOADER = new OBJLoader()
+
 const SHADERS = {
     standard: undefined,
     phongTexture: undefined,
@@ -92,17 +94,30 @@ function createLampCube(pos, scale) {
 
 function createPlane(pos, scale, color) {
     const texture1 = new Texture(document.getElementById('ground-image'))
-    const texture2 = new Texture(document.getElementById('ground-image'))
     
     const material = new Material(SHADERS.standard)
     material.setFloat3("u_Color", [color.r, color.g, color.b])
     material.setTexture("u_MainTexture", texture1)
-    material.setTexture("u_SecondaryTexture", texture2)
     
     const plane = new GameObject(pos, scale)
     plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
 
     return plane
+}
+
+function createCar(pos) {
+    const material = new Material(SHADERS.standard)
+    material.setFloat3("u_Color", [1.0, 1.0, 1.0])
+    
+    const model = new GameObject(pos)
+    const mesh = new Mesh()
+    mesh.vertices = OBJ_LOADER.vertices
+    mesh.normals = OBJ_LOADER.normals
+    mesh.indices = OBJ_LOADER.indices
+    mesh.build()
+    model.meshRenderer = new MeshRenderer(mesh, material)
+
+    return model
 }
 
 function createScene() {
@@ -131,13 +146,25 @@ function createScene() {
     plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 10, y:10, z: 10}, {r: 1.0, g: 1.0, b: 1.0})
     plane.parent = scene
 
+    car = createCar({x: 0.0, y: 0.0, z: 0.0})
+    car.parent = scene
+
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
     objects.push(lightCube)
 }
 
+async function loadModels() {
+    await OBJ_LOADER.load("res/Models/Car.obj")
+    // await OBJ_LOADER.load("res/Models/untitled.obj")
+    // await OBJ_LOADER.load("res/Models/Cube.obj")
+    // await OBJ_LOADER.load("res/Models/Plane.obj")
+    // await OBJ_LOADER.load("res/Models/Monkey.obj")
+}
+
 async function main() {
     await loadShaders()
+    await loadModels()
     buildShaders()
     createScene()
     bindGUI()
@@ -167,15 +194,12 @@ async function main() {
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
             material.setFloat1("u_SpecularIntensity", specularIntensity)
-            
             //Texture
             material.setFloat1("u_MixingTextures", mixingTextures)
 
             renderer.submit(meshRenderer.material.shader, meshRenderer.mesh.vertexArray)
             meshRenderer.material.apply()
             renderer.render()
-
-            // meshRenderer.render()
         }
 
         object._children.forEach(child => {
@@ -183,15 +207,9 @@ async function main() {
         })
     }
 
-    // loadFile("res/Shaders/LambertVert.txt")
-
     renderLoop()
     function renderLoop() {
         cameraScript()
-
-        // if (input.getKey("G"))
-        // loadFile()
-
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.rotate(VIEW_MATRIX, glMatrix.mat4.create(), camera.rot.y, [1, 0, 0])
