@@ -4,9 +4,10 @@ struct LightInfo {
     vec3 position;
     vec3 color;
     float size;
+    int type;
 };
 
-#define LIGHT_COUNT 2
+#define LIGHT_COUNT 3
 
 varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;
@@ -28,10 +29,11 @@ uniform vec3 u_CameraPosition;
 
 uniform LightInfo u_LightInfos[5];
 
-vec4 getLightFragColor(LightInfo lightInfo) {
-    // Ambient Color
-    vec3 ambientColor = lightInfo.color * u_AmbientIntensity;
+vec4 getAmbientLightFragColor(vec3 color) {
+    return vec4(color * u_AmbientIntensity, 1.0);
+}
 
+vec4 getPointLightFragColor(LightInfo lightInfo) {
     // Diffuse Color
     vec3 directionToLight = lightInfo.position - v_VertexPosition;
     float distanceToLight = length(directionToLight);
@@ -52,7 +54,21 @@ vec4 getLightFragColor(LightInfo lightInfo) {
     specular = pow(specular, 128.0);
     vec3 specularColor = lightInfo.color * (specular * u_SpecularIntensity);
 
-    return vec4(ambientColor + diffuseColor + specularColor, 1.0);
+    return vec4(diffuseColor + specularColor, 1.0);
+}
+
+vec4 getSpotLightFragColor(LightInfo lightInfo, vec3 lightDirection) {
+    vec3 directionToLight = lightInfo.position - v_VertexPosition;
+    float distanceToLight = length(directionToLight);
+    directionToLight = normalize(directionToLight);
+    float diffuse = max(0.0, dot(directionToLight, -lightDirection));
+    diffuse = (diffuse < 0.9) ? 0.0 : 1.0 / distanceToLight;
+    //float attenuation = max(0.0, (1.0 - distanceToLight / lightInfo.size)); // Light attenuation
+    //diffuse *= attenuation;
+    vec3 diffuseColor = lightInfo.color * (diffuse * u_DiffuseIntensity);
+
+    return vec4(diffuseColor, 1.0);
+ 
 }
 
 vec4 getTextureFragColor(sampler2D texture, vec2 uv) {
@@ -61,9 +77,14 @@ vec4 getTextureFragColor(sampler2D texture, vec2 uv) {
 }
 
 vec4 getGeneralLightFragColor() {
-    vec4 result;
+    vec4 result = getAmbientLightFragColor(vec3(1.0, 1.0, 1.0));
     for (int i = 0; i < LIGHT_COUNT; i++) {
-            result += getLightFragColor(u_LightInfos[i]);
+        int type = u_LightInfos[i].type;
+        if (type == 0) { // Point light type
+            result += getPointLightFragColor(u_LightInfos[i]);
+        } else if (type == 1) {
+            result += getSpotLightFragColor(u_LightInfos[i], vec3(1.0, -1.0, 0.0));
+        }
     }
     return result;
 }

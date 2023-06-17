@@ -39,6 +39,9 @@ let greenCube
 let blueCube
 let plane
 
+let headlightL
+
+
 const objects = []
 
 async function loadShaders() {
@@ -143,11 +146,17 @@ function createScene() {
     greenCube.parent = pedestal
     blueCube.parent = pedestal
 
-    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 10, y:10, z: 10}, {r: 1.0, g: 1.0, b: 1.0})
+    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 100, y:1, z: 100}, {r: 1.0, g: 1.0, b: 1.0})
     plane.parent = scene
 
     car = createCar({x: 0.0, y: 0.0, z: 0.0})
     car.parent = scene
+
+    // headlightL = new GameObject({x: 5.0, y: 0.0, z: 0.0})
+    headlightL = new GameObject({x: 2.6, y: 0.35, z: -0.75})
+    headlightL.parent = car
+    headlightR = new GameObject({x: 2.6, y: 0.35, z: 0.75})
+    headlightR.parent = car
 
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
@@ -156,10 +165,6 @@ function createScene() {
 
 async function loadModels() {
     await OBJ_LOADER.load("res/Models/Car.obj")
-    // await OBJ_LOADER.load("res/Models/untitled.obj")
-    // await OBJ_LOADER.load("res/Models/Cube.obj")
-    // await OBJ_LOADER.load("res/Models/Plane.obj")
-    // await OBJ_LOADER.load("res/Models/Monkey.obj")
 }
 
 async function main() {
@@ -189,7 +194,9 @@ async function main() {
             //Light
             const lightPos = lightCube.globalPosition
             material.setFloat3("u_CameraPosition", [camera.pos.x, camera.pos.y, camera.pos.z])
-            material.setLightInfo("u_LightInfos[0]", [lightPos.x, lightPos.y, lightPos.z], [1.0, 1.0, 1.0], lightSize)
+            material.setLightInfo("u_LightInfos[0]", [lightPos.x, lightPos.y, lightPos.z], [1.0, 1.0, 1.0], lightSize, 0)
+            material.setLightInfo("u_LightInfos[1]", [headlightL.globalPosition.x, headlightL.globalPosition.y, headlightL.globalPosition.z], [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[2]", [headlightR.globalPosition.x, headlightR.globalPosition.y, headlightR.globalPosition.z], [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
