@@ -162,7 +162,7 @@ async function main() {
             //Light
             const lightPos = lightCube.globalPosition
             material.setFloat3("u_CameraPosition", [camera.pos.x, camera.pos.y, camera.pos.z])
-            material.setLightInfo(0, [lightPos.x, lightPos.y, lightPos.z], [1.0, 1.0, 1.0], lightSize)
+            material.setLightInfo("u_LightInfos[0]", [lightPos.x, lightPos.y, lightPos.z], [1.0, 1.0, 1.0], lightSize)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
