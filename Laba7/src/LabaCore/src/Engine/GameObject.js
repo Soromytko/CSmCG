@@ -92,8 +92,6 @@ class GameObject {
         this._parent = newParent
     }
 
-
-
     _addChild(newChild) {
         if (!newChild) {
             console.log("The new child object is undefined")
@@ -129,10 +127,6 @@ class GameObject {
         }
     }
 
-    render(baseMatrix) {
-        gl.useProgram(this._material.shaderProgram)
-    }
-
     _isChildRecursive(maybeChild) {
         if (this._children.indexOf(maybeChild) >= 0) {
             return true;
@@ -141,6 +135,21 @@ class GameObject {
         for (let i = 0; i < this._children.length; i++) {
             return this._children[i]._isChildRecursive(maybeChild)
         }
+    }
+
+    _updateMatrix() {
+        this._globalPosition = _calGlobalPos()
+    }
+
+    _calGlobalPos() {
+        const m = this._parent
+        const v = [1, 1, 1, 1]
+        const u = [0, 0, 0, 0]
+        u[0] = m[0] * v[0] + m[4] * v[1] + m[8]  * v[2] + m[12] * v[3];
+        u[1] = m[1] * v[0] + m[5] * v[1] + m[9]  * v[2] + m[13] * v[3];
+        u[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
+        u[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+        return u
     }
 
 }
