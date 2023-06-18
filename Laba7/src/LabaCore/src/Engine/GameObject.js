@@ -12,6 +12,15 @@ class GameObject {
         this._meshRenderer
         
         this._matrix
+        this._rotateMatrix
+        this._scalMatrix
+
+        this._matrices = {
+            general: glMatrix.mat4.create(),
+            position: glMatrix.mat4.create(),
+            rotation: glMatrix.mat4.create(),
+            scale: glMatrix.mat4.create(),
+        }
     }
 
     get position() {
@@ -23,6 +32,8 @@ class GameObject {
     }
 
     get globalPosition() {
+        return this._globalPosition
+
         if (!this._parent) {
             return this._position
         }
@@ -33,6 +44,20 @@ class GameObject {
             y: parentGlobalPosition.y + this._position.y,
             z: parentGlobalPosition.z + this._position.z,
         }
+    }
+
+    _getLocalOffet(value) {
+        return this._parent ? this._parent.globalPosition - value : value
+    }
+
+    set globalPosition(value) {
+
+        const newMatrix = glMatrix.mat4.create()
+        glMatrix.mat4.translate(newMatrix, newMatrix, [value.x, value.y, value.z, 0])
+        this._positionMatrix = newMatrix
+        this.globalPosition = {x: value.x, y: value.y, z: value.z}
+
+        this._children.forEach(child => child._updateMatrix())
     }
 
     get rotation() {
@@ -137,18 +162,36 @@ class GameObject {
         }
     }
 
+    _updateMatrixWithParent() {
+        const maybeParentMatrix = this._parent ? this._parent.matrix : glMatrix.mat4.create()
+        
+        this._globalPosition = this._calGlobalPos()
+
+        this._children.forEach(child => {
+            child._updateMatrixWIthParent()
+        })
+    }
+
     _updateMatrix() {
         this._globalPosition = _calGlobalPos()
+
+        const parentGPos = this._parent ? this._parent.globalPosition : {x: 0, y: 0, z: 0}
+        const localPos = this._position
+        this._globalPosition = {
+            x: parentGPos.x + localPos.x,
+            y: parentGPos.y + localPos.y,
+            z: parentGPos.z + localPos.z,
+        }
     }
 
     _calGlobalPos() {
         const m = this._parent
         const v = [1, 1, 1, 1]
         const u = [0, 0, 0, 0]
-        u[0] = m[0] * v[0] + m[4] * v[1] + m[8]  * v[2] + m[12] * v[3];
-        u[1] = m[1] * v[0] + m[5] * v[1] + m[9]  * v[2] + m[13] * v[3];
-        u[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
-        u[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+        u[0] = m[0] * v[0] + m[4] * v[1] + m[8]  * v[2] + m[12] * v[3]
+        u[1] = m[1] * v[0] + m[5] * v[1] + m[9]  * v[2] + m[13] * v[3]
+        u[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3]
+        u[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3]
         return u
     }
 

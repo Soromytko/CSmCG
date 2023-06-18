@@ -200,8 +200,15 @@ async function main() {
             lightCube.position = {x: globalPosition[0], y: globalPosition[1] + 1, z: globalPosition[2]}
             console.log(object.position, globalPosition.slice(0, 3))
         }
-        glMatrix.mat4.rotate(matrix, matrix, object.rotation.y, [0, 1, 0])
-        glMatrix.mat4.scale(matrix, matrix, [object.scale.x, object.scale.y, object.scale.z])
+        const rotM = glMatrix.mat4.create()
+        glMatrix.mat4.rotate(rotM, rotM, object.rotation.y, [0, 1, 0])
+        glMatrix.mat4.multiply(matrix, matrix, rotM)
+        const scalM = glMatrix.mat4.create()
+        glMatrix.mat4.scale(scalM, scalM, [object.scale.x, object.scale.y, object.scale.z])
+        glMatrix.mat4.multiply(matrix, matrix, scalM)
+
+        // glMatrix.mat4.rotate(matrix, matrix, object.rotation.y, [0, 1, 0])
+        // glMatrix.mat4.scale(matrix, matrix, [object.scale.x, object.scale.y, object.scale.z])
         object.matrix = matrix
 
         const meshRenderer = object.meshRenderer

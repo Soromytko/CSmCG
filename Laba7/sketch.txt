@@ -1,0 +1,12 @@
+When parent is update then
+	* _globalPosition update
+	* _lovalPosition update
+	* _matrix update
+
+When globalPosition is update then
+	* _matrix update
+	* _localPosition update
+
+Then localPosition is update then
+	* _matrix update
+	* _globalPosition update
