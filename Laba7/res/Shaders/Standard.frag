@@ -13,6 +13,10 @@ varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;
 varying vec2 v_uvTexture;
 
+uniform mat4 u_ProjectMat;
+uniform mat4 u_ViewMat;
+uniform mat4 u_WorldMat;
+
 uniform vec3 u_Color;
 uniform float u_AmbientIntensity;
 uniform float u_DiffuseIntensity;
@@ -57,11 +61,16 @@ vec4 getPointLightFragColor(LightInfo lightInfo) {
     return vec4(diffuseColor + specularColor, 1.0);
 }
 
-vec4 getSpotLightFragColor(LightInfo lightInfo, vec3 lightDirection) {
+vec4 getSpotLightFragColor(LightInfo lightInfo) {
+
+    vec3 directionLight = vec3(1.0, -1.0, 0.0);
+    directionLight = (u_WorldMat * vec4(directionLight, 1.0)).xyz - (u_WorldMat * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    directionLight = normalize(directionLight);
+
     vec3 directionToLight = lightInfo.position - v_VertexPosition;
     float distanceToLight = length(directionToLight);
     directionToLight = normalize(directionToLight);
-    float diffuse = max(0.0, dot(directionToLight, -lightDirection));
+    float diffuse = max(0.0, dot(directionToLight, - directionLight));
     diffuse = (diffuse < 0.9) ? 0.0 : 1.0 / distanceToLight;
     //float attenuation = max(0.0, (1.0 - distanceToLight / lightInfo.size)); // Light attenuation
     //diffuse *= attenuation;
@@ -83,7 +92,7 @@ vec4 getGeneralLightFragColor() {
         if (type == 0) { // Point light type
             result += getPointLightFragColor(u_LightInfos[i]);
         } else if (type == 1) {
-            result += getSpotLightFragColor(u_LightInfos[i], vec3(1.0, -1.0, 0.0));
+            result += getSpotLightFragColor(u_LightInfos[i]);
         }
     }
     return result;
