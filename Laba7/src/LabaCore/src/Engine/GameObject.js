@@ -69,8 +69,10 @@ class GameObject {
         this._rotation = glMatrix.vec3.create()
         glMatrix.vec3.copy(this._rotation, value)
         
+        // TODO
         this._updateMatrix()
         this._updateChildrenRecursive()
+        // this.localPosition = this._localPosition
     }
 
     get scale() {

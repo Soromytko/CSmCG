@@ -228,9 +228,16 @@ async function main() {
         })
     }
 
+    let ry = 0.0
+
     renderLoop()
     function renderLoop() {
         cameraScript()
+
+        ry += 0.01
+
+        car.rotation = [0, ry, 0]
+        // car.localPosition = [0, 0, ry * 2]
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.rotate(VIEW_MATRIX, glMatrix.mat4.create(), camera.rot.y, [1, 0, 0])
