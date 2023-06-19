@@ -1,8 +1,11 @@
 class GameObject {
-    constructor(position = [0, 0, 0], rotatoin = [0, 0, 0], scale = [1, 1, 1]) {
-        this._globalPosition = position
-        this._localPosition = position
-        this._rotation = rotatoin
+    constructor(position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1]) {
+        this._globalPosition = glMatrix.vec3.create()
+        glMatrix.vec3.copy(this._globalPosition, position)
+        this._localPosition = glMatrix.vec3.create()
+        glMatrix.vec3.copy(this._localPosition, position)
+        this._rotation = glMatrix.vec3.create()
+        glMatrix.vec3.copy(this._rotation, rotation)
         this._scale = scale
         this._matrix = glMatrix.mat4.create()
         this._updateMatrix()
@@ -21,11 +24,15 @@ class GameObject {
     }
 
     set globalPosition(value) {
+        this._globalPosition = glMatrix.vec3.create()
         glMatrix.vec3.copy(this._globalPosition, value)
 
         // this._localPosition = this._parent ? value - this._parent._globalPosition : this._globalPosition
         if (this._parent) {
+            // DOTO
             glMatrix.vec3.sub(this._localPosition, value, this._parent._globalPosition)
+            // this._globalPosition = glMatrix.vec3.create()
+            // glMatrix.mat4.getTranslation(this._globalPosition, this._matrix)
         } else {
             glMatrix.vec3.clone(this._localPosition, value)
         }
@@ -41,23 +48,16 @@ class GameObject {
     set localPosition(value) {
         this._localPosition = glMatrix.vec3.create()
         glMatrix.vec3.copy(this._localPosition, value)
-        // glMatrix.vec3.copy(this._localPosition, value)
 
+        this._updateMatrix()
+        
         if (this._parent) {
-            // console.log("this.localPosition", this._localPosition)
-            // console.log("this._globalPosition", this._globalPosition)
-            // console.log("this._parent._globalPosition", this._parent._globalPosition)
-            // console.log("value", value)
-            glMatrix.vec3.add(this._globalPosition, this._parent._globalPosition, this._localPosition)
-            // console.log("+", this._globalPosition)
-            // console.log("local", this._localPosition)
-            // console.log("\n\n")
-            // console.log(value)
+            this._globalPosition = glMatrix.vec3.create()
+            glMatrix.mat4.getTranslation(this._globalPosition, this._matrix)
         } else {
             glMatrix.vec3.copy(this._globalPosition, this._localPosition)
         }
 
-        this._updateMatrix()
         this._updateChildrenRecursive()
     }
 
@@ -66,7 +66,9 @@ class GameObject {
     }
 
     set rotation(value) {
+        this._rotation = glMatrix.vec3.create()
         glMatrix.vec3.copy(this._rotation, value)
+        
         this._updateMatrix()
         this._updateChildrenRecursive()
     }

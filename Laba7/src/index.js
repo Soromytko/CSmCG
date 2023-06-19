@@ -166,10 +166,13 @@ function createScene() {
     car = createCar([0.0, 0.0, -0.0])
     car.parent = scene
 
-    headlightL = new GameObject([2.6, 0.35, -0.75])
+    // headlightL = new GameObject([2.6, 0.35, -0.75])
+    headlightL = createLampCube([2.52965, 0.365211, -0.746565], [0.1, 0.1, 0.1])
     headlightL.parent = car
-    headlightR = new GameObject([2.6, 0.35, 0.75])
+    headlightL.localPosition = [2.52965, 0.365211, -0.746565]
+    headlightR = new GameObject()
     headlightR.parent = car
+    headlightR.localPosition = [2.52965, 0.365211, +0.746565]
 
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
@@ -189,18 +192,6 @@ async function main() {
     createScene()
     bindGUI()
 
-
-    // const v1 = glMatrix.vec3.create()
-    // glMatrix.vec3.set(v1, 0, 2, 4)
-    // const vvv = [0, 0, 10]
-    // glMatrix.vec3.copy(v1, vvv)
-    // vvv[0] = 100
-    // console.log(v1)
-
-    // pedestal.rotation = [0, 20, 0]
-    // pedestal.rotation = [0, 20, 0]
-    // return
-
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
 
@@ -217,8 +208,9 @@ async function main() {
             material.setFloat3("u_CameraPosition", [camera.pos.x, camera.pos.y, camera.pos.z])
             material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [1.0, 1.0, 1.0], lightSize, 0)
             // material.setLightInfo("u_LightInfos[0]", globalPosition.slice(0, 3), [1.0, 1.0, 1.0], lightSize, 0)
-            material.setLightInfo("u_LightInfos[1]", [headlightL.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
-            material.setLightInfo("u_LightInfos[2]", [headlightR.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
+            // console.log(headlightL.globalPosition)
+            material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
