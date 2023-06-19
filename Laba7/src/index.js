@@ -40,6 +40,7 @@ let blueCube
 let plane
 
 let headlightL
+let headlightR
 
 const objects = []
 
@@ -162,8 +163,8 @@ function createScene() {
     plane = createPlane([0.0, -0.5, 0.0], [100, 1, 100], [1.0, 1.0, 1.0])
     plane.parent = scene
 
-    car = createCar([0.0, 0.0, -10.0])
-    // car.parent = scene
+    car = createCar([0.0, 0.0, -0.0])
+    car.parent = scene
 
     headlightL = new GameObject([2.6, 0.35, -0.75])
     headlightL.parent = car
@@ -189,12 +190,12 @@ async function main() {
     bindGUI()
 
 
-    const v1 = glMatrix.vec3.create()
-    glMatrix.vec3.set(v1, 0, 2, 4)
-    const vvv = [0, 0, 10]
-    glMatrix.vec3.copy(v1, vvv)
-    vvv[0] = 100
-    console.log(v1)
+    // const v1 = glMatrix.vec3.create()
+    // glMatrix.vec3.set(v1, 0, 2, 4)
+    // const vvv = [0, 0, 10]
+    // glMatrix.vec3.copy(v1, vvv)
+    // vvv[0] = 100
+    // console.log(v1)
 
     // pedestal.rotation = [0, 20, 0]
     // pedestal.rotation = [0, 20, 0]
@@ -206,7 +207,7 @@ async function main() {
     const renderObjectRecursively = function(object) {
         const meshRenderer = object.meshRenderer
         if (meshRenderer) {
-            if (object == redCube) console.log(object.matrix)
+            // if (object == redCube) console.log(object.matrix)
             const material = meshRenderer.material
             material.setMat4("u_ProjectMat", PROJECT_MATRIX)
             material.setMat4("u_ViewMat", VIEW_MATRIX)
@@ -216,8 +217,8 @@ async function main() {
             material.setFloat3("u_CameraPosition", [camera.pos.x, camera.pos.y, camera.pos.z])
             material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [1.0, 1.0, 1.0], lightSize, 0)
             // material.setLightInfo("u_LightInfos[0]", globalPosition.slice(0, 3), [1.0, 1.0, 1.0], lightSize, 0)
-            // material.setLightInfo("u_LightInfos[1]", [headlightL.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
-            // material.setLightInfo("u_LightInfos[2]", [headlightR.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[1]", [headlightL.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[2]", [headlightR.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
@@ -235,7 +236,6 @@ async function main() {
         })
     }
 
-    let l = 0.0
     renderLoop()
     function renderLoop() {
         cameraScript()

@@ -39,10 +39,8 @@ class GameObject {
     }
 
     set localPosition(value) {
-        this._localPosition = new Float32Array(3)
-        this._localPosition[0] = value[0]
-        this._localPosition[1] = value[1]
-        this._localPosition[2] = value[2]
+        this._localPosition = glMatrix.vec3.create()
+        glMatrix.vec3.copy(this._localPosition, value)
         // glMatrix.vec3.copy(this._localPosition, value)
 
         if (this._parent) {
