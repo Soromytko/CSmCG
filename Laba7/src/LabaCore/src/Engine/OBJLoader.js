@@ -31,7 +31,7 @@ class OBJLoader {
         // console.log(this._vertices)
         // console.log(this._normals)
         // console.log(this._indices)
-        console.log(mesh)
+        // console.log(mesh)
 
         // console.log(obj)
         // this._parseOBJ(objText)

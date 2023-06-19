@@ -7,6 +7,18 @@ When globalPosition is update then
 	* _matrix update
 	* _localPosition update
 
-Then localPosition is update then
+When localPosition is update then
 	* _matrix update
 	* _globalPosition update
+	
+	
+	
+LocalMatrix (when parnet is updated): 
+	+ no need to update when the parent is updated
+	+ no need to update localPosition
+	- need to update globalPosition
+	
+globalMatrix (when parent is updated):
+	- need to update when the parent is updated
+	- need to update globalPosition
+	+ no need to update localPosition

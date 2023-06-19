@@ -1,22 +1,23 @@
 function bindGUI() {
     document.getElementById("sceneRange").addEventListener("input", (event) => {
-        scene.rotation.y = event.target.value / 60
+        scene.rotation = [0, event.target.value / 50, 0]
     })
 
     document.getElementById("pedestalRange").addEventListener("input", (event) => {
-        pedestal.rotation.y = event.target.value / 60
+        pedestal.rotation = [0, event.target.value / 50, 0]
+        // pedestal.rotation = new Float32Array(0, event.target.value / 50, 0)
     })
 
     document.getElementById("redRange").addEventListener("input", (event) => {
-        redCube.rotation.y = event.target.value / 50
+        redCube.rotation = [0, event.target.value / 50, 0]
     })
 
     document.getElementById("greenRange").addEventListener("input", (event) => {
-        greenCube.rotation.y = event.target.value / 50
+        greenCube.rotation = [0, event.target.value / 50, 0]
     })
 
     document.getElementById("blueRange").addEventListener("input", (event) => {
-        blueCube.rotation.y = event.target.value / 50
+        blueCube.rotation = [0, event.target.value / 50, 0]
     })
 
     document.getElementById("ambientRange").addEventListener("input", (event) => {

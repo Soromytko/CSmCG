@@ -1,8 +1,11 @@
 class GameObject {
-    constructor(position = {x: 0, y: 0, z: 0}, scale = {x: 1, y: 1, z: 1}) {
-        this._position = position
-        this._rotation = {x: 0, y: 0, z: 0}
+    constructor(position = [0, 0, 0], rotatoin = [0, 0, 0], scale = [1, 1, 1]) {
+        this._globalPosition = position
+        this._localPosition = position
+        this._rotation = rotatoin
         this._scale = scale
+        this._matrix = glMatrix.mat4.create()
+        this._updateMatrix()
 
         this._parent
         this._children = []
@@ -11,53 +14,53 @@ class GameObject {
         // Components
         this._meshRenderer
         
-        this._matrix
-        this._rotateMatrix
-        this._scalMatrix
-
-        this._matrices = {
-            general: glMatrix.mat4.create(),
-            position: glMatrix.mat4.create(),
-            rotation: glMatrix.mat4.create(),
-            scale: glMatrix.mat4.create(),
-        }
     }
-
-    get position() {
-        return this._position
-    }
-
-    set position(value) {
-        this._position = value
-    }
-
+    
     get globalPosition() {
         return this._globalPosition
-
-        if (!this._parent) {
-            return this._position
-        }
-        const parentGlobalPosition = this._parent.globalPosition
-
-        return {
-            x: parentGlobalPosition.x + this._position.x,
-            y: parentGlobalPosition.y + this._position.y,
-            z: parentGlobalPosition.z + this._position.z,
-        }
-    }
-
-    _getLocalOffet(value) {
-        return this._parent ? this._parent.globalPosition - value : value
     }
 
     set globalPosition(value) {
+        glMatrix.vec3.copy(this._globalPosition, value)
 
-        const newMatrix = glMatrix.mat4.create()
-        glMatrix.mat4.translate(newMatrix, newMatrix, [value.x, value.y, value.z, 0])
-        this._positionMatrix = newMatrix
-        this.globalPosition = {x: value.x, y: value.y, z: value.z}
+        // this._localPosition = this._parent ? value - this._parent._globalPosition : this._globalPosition
+        if (this._parent) {
+            glMatrix.vec3.sub(this._localPosition, value, this._parent._globalPosition)
+        } else {
+            glMatrix.vec3.clone(this._localPosition, value)
+        }
 
-        this._children.forEach(child => child._updateMatrix())
+        this._updateMatrix()
+        this._updateChildrenRecursive()
+    }
+
+    get localPosition() {
+        return this._localPosition
+    }
+
+    set localPosition(value) {
+        this._localPosition = new Float32Array(3)
+        this._localPosition[0] = value[0]
+        this._localPosition[1] = value[1]
+        this._localPosition[2] = value[2]
+        // glMatrix.vec3.copy(this._localPosition, value)
+
+        if (this._parent) {
+            // console.log("this.localPosition", this._localPosition)
+            // console.log("this._globalPosition", this._globalPosition)
+            // console.log("this._parent._globalPosition", this._parent._globalPosition)
+            // console.log("value", value)
+            glMatrix.vec3.add(this._globalPosition, this._parent._globalPosition, this._localPosition)
+            // console.log("+", this._globalPosition)
+            // console.log("local", this._localPosition)
+            // console.log("\n\n")
+            // console.log(value)
+        } else {
+            glMatrix.vec3.copy(this._globalPosition, this._localPosition)
+        }
+
+        this._updateMatrix()
+        this._updateChildrenRecursive()
     }
 
     get rotation() {
@@ -65,7 +68,9 @@ class GameObject {
     }
 
     set rotation(value) {
-        this._rotation = value
+        glMatrix.vec3.copy(this._rotation, value)
+        this._updateMatrix()
+        this._updateChildrenRecursive()
     }
 
     get scale() {
@@ -76,20 +81,20 @@ class GameObject {
         this._scale = value
     }
 
-    get meshRenderer() {
-        return this._meshRenderer
-    }
-
-    set meshRenderer(value) {
-        this._meshRenderer = value
-    }
-
     get matrix() {
         return this._matrix
     }
 
     set matrix(newMatrix) {
         this._matrix = newMatrix
+    }
+
+    get meshRenderer() {
+        return this._meshRenderer
+    }
+
+    set meshRenderer(value) {
+        this._meshRenderer = value
     }
 
     get parent() {
@@ -115,6 +120,9 @@ class GameObject {
         }
         
         this._parent = newParent
+
+        this._updateMatrix()
+        this._updateChildrenRecursive()
     }
 
     _addChild(newChild) {
@@ -162,38 +170,45 @@ class GameObject {
         }
     }
 
-    _updateMatrixWithParent() {
+    _updateMatrix() {
         const maybeParentMatrix = this._parent ? this._parent.matrix : glMatrix.mat4.create()
-        
-        this._globalPosition = this._calGlobalPos()
 
+        const pos = this._localPosition
+        glMatrix.mat4.translate(this._matrix, maybeParentMatrix, pos)
+
+        const rot = this._rotation
+        glMatrix.mat4.rotate(this._matrix, this._matrix, rot[1], [0, 1, 0])
+
+        const scale = this._scale
+        glMatrix.mat4.scale(this._matrix, this._matrix, scale)
+    }
+
+    _updateChildrenRecursive() {
         this._children.forEach(child => {
-            child._updateMatrixWIthParent()
+            // It updates child.globalPosition and child.matrix
+            child.localPosition = child._localPosition
+            // child.setLocalPosition(this._localPosition)
+            // child.localRotation = child._localRotation
         })
     }
 
-    _updateMatrix() {
-        this._globalPosition = _calGlobalPos()
+    // _getPositionByMatrix() {
+    //     const vec3 = glMatrix.vec3.create()
+    //     const matrix = this._matrix
+    //     glMatrix.mat4.getTranslation(vec3, matrix)
+    //     return {x: vec3[0], y: vec3[1], z: vec3[2]}
+    // }
 
-        const parentGPos = this._parent ? this._parent.globalPosition : {x: 0, y: 0, z: 0}
-        const localPos = this._position
-        this._globalPosition = {
-            x: parentGPos.x + localPos.x,
-            y: parentGPos.y + localPos.y,
-            z: parentGPos.z + localPos.z,
-        }
-    }
-
-    _calGlobalPos() {
-        const m = this._parent
-        const v = [1, 1, 1, 1]
-        const u = [0, 0, 0, 0]
-        u[0] = m[0] * v[0] + m[4] * v[1] + m[8]  * v[2] + m[12] * v[3]
-        u[1] = m[1] * v[0] + m[5] * v[1] + m[9]  * v[2] + m[13] * v[3]
-        u[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3]
-        u[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3]
-        return u
-    }
+    // _calGlobalPos() {
+    //     const m = this._parent
+    //     const v = [1, 1, 1, 1]
+    //     const u = [0, 0, 0, 0]
+    //     u[0] = m[0] * v[0] + m[4] * v[1] + m[8]  * v[2] + m[12] * v[3]
+    //     u[1] = m[1] * v[0] + m[5] * v[1] + m[9]  * v[2] + m[13] * v[3]
+    //     u[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3]
+    //     u[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3]
+    //     return u
+    // }
 
 }
 

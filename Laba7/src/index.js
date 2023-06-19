@@ -41,7 +41,6 @@ let plane
 
 let headlightL
 
-
 const objects = []
 
 async function loadShaders() {
@@ -71,38 +70,44 @@ function buildShaders() {
 }
 
 function createCube(pos, scale, color, primaryImage, secondaryImage) {
+    const rot = [0, 0, 0]
+
     const primaryTexture = new Texture(primaryImage)
     const secondaryTexture = new Texture(secondaryImage)
     
     const material = new Material(SHADERS.standard)
-    material.setFloat3("u_Color", [color.r, color.g, color.b])
+    material.setFloat3("u_Color", color)
     material.setTexture("u_MainTexture", primaryTexture)
     material.setTexture("u_SecondaryTexture", secondaryTexture)
     
-    const cube = new GameObject(pos, scale)
+    const cube = new GameObject(pos, rot, scale)
     cube.meshRenderer = new MeshRenderer(new CubeMesh(), material)
 
     return cube
 }
 
 function createLampCube(pos, scale) {
+    const rot = [0, 0, 0]
+    
     const material = new Material(SHADERS.standard)
     material.setFloat3("u_Color", [1.0, 1.0, 1.0])
     
-    const cube = new GameObject(pos, scale)
+    const cube = new GameObject(pos, rot, scale)
     cube.meshRenderer = new MeshRenderer(new CubeMesh(), material)
 
     return cube
 }
 
 function createPlane(pos, scale, color) {
+    const rot = [0, 0, 0]
+
     const texture1 = new Texture(document.getElementById('ground-image'))
     
     const material = new Material(SHADERS.standard)
-    material.setFloat3("u_Color", [color.r, color.g, color.b])
+    material.setFloat3("u_Color", color)
     material.setTexture("u_MainTexture", texture1)
     
-    const plane = new GameObject(pos, scale)
+    const plane = new GameObject(pos, rot, scale)
     plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
 
     return plane
@@ -132,13 +137,21 @@ function createScene() {
     const grass = document.getElementById("grass-image")
     const marble = document.getElementById("marble-image")
 
+    // redCube = createCube([0.0, 0.0, -5.0], [1.0, 1.0, 1.0], [1.0, 0.0, 0.0], one, fire)
+    // console.log(redCube.localPosition)
+    // lightCube = createLampCube([0.0, 2.0, -2.0], [0.1, 0.1, 0.1])
+    // lightCube.meshRenderer.material = new Material(SHADERS.lamp)
+    // objects.push(redCube)
+    // objects.push(lightCube)
+    // return
+
     // Create objects
-    scene = new GameObject({x: 0.0, y: 0.0, z: -3.0})
-    pedestal = new GameObject({x: 0.0, y: 0.0, z: -2.0})
-    redCube = createCube({x: 0.0, y: 0.0, z: 0.0}, {x: 1.0, y: 1.0, z: 1.0}, {r: 1.0, g: 0.0, b: 0.0}, one, fire)
-    greenCube = createCube({x: -1.0, y: -0.1, z: 0.0}, {x: 1.0, y: 0.8, z: 1.0}, {r: 0.0, g: 1.0, b: 0.0}, two, grass)
-    blueCube = createCube({x: 1.0, y: -0.2, z: 0.0}, {x: 1.0, y: 0.6, z: 1.0}, {r: 0.0, g: 0.0, b: 1.0}, three, marble)
-    lightCube = createLampCube({x: 0.0, y: 2.0, z: -2.0}, {x: 0.1, y: 0.1, z: 0.1})
+    scene = new GameObject([0.0, 0.0, -3.0])
+    pedestal = new GameObject([0.0, 0.0, -2.0])
+    redCube = createCube([0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [1.0, 0.0, 0.0], one, fire)
+    greenCube = createCube([-1.0, -0.1, 0.0], [1.0, 0.8, 1.0], [0.0, 1.0, 0.0], two, grass)
+    blueCube = createCube([1.0, -0.2, 0.0], [1.0, 0.6, 1.0], [0.0, 0.0, 1.0], three, marble)
+    lightCube = createLampCube([0.0, 2.0, -2.0], [0.1, 0.1, 0.1])
     lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
@@ -146,36 +159,26 @@ function createScene() {
     greenCube.parent = pedestal
     blueCube.parent = pedestal
 
-    plane = createPlane({x: 0.0, y: -0.5, z: 0.0}, {x: 100, y:1, z: 100}, {r: 1.0, g: 1.0, b: 1.0})
+    plane = createPlane([0.0, -0.5, 0.0], [100, 1, 100], [1.0, 1.0, 1.0])
     plane.parent = scene
 
-    car = createCar({x: 0.0, y: 0.0, z: -10.0})
-    car.parent = scene
+    car = createCar([0.0, 0.0, -10.0])
+    // car.parent = scene
 
-    // headlightL = new GameObject({x: 5.0, y: 0.0, z: 0.0})
-    headlightL = new GameObject({x: 2.6, y: 0.35, z: -0.75})
+    headlightL = new GameObject([2.6, 0.35, -0.75])
     headlightL.parent = car
-    headlightR = new GameObject({x: 2.6, y: 0.35, z: 0.75})
+    headlightR = new GameObject([2.6, 0.35, 0.75])
     headlightR.parent = car
 
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
     objects.push(lightCube)
+
+    
 }
 
 async function loadModels() {
     await OBJ_LOADER.load("res/Models/Car.obj")
-}
-
-function mat4ByVec3(mat4, vec4) {
-    const m = mat4
-    const v = vec4
-    const u = [0, 0, 0, 0]
-    u[0] = m[0] * v[0] + m[4] * v[1] + m[8]  * v[2] + m[12] * v[3];
-    u[1] = m[1] * v[0] + m[5] * v[1] + m[9]  * v[2] + m[13] * v[3];
-    u[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
-    u[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
-    return u
 }
 
 async function main() {
@@ -185,45 +188,36 @@ async function main() {
     createScene()
     bindGUI()
 
+
+    const v1 = glMatrix.vec3.create()
+    glMatrix.vec3.set(v1, 0, 2, 4)
+    const vvv = [0, 0, 10]
+    glMatrix.vec3.copy(v1, vvv)
+    vvv[0] = 100
+    console.log(v1)
+
+    // pedestal.rotation = [0, 20, 0]
+    // pedestal.rotation = [0, 20, 0]
+    // return
+
     const renderer = new Renderer(0, 0, gl.canvas.width, gl.canvas.height)
     renderer.cleaningColor = [0.0, 0.0, 0.0, 1.0]
 
     const renderObjectRecursively = function(object) {
-        const parentMatrix = object.parent ? object.parent.matrix : glMatrix.mat4.create()
-        const matrix = glMatrix.mat4.create()
-        glMatrix.mat4.translate(matrix, parentMatrix, [object.position.x, object.position.y, object.position.z, 0])
-        const globalPosition = mat4ByVec3(parentMatrix, [object.position.x, object.position.y, object.position.z, 1])
-        // if (object == lightCube) {
-        // console.log(object.globalPosition, globalPosition.slice(0, 3))
-        // }
-        if (object == greenCube) {
-            lightCube.position = {x: globalPosition[0], y: globalPosition[1] + 1, z: globalPosition[2]}
-            console.log(object.position, globalPosition.slice(0, 3))
-        }
-        const rotM = glMatrix.mat4.create()
-        glMatrix.mat4.rotate(rotM, rotM, object.rotation.y, [0, 1, 0])
-        glMatrix.mat4.multiply(matrix, matrix, rotM)
-        const scalM = glMatrix.mat4.create()
-        glMatrix.mat4.scale(scalM, scalM, [object.scale.x, object.scale.y, object.scale.z])
-        glMatrix.mat4.multiply(matrix, matrix, scalM)
-
-        // glMatrix.mat4.rotate(matrix, matrix, object.rotation.y, [0, 1, 0])
-        // glMatrix.mat4.scale(matrix, matrix, [object.scale.x, object.scale.y, object.scale.z])
-        object.matrix = matrix
-
         const meshRenderer = object.meshRenderer
         if (meshRenderer) {
+            if (object == redCube) console.log(object.matrix)
             const material = meshRenderer.material
             material.setMat4("u_ProjectMat", PROJECT_MATRIX)
             material.setMat4("u_ViewMat", VIEW_MATRIX)
-            material.setMat4("u_WorldMat", matrix)
+            material.setMat4("u_WorldMat", object.matrix)
+            // material.setMat4("u_WorldMat", glMatrix.mat4.create())
             //Light
-            const lightPos = lightCube.globalPosition
             material.setFloat3("u_CameraPosition", [camera.pos.x, camera.pos.y, camera.pos.z])
-            material.setLightInfo("u_LightInfos[0]", [lightPos.x, lightPos.y, lightPos.z], [1.0, 1.0, 1.0], lightSize, 0)
+            material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [1.0, 1.0, 1.0], lightSize, 0)
             // material.setLightInfo("u_LightInfos[0]", globalPosition.slice(0, 3), [1.0, 1.0, 1.0], lightSize, 0)
-            material.setLightInfo("u_LightInfos[1]", [headlightL.globalPosition.x, headlightL.globalPosition.y, headlightL.globalPosition.z], [1.0, 1.0, 1.0], lightSize, 1)
-            material.setLightInfo("u_LightInfos[2]", [headlightR.globalPosition.x, headlightR.globalPosition.y, headlightR.globalPosition.z], [1.0, 1.0, 1.0], lightSize, 1)
+            // material.setLightInfo("u_LightInfos[1]", [headlightL.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
+            // material.setLightInfo("u_LightInfos[2]", [headlightR.globalPosition], [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
@@ -241,6 +235,7 @@ async function main() {
         })
     }
 
+    let l = 0.0
     renderLoop()
     function renderLoop() {
         cameraScript()
