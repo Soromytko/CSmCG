@@ -32,21 +32,23 @@ function bindGUI() {
         specularIntensity = event.target.value
     })
 
-
     document.getElementById("lightSizeRange").addEventListener("input", (event) => {
         lightSize = event.target.value * 10
     })
 
     document.getElementById("lightXRange").addEventListener("input", (event) => {
-        lightCube.position.x = event.target.value * 10 - 5 // [-5, 5]
+        const x = event.target.value * 10 - 5 // [-5, 5]
+        lightCube.globalPosition = [x, lightCube.globalPosition[1], lightCube.globalPosition[2]]
     })
 
     document.getElementById("lightYRange").addEventListener("input", (event) => {
-        lightCube.position.y = event.target.value * 10 - 5 // [-5, 5]
+        const y = event.target.value * 10 - 5 // [-5, 5]
+        lightCube.globalPosition = [lightCube.globalPosition[0], y, lightCube.globalPosition[2]]
     })
 
     document.getElementById("lightZRange").addEventListener("input", (event) => {
-        lightCube.position.z = event.target.value * 10 - 5 // [-5, 5]
+        const z = event.target.value * 10 - 5 // [-5, 5]
+        lightCube.globalPosition = [lightCube.globalPosition[0], lightCube.globalPosition[1], z]
     })
 
     document.getElementById("mixRange").addEventListener("input", (event) => {

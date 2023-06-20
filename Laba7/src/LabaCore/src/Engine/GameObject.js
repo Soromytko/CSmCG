@@ -34,7 +34,7 @@ class GameObject {
             // this._globalPosition = glMatrix.vec3.create()
             // glMatrix.mat4.getTranslation(this._globalPosition, this._matrix)
         } else {
-            glMatrix.vec3.clone(this._localPosition, value)
+            glMatrix.vec3.copy(this._localPosition, this._globalPosition)
         }
 
         this._updateMatrix()
@@ -125,6 +125,14 @@ class GameObject {
 
         this._updateMatrix()
         this._updateChildrenRecursive()
+    }
+
+    move(x, y, z) {
+        const offset = glMatrix.vec3.create()
+        glMatrix.vec3.set(offset, x, y, z)
+        const newPos = glMatrix.vec3.create()
+        glMatrix.vec3.add(newPos, this._localPosition, offset)
+        this.localPosition = newPos
     }
 
     _addChild(newChild) {
