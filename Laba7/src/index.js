@@ -123,6 +123,7 @@ function createCar(pos) {
     mesh.vertices = OBJ_LOADER.vertices
     mesh.normals = OBJ_LOADER.normals
     mesh.indices = OBJ_LOADER.indices
+    mesh.uv = new Array(mesh.vertices.length)
     mesh.build()
     model.meshRenderer = new MeshRenderer(mesh, material)
 

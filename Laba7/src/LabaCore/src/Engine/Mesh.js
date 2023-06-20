@@ -23,6 +23,14 @@ class Mesh {
         this._normals = value
     }
 
+    get uv() {
+        return this._uv
+    }
+
+    set uv(value) {
+        this._uv = value
+    }
+
     get indices() {
         return this._indices
     }
