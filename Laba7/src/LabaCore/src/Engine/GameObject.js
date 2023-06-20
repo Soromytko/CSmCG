@@ -127,6 +127,21 @@ class GameObject {
         this._updateChildrenRecursive()
     }
 
+    get forward() {
+        const dir = [0.0, 0.0, 1.0] // Forward direction
+        
+        const destMat = glMatrix.mat4.create()
+        glMatrix.mat4.translate(destMat, this._matrix, dir)
+        
+        const dest = glMatrix.vec3.create()
+        glMatrix.mat4.getTranslation(dest, destMat)
+        
+        const result = glMatrix.vec3.create()
+        glMatrix.vec3.sub(result, dest, this._globalPosition)
+
+        return result
+    }
+
     move(x, y, z) {
         const offset = glMatrix.vec3.create()
         glMatrix.vec3.set(offset, x, y, z)

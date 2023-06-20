@@ -63,7 +63,7 @@ vec4 getPointLightFragColor(LightInfo lightInfo) {
 
 vec4 getSpotLightFragColor(LightInfo lightInfo) {
 
-    vec3 directionLight = vec3(1.0, -1.0, 0.0);
+    vec3 directionLight = vec3(0.0, 0.0, 1.0);
     directionLight = (u_WorldMat * vec4(directionLight, 1.0)).xyz - (u_WorldMat * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
     directionLight = normalize(directionLight);
 

@@ -169,7 +169,7 @@ function createScene() {
 
     // headlightL = new GameObject([2.6, 0.35, -0.75])
     headlightL = createLampCube([2.52965, 0.365211, -0.746565], [0.1, 0.1, 0.1])
-    headlightL.parent = car
+    headlightL.parent = greenCube
     headlightL.localPosition = [2.52965, 0.365211, -0.746565]
     headlightR = new GameObject()
     headlightR.parent = car
@@ -233,6 +233,7 @@ async function main() {
 
     renderLoop()
     function renderLoop() {
+
         cameraScript()
 
         ry += 0.01
