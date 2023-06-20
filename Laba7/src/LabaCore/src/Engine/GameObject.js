@@ -126,11 +126,17 @@ class GameObject {
         this.localPosition = this._localPosition
     }
 
+    get right() {
+        return this.getRelativeDirection(1.0, 0.0, 0.0)
+    }
+
     get forward() {
-        const dir = [0.0, 0.0, 1.0] // Forward direction
-        
+        return this.getRelativeDirection(0.0, 0.0, 1.0)
+    }
+
+    getRelativeDirection(x, y, z) {
         const destMat = glMatrix.mat4.create()
-        glMatrix.mat4.translate(destMat, this._matrix, dir)
+        glMatrix.mat4.translate(destMat, this._matrix, [x, y, z])
         
         const dest = glMatrix.vec3.create()
         glMatrix.mat4.getTranslation(dest, destMat)

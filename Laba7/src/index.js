@@ -157,9 +157,9 @@ function createScene() {
     car = createCar([0.0, 0.0, -10.0])
     car.parent = scene
 
-    // headlightL = new GameObject([2.6, 0.35, -0.75])
-    headlightL = createLampCube([2.52965, 0.365211, -0.746565], [0.1, 0.1, 0.1])
-    headlightL.parent = greenCube
+    headlightL = new GameObject([2.52965, 0.365211, -0.746565])
+    // headlightL = createLampCube([2.52965, 0.365211, -0.746565], [0.1, 0.1, 0.1])
+    headlightL.parent = car
     headlightL.localPosition = [2.52965, 0.365211, -0.746565]
     headlightR = new GameObject()
     headlightR.parent = car
@@ -189,19 +189,15 @@ async function main() {
     const renderObjectRecursively = function(object) {
         const meshRenderer = object.meshRenderer
         if (meshRenderer) {
-            // if (object == redCube) console.log(object.matrix)
             const material = meshRenderer.material
             material.setMat4("u_ProjectMat", PROJECT_MATRIX)
             material.setMat4("u_ViewMat", VIEW_MATRIX)
             material.setMat4("u_WorldMat", object.matrix)
-            // material.setMat4("u_WorldMat", glMatrix.mat4.create())
             //Light
             material.setFloat3("u_CameraPosition", [camera.pos.x, camera.pos.y, camera.pos.z])
-            material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [1.0, 1.0, 1.0], lightSize, 0)
-            // material.setLightInfo("u_LightInfos[0]", globalPosition.slice(0, 3), [1.0, 1.0, 1.0], lightSize, 0)
-            // console.log(headlightL.globalPosition)
-            material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, [1.0, 1.0, 1.0], lightSize, 1)
-            material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [0, 0, 0], [1.0, 1.0, 1.0], lightSize, 0)
+            material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
@@ -223,8 +219,6 @@ async function main() {
 
     renderLoop()
     function renderLoop() {
-
-        // console.log(redCube.globalPosition, redCube.forward)
 
         cameraScript()
 

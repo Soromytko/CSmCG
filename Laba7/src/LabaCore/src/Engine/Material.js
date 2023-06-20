@@ -49,6 +49,7 @@ class Material {
         }
         for (const [key, value] of Object.entries(this._data.pointLights)) {
             this._shader.setFloat3(key + ".position", value.position[0], value.position[1], value.position[2])
+            this._shader.setFloat3(key + ".direction", value.direction[0], value.direction[1], value.direction[2])
             this._shader.setFloat3(key + ".color", value.color[0], value.color[1], value.color[2])
             this._shader.setFloat1(key + ".size", value.size)
             this._shader.setInt1(key + ".type", value.type)
@@ -71,9 +72,10 @@ class Material {
         this._data.textures[name] = value
     }
 
-    setLightInfo(name, position, color, size, type) {
+    setLightInfo(name, position, direction, color, size, type) {
         this._data.pointLights[name] = {
             position: position,
+            direction: direction,
             color: color,
             size: size,
             type: type,

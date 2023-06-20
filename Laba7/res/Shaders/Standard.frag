@@ -2,6 +2,7 @@ precision mediump float;
 
 struct LightInfo {
     vec3 position;
+    vec3 direction;
     vec3 color;
     float size;
     int type;
@@ -12,10 +13,6 @@ struct LightInfo {
 varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;
 varying vec2 v_uvTexture;
-
-uniform mat4 u_ProjectMat;
-uniform mat4 u_ViewMat;
-uniform mat4 u_WorldMat;
 
 uniform vec3 u_Color;
 uniform float u_AmbientIntensity;
@@ -62,22 +59,14 @@ vec4 getPointLightFragColor(LightInfo lightInfo) {
 }
 
 vec4 getSpotLightFragColor(LightInfo lightInfo) {
-
-    vec3 directionLight = vec3(0.0, 0.0, 1.0);
-    directionLight = (u_WorldMat * vec4(directionLight, 1.0)).xyz - (u_WorldMat * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
-    directionLight = normalize(directionLight);
-
     vec3 directionToLight = lightInfo.position - v_VertexPosition;
     float distanceToLight = length(directionToLight);
     directionToLight = normalize(directionToLight);
-    float diffuse = max(0.0, dot(directionToLight, - directionLight));
-    diffuse = (diffuse < 0.9) ? 0.0 : 1.0 / distanceToLight;
-    //float attenuation = max(0.0, (1.0 - distanceToLight / lightInfo.size)); // Light attenuation
-    //diffuse *= attenuation;
-    vec3 diffuseColor = lightInfo.color * (diffuse * u_DiffuseIntensity);
+    float diffuse = max(0.0, dot(directionToLight, - lightInfo.direction));
+    diffuse = (diffuse < 0.9) ? 0.0 : 1.0 / pow(distanceToLight, 1.7);
+    vec3 diffuseColor = lightInfo.color * (diffuse);
 
     return vec4(diffuseColor, 1.0);
- 
 }
 
 vec4 getTextureFragColor(sampler2D texture, vec2 uv) {
