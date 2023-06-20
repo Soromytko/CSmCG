@@ -135,6 +135,14 @@ class GameObject {
         return this.getRelativeDirection(0.0, 0.0, 1.0)
     }
 
+    get script() {
+        return this._script
+    }
+
+    set script(value) {
+        this._script = value
+    }
+
     getRelativeDirection(x, y, z) {
         const destMat = glMatrix.mat4.create()
         glMatrix.mat4.translate(destMat, this._matrix, [x, y, z])
@@ -156,12 +164,19 @@ class GameObject {
         this.globalPosition = newPos
     }
 
-    move(x, y, z) {
+    moveLocal(x, y, z) {
         const offset = glMatrix.vec3.create()
         glMatrix.vec3.set(offset, x, y, z)
         const newPos = glMatrix.vec3.create()
         glMatrix.vec3.add(newPos, this._localPosition, offset)
         this.localPosition = newPos
+    }
+
+    rotate(x, y, z) {
+        const offset = glMatrix.vec3.create()
+        glMatrix.vec3.set(offset, x, y, z)
+        glMatrix.vec3.add(this._rotation, this._rotation, offset)
+        this.rotation = this._rotation
     }
 
     _addChild(newChild) {

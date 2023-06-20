@@ -147,6 +147,7 @@ function createScene() {
 
     car = createCar([0.0, 0.0, -10.0])
     car.parent = scene
+    car.script = new CarController(car)
 
     headlightL = new GameObject([2.52965, 0.365211, -0.746565])
     // headlightL = createLampCube([2.52965, 0.365211, -0.746565], [0.1, 0.1, 0.1])
@@ -163,7 +164,7 @@ function createScene() {
     camera = new GameObject([0.0, 3.0, 2.0])
     camera.parent = cameraPivot
     camera.localPosition = [0.0, 0.0, 10.0]
-    camera._script = new CameraPivot(camera)
+    camera.script = new CameraPivotController(camera)
     
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
@@ -219,6 +220,7 @@ async function main() {
     function renderLoop() {
         input.update()
         camera._script.update()
+        car._script.update()
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.invert(VIEW_MATRIX, camera.matrix)

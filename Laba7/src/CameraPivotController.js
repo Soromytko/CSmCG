@@ -1,4 +1,4 @@
-class CameraPivot {
+class CameraPivotController {
     constructor(object) {
         this._object = object
 
