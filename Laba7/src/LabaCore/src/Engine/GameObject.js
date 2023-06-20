@@ -16,7 +16,6 @@ class GameObject {
 
         // Components
         this._meshRenderer
-        
     }
     
     get globalPosition() {
@@ -123,8 +122,8 @@ class GameObject {
         
         this._parent = newParent
 
-        this._updateMatrix()
-        this._updateChildrenRecursive()
+        glMatrix.vec3.sub(this._localPosition, this._globalPosition, this._parent._globalPosition)
+        this.localPosition = this._localPosition
     }
 
     get forward() {

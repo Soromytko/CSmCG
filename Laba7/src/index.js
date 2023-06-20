@@ -70,16 +70,14 @@ function buildShaders() {
     return true
 }
 
-function createCube(pos, scale, color, primaryImage, secondaryImage) {
+function createCube(pos, scale, color, primaryImage) {
     const rot = [0, 0, 0]
 
     const primaryTexture = new Texture(primaryImage)
-    const secondaryTexture = new Texture(secondaryImage)
     
     const material = new Material(SHADERS.standard)
     material.setFloat3("u_Color", color)
     material.setTexture("u_MainTexture", primaryTexture)
-    material.setTexture("u_SecondaryTexture", secondaryTexture)
     
     const cube = new GameObject(pos, rot, scale)
     cube.meshRenderer = new MeshRenderer(new CubeMesh(), material)
@@ -139,20 +137,12 @@ function createScene() {
     const grass = document.getElementById("grass-image")
     const marble = document.getElementById("marble-image")
 
-    // redCube = createCube([0.0, 0.0, -5.0], [1.0, 1.0, 1.0], [1.0, 0.0, 0.0], one, fire)
-    // console.log(redCube.localPosition)
-    // lightCube = createLampCube([0.0, 2.0, -2.0], [0.1, 0.1, 0.1])
-    // lightCube.meshRenderer.material = new Material(SHADERS.lamp)
-    // objects.push(redCube)
-    // objects.push(lightCube)
-    // return
-
     // Create objects
-    scene = new GameObject([0.0, 0.0, -3.0])
+    scene = new GameObject([0.0, 0.0, 0.0])
     pedestal = new GameObject([0.0, 0.0, -2.0])
-    redCube = createCube([0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [1.0, 0.0, 0.0], one, fire)
-    greenCube = createCube([-1.0, -0.1, 0.0], [1.0, 0.8, 1.0], [0.0, 1.0, 0.0], two, grass)
-    blueCube = createCube([1.0, -0.2, 0.0], [1.0, 0.6, 1.0], [0.0, 0.0, 1.0], three, marble)
+    redCube = createCube([0.0, 0.0, -2.0], [1.0, 1.0, 1.0], [1.0, 0.0, 0.0], one)
+    greenCube = createCube([-1.0, -0.1, -2.0], [1.0, 0.8, 1.0], [0.0, 1.0, 0.0], two)
+    blueCube = createCube([1.0, -0.2, -2.0], [1.0, 0.6, 1.0], [0.0, 0.0, 1.0], three)
     lightCube = createLampCube([0.0, 2.0, -2.0], [0.1, 0.1, 0.1])
     lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
@@ -233,6 +223,8 @@ async function main() {
 
     renderLoop()
     function renderLoop() {
+
+        // console.log(redCube.globalPosition, redCube.forward)
 
         cameraScript()
 
