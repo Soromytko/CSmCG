@@ -16,6 +16,7 @@ class GameObject {
 
         // Components
         this._meshRenderer
+        this._script
     }
     
     get globalPosition() {
@@ -145,6 +146,14 @@ class GameObject {
         glMatrix.vec3.sub(result, dest, this._globalPosition)
 
         return result
+    }
+
+    moveGlobal(x, y, z) {
+        const offset = glMatrix.vec3.create()
+        glMatrix.vec3.set(offset, x, y, z)
+        const newPos = glMatrix.vec3.create()
+        glMatrix.vec3.add(newPos, this._globalPosition, offset)
+        this.globalPosition = newPos
     }
 
     move(x, y, z) {
