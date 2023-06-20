@@ -1,36 +1,4 @@
-function length(vector) {
-    return Math.sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
-}
-
-function normalize(vector) {
-    const l = length(vector)
-    return l == 0 ? {x: 0, y: 0, z: 0} : {x: vector.x / l, y: vector.y / l, z: vector.z / l}
-}
-
-function move(from, to, speed) {
-    const delta = {
-        x: to.x - from.x,
-        y: to.y - from.y,
-        z: to.z - from.z,
-    }
-    
-    const l = length(delta)
-    if(l == 0) {
-        return from
-    }
-    
-    const direction = normalize(delta)
-    const x = from.x + direction.x * speed * l
-    const y = from.y + direction.y * speed * l
-    const z = from.z + direction.z * speed * l
-    return {x: x, y: y, z: z}
-}
-
-function cameraScript() {
-    
-}
-
-class CameraController {
+class CameraPivot {
     constructor(object) {
         this._object = object
 
@@ -64,10 +32,8 @@ class CameraController {
         const y = -direction.y * 0.05
         const z = -direction.z * 0.05
 
-        
-        this._object.moveGlobal(x, y, z)
-        this._object.rotation = [-this._rot.y, -this._rot.x, 0]
-      
+        this._object.parent.rotation = [-this._rot.y, -this._rot.x, 0]
+
         if (input.mouse.isHoldButton) {
             this._looking()
         }
@@ -76,5 +42,10 @@ class CameraController {
     _looking() {
         this._rot.x += input.mouse.delta.x * 0.01
         this._rot.y += input.mouse.delta.y * 0.01
+
+        const clamp = (value, min, max) => value < min ? min : value > max ? max : value
+        const deg2Rad = (deg) => deg * Math.PI / 180
+
+        this._rot.y = clamp(this._rot.y, deg2Rad(15), deg2Rad(75))
     }
 }

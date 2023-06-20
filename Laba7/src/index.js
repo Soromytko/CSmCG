@@ -1,3 +1,4 @@
+const input = new Input()
 const OBJ_LOADER = new OBJLoader()
 
 const SHADERS = {
@@ -13,6 +14,7 @@ const SHADERS = {
 const PROJECT_MATRIX = glMatrix.mat4.create()
 const VIEW_MATRIX = glMatrix.mat4.create()
 
+let cameraPivot
 let camera
 
 let lightSize = 7
@@ -126,10 +128,6 @@ function createScene() {
     const grass = document.getElementById("grass-image")
     const marble = document.getElementById("marble-image")
 
-    //Camera
-    camera = new GameObject([0.0, 2.0, 3.0])
-    camera._script = new CameraController(camera)
-
     // Create objects
     scene = new GameObject([0.0, 0.0, 0.0])
     pedestal = new GameObject([0.0, 0.0, -2.0])
@@ -158,11 +156,20 @@ function createScene() {
     headlightR.parent = car
     headlightR.localPosition = [2.52965, 0.365211, +0.746565]
 
+    //Camera
+    cameraPivot = new GameObject([0.0, 0.0, 0.0])
+    cameraPivot.parent = car
+    cameraPivot.localPosition = [0.0, 0.0, 0.0]
+    camera = new GameObject([0.0, 3.0, 2.0])
+    camera.parent = cameraPivot
+    camera.localPosition = [0.0, 0.0, 10.0]
+    camera._script = new CameraPivot(camera)
+    
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
     objects.push(lightCube)
 
-    
+
 }
 
 async function loadModels() {
@@ -208,18 +215,10 @@ async function main() {
         })
     }
 
-    let ry = 0.0
-
     renderLoop()
     function renderLoop() {
-
+        input.update()
         camera._script.update()
-
-
-        ry += 0.01
-
-        car.rotation = [0, ry, 0]
-        // car.localPosition = [0, 0, ry * 2]
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.invert(VIEW_MATRIX, camera.matrix)
