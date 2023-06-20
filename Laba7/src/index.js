@@ -13,20 +13,7 @@ const SHADERS = {
 const PROJECT_MATRIX = glMatrix.mat4.create()
 const VIEW_MATRIX = glMatrix.mat4.create()
 
-const camera = {
-    pos: {
-        x: 0,
-        y: 2,
-        z: 3,
-    },
-    rot: {
-        x: 0,
-        y: 0,
-        z: 0,
-    },
-}
-
-let cameraObj
+let camera
 
 let lightSize = 7
 let ambientIntensity = 0.1
@@ -140,8 +127,8 @@ function createScene() {
     const marble = document.getElementById("marble-image")
 
     //Camera
-    cameraObj = new GameObject([0.0, 2.0, 3.0])
-    cameraObj._script = new CameraController(cameraObj)
+    camera = new GameObject([0.0, 2.0, 3.0])
+    camera._script = new CameraController(camera)
 
     // Create objects
     scene = new GameObject([0.0, 0.0, 0.0])
@@ -200,7 +187,7 @@ async function main() {
             material.setMat4("u_ViewMat", VIEW_MATRIX)
             material.setMat4("u_WorldMat", object.matrix)
             //Light
-            material.setFloat3("u_CameraPosition", cameraObj.globalPosition)
+            material.setFloat3("u_CameraPosition", camera.globalPosition)
             material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [0, 0, 0], [1.0, 1.0, 1.0], lightSize, 0)
             material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
             material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
@@ -226,7 +213,7 @@ async function main() {
     renderLoop()
     function renderLoop() {
 
-        cameraObj._script.update()
+        camera._script.update()
 
 
         ry += 0.01
@@ -235,16 +222,7 @@ async function main() {
         // car.localPosition = [0, 0, ry * 2]
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
-        glMatrix.mat4.rotate(VIEW_MATRIX, glMatrix.mat4.create(), cameraObj.rotation[1], [1, 0, 0])
-        glMatrix.mat4.rotate(VIEW_MATRIX, VIEW_MATRIX, cameraObj.rotation[0], [0, 1, 0])
-        // glMatrix.mat4.translate(VIEW_MATRIX, VIEW_MATRIX, [-camera.pos.x, -camera.pos.y, -camera.pos.z, 0])
-        const invPos = [
-            -cameraObj.globalPosition[0],
-            -cameraObj.globalPosition[1],
-            -cameraObj.globalPosition[2],
-        ]
-        console.log(invPos)
-        glMatrix.mat4.translate(VIEW_MATRIX, VIEW_MATRIX, invPos)
+        glMatrix.mat4.invert(VIEW_MATRIX, camera.matrix)
 
         renderer.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 

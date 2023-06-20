@@ -217,6 +217,7 @@ class GameObject {
 
         const rot = this._rotation
         glMatrix.mat4.rotate(this._matrix, this._matrix, rot[1], [0, 1, 0])
+        glMatrix.mat4.rotate(this._matrix, this._matrix, rot[0], [1, 0, 0])
 
         const scale = this._scale
         glMatrix.mat4.scale(this._matrix, this._matrix, scale)

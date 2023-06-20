@@ -36,7 +36,7 @@ class CameraController {
     constructor(object) {
         this._object = object
 
-        this._rot = {x: 0, y: 0}
+        this._rot = {x: 0.0, y: 0.0}
     }
 
     update() {
@@ -68,9 +68,8 @@ class CameraController {
 
         
         this._object.moveGlobal(x, y, z)
-        this._object.rotation = [this._rot.x, this._rot.y, 0]
+        this._object.rotation = [-this._rot.y, -this._rot.x, 0]
       
-        // camera.pos = move(camera.pos, cameraTarget.pos, 0.1)
         if (input.mouse.isHoldButton) {
             this._looking()
         }
@@ -79,9 +78,7 @@ class CameraController {
     _looking() {
         input.update()
     
-        this._rot = {
-            x: this._rot.x + input.mouse.delta.x * 0.01,
-            y: this._rot.y + input.mouse.delta.y * 0.01,
-        }
+        this._rot.x += input.mouse.delta.x * 0.01
+        this._rot.y += input.mouse.delta.y * 0.01
     }
 }
