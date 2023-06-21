@@ -12,7 +12,7 @@ class Collider extends GameObject {
         for (let i = 0; i < this._points.length; i++) {
             const localPoint = this._points[i]
             glMatrix.mat4.translate(pointMatrix, matrix1, [point])
-            if (collider2.contains(point)) {
+            if (collider.contains(point)) {
                 return true
             }
         }

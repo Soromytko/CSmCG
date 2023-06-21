@@ -116,15 +116,15 @@ function createCar(pos) {
     mesh.build()
     model.meshRenderer = new MeshRenderer(mesh, material)
     
-    // const collider = new BoxCollider()
-    // collider.parent = model
-    // collider.scale = [2.0, 2.0, 2.0]
-    // model.collider = collider
+    const collider = new BoxCollider()
+    collider.parent = model
+    collider.scale = [5.0, 5.0, 3.0]
+    model.collider = collider
 
-    cube = createCube([0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [1.0, 0.0, 1.0], document.getElementById("cube1-image"))
-    cube.parent = model
-    cube.localPosition = [0.0, 0.0, 0.0]
-    cube.scale = [3.0, 3.0, 3.0]
+    // cube = createCube([0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [1.0, 0.0, 1.0], document.getElementById("cube1-image"))
+    // cube.parent = model
+    // cube.localPosition = [0.0, 0.0, 0.0]
+    // cube.scale = [5.0, 5.0, 3.0]
 
     return model
 }
