@@ -18,7 +18,7 @@ class CarController {
         if (input.getKey('q')) this._move = moveTowards(this._move, 0, 0.01)
         
 
-        const direction = object.right
+        const direction = object.forward
         glMatrix.vec3.mul(direction, direction, [this._move, this._move, this._move])
         object.moveGlobal(direction[0], direction[1], direction[2])
 

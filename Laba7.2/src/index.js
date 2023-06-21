@@ -140,16 +140,18 @@ function createScene() {
     car.parent = scene
     car.script = new CarController(car)
 
-    headlightL = new GameObject([2.52965, 0.365211, -0.746565])
+    headlightL = new GameObject()
     headlightL.parent = car
-    headlightL.localPosition = [2.52965, 0.365211, -0.746565]
+    // headlightL.localPosition = [1.07313, -1.46486, -3.58664]
+    headlightL.localPosition = [1.08891, 1.35343, +3.3577]
     headlightR = new GameObject()
     headlightR.parent = car
-    headlightR.localPosition = [2.52965, 0.365211, +0.746565]
+    headlightR.localPosition = [-1.08891, 1.35343, +3.3577]
 
     //Camera
     camera = new GameObject([0.0, 15.0, 15.0])
     camera.rotate(-30 * Math.PI / 180, 0, 0)
+    camera.script = new CameraController(camera)
     
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
@@ -180,8 +182,8 @@ async function main() {
             //Light
             material.setFloat3("u_CameraPosition", camera.globalPosition)
             material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [0, 0, 0], [1.0, 1.0, 1.0], lightSize, 0)
-            material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
-            material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(0.0, -0.7, 1.0), [1.0, 1.0, 1.0], lightSize, 1)
+            material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(0.0, -0.7, 1.0), [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
