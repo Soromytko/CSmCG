@@ -14,7 +14,6 @@ const SHADERS = {
 const PROJECT_MATRIX = glMatrix.mat4.create()
 const VIEW_MATRIX = glMatrix.mat4.create()
 
-let cameraPivot
 let camera
 
 let lightSize = 7
@@ -25,9 +24,6 @@ let mixingTextures = 1.0
 
 let scene
 let pedestal
-let redCube
-let greenCube
-let blueCube
 let plane
 
 let headlightL
@@ -88,14 +84,14 @@ function createLampCube(pos, scale) {
     return cube
 }
 
-function createPlane(pos, scale, color) {
+function createPlane(pos, scale, color, image) {
     const rot = [0, 0, 0]
 
-    const texture1 = new Texture(document.getElementById('ground-image'))
+    const texture = new Texture(image)
     
     const material = new Material(SHADERS.standard)
     material.setFloat3("u_Color", color)
-    material.setTexture("u_MainTexture", texture1)
+    material.setTexture("u_MainTexture", texture)
     
     const plane = new GameObject(pos, rot, scale)
     plane.meshRenderer = new MeshRenderer(new PlaneMesh(), material)
@@ -127,22 +123,17 @@ function createScene() {
     const fire = document.getElementById("fire-image")
     const grass = document.getElementById("grass-image")
     const marble = document.getElementById("marble-image")
+    const asphalt = document.getElementById("asphalt-image")
 
     // Create objects
     scene = new GameObject([0.0, 0.0, 0.0])
     pedestal = new GameObject([0.0, 0.0, -2.0])
-    redCube = createCube([0.0, 0.0, -2.0], [1.0, 1.0, 1.0], [1.0, 0.0, 0.0], one)
-    greenCube = createCube([-1.0, -0.1, -2.0], [1.0, 0.8, 1.0], [0.0, 1.0, 0.0], two)
-    blueCube = createCube([1.0, -0.2, -2.0], [1.0, 0.6, 1.0], [0.0, 0.0, 1.0], three)
     lightCube = createLampCube([0.0, 2.0, -2.0], [0.1, 0.1, 0.1])
     lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
     pedestal.parent = scene
-    redCube.parent = pedestal
-    greenCube.parent = pedestal
-    blueCube.parent = pedestal
 
-    plane = createPlane([0.0, -0.5, 0.0], [100, 1, 100], [1.0, 1.0, 1.0])
+    plane = createPlane([0.0, -0.5, 0.0], [50, 1, 50], [1.0, 1.0, 1.0], asphalt)
     plane.parent = scene
 
     car = createCar([0.0, 0.0, -10.0])
@@ -150,7 +141,6 @@ function createScene() {
     car.script = new CarController(car)
 
     headlightL = new GameObject([2.52965, 0.365211, -0.746565])
-    // headlightL = createLampCube([2.52965, 0.365211, -0.746565], [0.1, 0.1, 0.1])
     headlightL.parent = car
     headlightL.localPosition = [2.52965, 0.365211, -0.746565]
     headlightR = new GameObject()
@@ -158,19 +148,12 @@ function createScene() {
     headlightR.localPosition = [2.52965, 0.365211, +0.746565]
 
     //Camera
-    cameraPivot = new GameObject([0.0, 0.0, 0.0])
-    cameraPivot.parent = car
-    cameraPivot.localPosition = [0.0, 0.0, 0.0]
-    camera = new GameObject([0.0, 3.0, 2.0])
-    camera.parent = cameraPivot
-    camera.localPosition = [0.0, 0.0, 10.0]
-    camera.script = new CameraPivotController(camera)
+    camera = new GameObject([0.0, 15.0, 15.0])
+    camera.rotate(-30 * Math.PI / 180, 0, 0)
     
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
     objects.push(lightCube)
-
-
 }
 
 async function loadModels() {
@@ -219,7 +202,7 @@ async function main() {
     renderLoop()
     function renderLoop() {
         input.update()
-        camera._script.update()
+        // camera._script.update()
         car._script.update()
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)

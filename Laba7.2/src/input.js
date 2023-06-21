@@ -57,9 +57,6 @@ function bindGUI() {
 
     document.getElementById("shaderSelector").addEventListener("change", (event) => {
         const setShader = function(shader) {
-            redCube.meshRenderer.material.shader = shader
-            greenCube.meshRenderer.material.shader = shader
-            blueCube.meshRenderer.material.shader = shader
             plane.meshRenderer.material.shader = shader
         }
 
