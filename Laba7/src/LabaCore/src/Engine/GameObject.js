@@ -16,6 +16,7 @@ class GameObject {
 
         // Components
         this._meshRenderer
+        this._collider
         this._script
     }
     
@@ -77,6 +78,14 @@ class GameObject {
 
     get scale() {
         return this._scale
+    }
+
+    get collider() {
+        return this._collider
+    }
+
+    set collider(value) {
+        this._collider = value
     }
 
     set scale(value) {
