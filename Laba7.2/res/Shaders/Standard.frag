@@ -8,7 +8,7 @@ struct LightInfo {
     int type;
 };
 
-#define LIGHT_COUNT 3
+#define LIGHT_COUNT 5
 
 varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;
@@ -63,7 +63,7 @@ vec4 getSpotLightFragColor(LightInfo lightInfo) {
     float distanceToLight = length(directionToLight);
     directionToLight = normalize(directionToLight);
     float diffuse = max(0.0, dot(directionToLight, - lightInfo.direction));
-    diffuse = (diffuse < 0.9) ? 0.0 : 1.0 / pow(distanceToLight, 1.7);
+    diffuse = (diffuse < 0.9) ? 0.0 : 1.0 / pow(distanceToLight / 2.0, 1.0);
     vec3 diffuseColor = lightInfo.color * (diffuse);
 
     return vec4(diffuseColor, 1.0);

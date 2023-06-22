@@ -28,6 +28,8 @@ class OBJLoader {
         this._normals = mesh.vertexNormals
         this._indices = mesh.indices
 
+        // console.log(mesh)
+
         // console.log(this._vertices)
         // console.log(this._normals)
         // console.log(this._indices)
@@ -36,6 +38,7 @@ class OBJLoader {
         // console.log(obj)
         // this._parseOBJ(objText)
         // this._parse(objText)
+
     }
 
     _parse(text) {

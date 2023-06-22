@@ -11,6 +11,11 @@ const SHADERS = {
     simple: undefined,
 }
 
+const meshes = {
+    car: new Mesh(),
+    lamppost: new Mesh(),
+}
+
 const PROJECT_MATRIX = glMatrix.mat4.create()
 const VIEW_MATRIX = glMatrix.mat4.create()
 
@@ -99,17 +104,11 @@ function createPlane(pos, scale, color, image) {
     return plane
 }
 
-function createCar(pos) {
-    const material = new Material(SHADERS.standard)
-    material.setFloat3("u_Color", [1.0, 1.0, 1.0])
+function createModel(mesh, color) {
+    const material = new Material(SHADERS.phong)
+    material.setFloat3("u_Color", color)
     
-    const model = new GameObject(pos)
-    const mesh = new Mesh()
-    mesh.vertices = OBJ_LOADER.vertices
-    mesh.normals = OBJ_LOADER.normals
-    mesh.indices = OBJ_LOADER.indices
-    mesh.uv = new Array(mesh.vertices.length)
-    mesh.build()
+    const model = new GameObject()
     model.meshRenderer = new MeshRenderer(mesh, material)
 
     return model
@@ -124,6 +123,8 @@ function createScene() {
     const grass = document.getElementById("grass-image")
     const marble = document.getElementById("marble-image")
     const asphalt = document.getElementById("asphalt-image")
+    const road = document.getElementById("road-image")
+    const groundT = document.getElementById("ground-image")
 
     // Create objects
     scene = new GameObject([0.0, 0.0, 0.0])
@@ -133,20 +134,51 @@ function createScene() {
     
     pedestal.parent = scene
 
-    plane = createPlane([0.0, -0.5, 0.0], [50, 1, 50], [1.0, 1.0, 1.0], asphalt)
+    plane = createPlane([0.0, -0.5, 0.0], [25, 1, 50], [1.0, 1.0, 1.0], road)
     plane.parent = scene
+    const road2 = createPlane([0.0, -0.5, -1], [1, 1, 1], [1.0, 1.0, 1.0], road)
+    road2.parent = plane
+    for (let i = 0; i < 1; i++) {
+        const create = function(pos, rotY) {
+            const lamppost = createModel(meshes.lamppost, [1.0, 1.0, 1.0])
+            const step = 10
+            lamppost.globalPosition = pos
+            lamppost.rotate(0, rotY)
+            lamppost.parent = scene
+            const light = new LightInfo()
+            light.size = 25
+            light.type = 0
+            light.parent = lamppost
+            light.localPosition = [0, 15, 3]
+        }
 
-    car = createCar([0.0, 0.0, -10.0])
+        const z = -i * 40 - 20
+        create([-12, 0.0, z], 90 * Math.PI / 180)
+        create([12, 0.0, z], -90 * Math.PI / 180)
+        
+    }
+
+    const ground = createPlane([0.0, -0.7, -20], [50, 1, 100], [1.0, 1.0, 1.0], grass)
+    ground.parent = scene
+
+    // car = createCar([0.0, 0.0, -10.0])
+    car = createModel(meshes.car, [1.0, 0.0, 0.5])
+    car.rotate(0, Math.PI)
     car.parent = scene
     car.script = new CarController(car)
 
-    headlightL = new GameObject()
+    headlightL = new LightInfo()
+    headlightL.type = 1
     headlightL.parent = car
+    const tilt = 10 * Math.PI / 180
     // headlightL.localPosition = [1.07313, -1.46486, -3.58664]
     headlightL.localPosition = [1.08891, 1.35343, +3.3577]
-    headlightR = new GameObject()
+    headlightL.rotate(tilt, 0, 0)
+    headlightR = new LightInfo()
+    headlightR.type = 1
     headlightR.parent = car
     headlightR.localPosition = [-1.08891, 1.35343, +3.3577]
+    headlightR.rotate(tilt, 0, 0)
 
     //Camera
     camera = new GameObject([0.0, 15.0, 15.0])
@@ -160,6 +192,25 @@ function createScene() {
 
 async function loadModels() {
     await OBJ_LOADER.load("res/Models/Car.obj")
+    meshes.car.vertices = OBJ_LOADER.vertices
+    meshes.car.normals = OBJ_LOADER.normals
+    meshes.car.indices = OBJ_LOADER.indices
+    meshes.car.uv = new Array(meshes.car.vertices.length)
+    meshes.car.build()
+
+    await OBJ_LOADER.load("res/Models/lamppost.obj")
+    meshes.lamppost.vertices = OBJ_LOADER.vertices
+    meshes.lamppost.normals = OBJ_LOADER.normals
+    meshes.lamppost.indices = OBJ_LOADER.indices
+    meshes.lamppost.uv = new Array(meshes.lamppost.vertices.length)
+    meshes.lamppost.build()
+}
+
+function setLights(material) {
+    LightInfo.INSTANCES.forEach((light, index) => {
+        const name = "u_LightInfos[" + index + "]" 
+        material.setLightInfo(name, light.globalPosition, light.forward, [1.0, 1.0, 1.0], light.size, light.type)
+    })
 }
 
 async function main() {
@@ -181,9 +232,10 @@ async function main() {
             material.setMat4("u_WorldMat", object.matrix)
             //Light
             material.setFloat3("u_CameraPosition", camera.globalPosition)
-            material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [0, 0, 0], [1.0, 1.0, 1.0], lightSize, 0)
-            material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(0.0, -0.7, 1.0), [1.0, 1.0, 1.0], lightSize, 1)
-            material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(0.0, -0.7, 1.0), [1.0, 1.0, 1.0], lightSize, 1)
+            setLights(material)
+            // material.setLightInfo("u_LightInfos[4]", lightCube.globalPosition, [0, 0, 0], [1.0, 1.0, 1.0], lightSize, 0)
+            // material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(0.0, -0.7, 1.0), [1.0, 1.0, 1.0], lightSize, 1)
+            // material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(0.0, -0.7, 1.0), [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
@@ -204,8 +256,8 @@ async function main() {
     renderLoop()
     function renderLoop() {
         input.update()
-        // camera._script.update()
-        car._script.update()
+        // camera.script.update()
+        car.script.update()
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.invert(VIEW_MATRIX, camera.matrix)
