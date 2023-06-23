@@ -11,6 +11,11 @@ const SHADERS = {
     simple: undefined,
 }
 
+const meshes = {
+    car: new Mesh(),
+    lamppost: new Mesh(),
+}
+
 const PROJECT_MATRIX = glMatrix.mat4.create()
 const VIEW_MATRIX = glMatrix.mat4.create()
 
@@ -103,28 +108,12 @@ function createPlane(pos, scale, color) {
     return plane
 }
 
-function createCar(pos) {
+function createModel(mesh, color) {
     const material = new Material(SHADERS.standard)
-    material.setFloat3("u_Color", [1.0, 1.0, 1.0])
+    material.setFloat3("u_Color", color)
     
-    const model = new GameObject(pos)
-    const mesh = new Mesh()
-    mesh.vertices = OBJ_LOADER.vertices
-    mesh.normals = OBJ_LOADER.normals
-    mesh.indices = OBJ_LOADER.indices
-    mesh.uv = new Array(mesh.vertices.length)
-    mesh.build()
+    const model = new GameObject()
     model.meshRenderer = new MeshRenderer(mesh, material)
-    
-    const collider = new BoxCollider()
-    collider.parent = model
-    collider.scale = [5.0, 5.0, 3.0]
-    model.collider = collider
-
-    // cube = createCube([0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [1.0, 0.0, 1.0], document.getElementById("cube1-image"))
-    // cube.parent = model
-    // cube.localPosition = [0.0, 0.0, 0.0]
-    // cube.scale = [5.0, 5.0, 3.0]
 
     return model
 }
@@ -155,17 +144,21 @@ function createScene() {
     plane = createPlane([0.0, -0.5, 0.0], [100, 1, 100], [1.0, 1.0, 1.0])
     plane.parent = scene
 
-    car = createCar([0.0, 0.0, -10.0])
+    car = createModel(meshes.car, [1.0, 1.0, 1.0])
+    car.globalPosition = [0.0, 0.0, -10.0]
     car.parent = scene
     car.script = new CarController(car)
 
-    headlightL = new GameObject([2.52965, 0.365211, -0.746565])
-    // headlightL = createLampCube([2.52965, 0.365211, -0.746565], [0.1, 0.1, 0.1])
+    headlightL = new LightInfo()
+    headlightL.type = 1
     headlightL.parent = car
-    headlightL.localPosition = [2.52965, 0.365211, -0.746565]
-    headlightR = new GameObject()
+    headlightL.rotate(20 * Math.PI / 180, 90 * Math.PI / 180)
+    headlightL.localPosition = [2.32965, 0.865211, -0.746565]
+    headlightR = new LightInfo()
+    headlightR.type = 1
     headlightR.parent = car
-    headlightR.localPosition = [2.52965, 0.365211, +0.746565]
+    headlightR.rotate(20 * Math.PI / 180, 90 * Math.PI / 180)
+    headlightR.localPosition = [2.32965, 0.865211, +0.746565]
 
     //Camera
     cameraPivot = new GameObject([0.0, 0.0, 0.0])
@@ -185,6 +178,25 @@ function createScene() {
 
 async function loadModels() {
     await OBJ_LOADER.load("res/Models/Car.obj")
+    meshes.car.vertices = OBJ_LOADER.vertices
+    meshes.car.normals = OBJ_LOADER.normals
+    meshes.car.indices = OBJ_LOADER.indices
+    meshes.car.uv = new Array(meshes.car.vertices.length)
+    meshes.car.build()
+
+    // await OBJ_LOADER.load("res/Models/lamppost.obj")
+    // meshes.lamppost.vertices = OBJ_LOADER.vertices
+    // meshes.lamppost.normals = OBJ_LOADER.normals
+    // meshes.lamppost.indices = OBJ_LOADER.indices
+    // meshes.lamppost.uv = new Array(meshes.lamppost.vertices.length)
+    // meshes.lamppost.build()
+}
+
+function setLights(material) {
+    LightInfo.INSTANCES.forEach((light, index) => {
+        const name = "u_LightInfos[" + index + "]" 
+        material.setLightInfo(name, light.globalPosition, light.forward, [1.0, 1.0, 1.0], light.size, light.type)
+    })
 }
 
 async function main() {
@@ -206,9 +218,10 @@ async function main() {
             material.setMat4("u_WorldMat", object.matrix)
             //Light
             material.setFloat3("u_CameraPosition", camera.globalPosition)
-            material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [0, 0, 0], [1.0, 1.0, 1.0], lightSize, 0)
-            material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
-            material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
+            setLights(material)
+            // material.setLightInfo("u_LightInfos[0]", lightCube.globalPosition, [0, 0, 0], [1.0, 1.0, 1.0], lightSize, 0)
+            // material.setLightInfo("u_LightInfos[1]", headlightL.globalPosition, headlightL.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
+            // material.setLightInfo("u_LightInfos[2]", headlightR.globalPosition, headlightR.getRelativeDirection(1.0, -1.0, 0.0), [1.0, 1.0, 1.0], lightSize, 1)
             material.setFloat1("u_LightSize", lightSize)
             material.setFloat1("u_AmbientIntensity", ambientIntensity)
             material.setFloat1("u_DiffuseIntensity", diffuseIntensity)
