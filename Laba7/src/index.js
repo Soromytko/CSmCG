@@ -3,12 +3,6 @@ const OBJ_LOADER = new OBJLoader()
 
 const SHADERS = {
     standard: undefined,
-    phongTexture: undefined,
-    phong: undefined,
-    lambert: undefined,
-    guro: undefined,
-    lamp: undefined,
-    simple: undefined,
 }
 
 const PROJECT_MATRIX = glMatrix.mat4.create()
@@ -36,18 +30,7 @@ let headlightR
 const objects = []
 
 async function loadShaders() {
-    const loadShader = async function(shaderFileName) {
-        const url = "res/Shaders/" + shaderFileName
-        // e.g. url = res/Shaders/Phong.vert
-        return await loadFile(url)
-    }
-    SHADERS.standard = new Shader(await loadShader("Standard.vert"), await loadShader("Standard.frag"))
-    SHADERS.phongTexture = new Shader(await loadShader("PhongTexture.vert"), await loadShader("PhongTexture.frag"))
-    SHADERS.phong = new Shader(await loadShader("Phong.vert"), await loadShader("Phong.frag"))
-    SHADERS.lambert = new Shader(await loadShader("Lambert.vert"), await loadShader("Lambert.frag"))
-    SHADERS.guro = new Shader(await loadShader("Guro.vert"), await loadShader("Guro.frag"))
-    SHADERS.lamp = new Shader(await loadShader("Lamp.vert"), await loadShader("Lamp.frag"))
-    SHADERS.simple = new Shader(await loadShader("Simple.vert"), await loadShader("Simple.frag"))
+    SHADERS.standard = new Shader(standardVert, standardFrag)
 }
 
 function buildShaders() {
@@ -216,6 +199,7 @@ async function main() {
             //Texture
             material.setFloat1("u_MixingTextures", mixingTextures)
 
+            if (!meshRenderer.material.shader) return
             renderer.submit(meshRenderer.material.shader, meshRenderer.mesh.vertexArray)
             meshRenderer.material.apply()
             renderer.render()

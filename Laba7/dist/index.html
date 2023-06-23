@@ -1,0 +1,117 @@
+<html>
+	<head>
+		<titlelaba3< title="">
+	</titlelaba3<></head>
+	<body onload="main()">
+		<div class="slidecontainer">
+			<div>
+				<label for="temp">Scene:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="sceneRange">
+				<label for="temp">Pedestal:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="pedestalRange">
+				<label for="temp">Red:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="redRange">
+				<label for="temp">Green:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="greenRange">
+				<label for="temp">Blue:</label>
+				<input type="range" min="0" max="360" value="0" class="slider" id="blueRange">
+			</div>
+		</div>
+		<canvas id="canvas" width="800" height="600">
+			Your browser does not support HTML5
+		</canvas>
+		<div>
+			<div>
+				<label for="temp">Ambient:</label>
+				<input type="range" min="0" max="1" value="0.1" step="0.01" class="slider" id="ambientRange">
+				<label for="temp">Diffuse:</label>
+				<input type="range" min="0" max="1" value="0.2" step="0.01" class="slider" id="diffuseRange">
+				<label for="temp">Specular:</label>
+				<input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="specularRange">
+				<label for="temp">LightSize:</label>
+				<input type="range" min="0" max="1" value="0.7" step="0.01" class="slider" id="lightSizeRange">
+			</div>
+
+			<div>
+				<label for="temp">LightPositionX:</label>
+				<input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="lightXRange">
+				<label for="temp">LightPositionY:</label>
+				<input type="range" min="0" max="1" value="0.7" step="0.01" class="slider" id="lightYRange">
+				<label for="temp">LightPositionZ:</label>
+				<input type="range" min="0" max="1" value="0.3" step="0.01" class="slider" id="lightZRange">
+			</div>
+			<div>
+				<label for="pet-select">Shader:</label>
+				<select name="pets" id="shaderSelector">
+					<option value="Standard">Standard</option>
+					<option value="Phong (Texture)">PhongTexture</option>
+					<option value="Phong">Phong</option>
+					<option value="Lambert">Lambert</option>
+					<option value="Guro">Guro</option>
+					<option value="Simple">Simple</option>
+				</select>
+			</div>
+			<div>
+				<label for="temp">Mixing Textures:</label>
+				<input type="range" min="0" max="1" value="1.0" step="0.01" class="slider" id="mixRange">
+			</div>
+				
+				
+		</div>
+
+		<!-- LabaCore/External -->
+		<!-- <script src="src/LabaCore/External/gl-matrix/dist/gl-matrix-min.js"></script> -->
+		<script src="/index.55c91008.js"></script>
+		<script src="/index.9b771efe.js"></script>
+		<!-- <script src="src/LabaCore/External/gl-matrix-v4.x/gl-matrix.js"></script> -->
+		<!-- <script src="node_modules\obj-file-parser\dist\OBJFile.js"></script> -->
+		<!-- <script src="node_modules\webgl-obj-loader\dist\webgl-obj-loader.min.js"></script> -->
+		<!-- <script src="node_modules\webgl-obj-loader\dist/webgl-obj-loader.js"></script> -->
+
+
+		<!-- LabaCore/src/Core -->
+		<script src="/index.793b3c35.js"></script>
+		<script src="/index.fbeed4bd.js"></script>
+		<script src="/index.6c5e14aa.js"></script>
+		<script src="/index.398ce9ee.js"></script>
+		<script src="/index.5a4e0cb1.js"></script>
+		<script src="/index.944cb514.js"></script>
+		<script src="/index.26fb6369.js"></script>
+
+		<!-- LabaCore/src/Engine -->
+		<script src="/index.25f7bf3e.js"></script>
+		<script src="/index.d2f84c8c.js"></script>
+		<script src="/index.5d8067f7.js"></script>
+		<script src="/index.bf83e63f.js"></script>
+		<script src="/index.2ce2039a.js"></script>
+		<script src="/index.ac709b7b.js"></script>
+		<script src="/index.cfd37c45.js"></script>
+		<script src="/index.11b2444b.js"></script>
+		<script src="/index.bf8b1abc.js"></script>
+		<script src="/index.9ab74f3d.js"></script>
+		<script src="/index.3faaf029.js"></script>
+		<script src="/index.dc4874ec.js"></script>
+		
+		<!-- Laba -->
+		<script src="/index.ff6bdaa2.js"></script>
+		<script src="/index.dd126d9e.js"></script>
+		<script src="/index.ad90fa85.js"></script>
+		<!-- <script src="src/CameraPivotController.js"></script> -->
+		<script src="/index.34a95545.js"></script>
+		<script src="/index.3e05f1f8.js"></script>
+		<script src="/index.579125c3.js"></script>
+
+		<!-- Textures -->
+		<img id="iron-image" src="/iron.856840bb.jpg" width="0" height="0">
+		<img id="marble-image" src="/marble.d16a2797.jpg" width="0" height="0">
+		<img id="grass-image" src="/grass.3c3ee6a3.jpg" width="0" height="0">
+		<img id="wood-image" src="/wood.1f24a567.jpg" width="0" height="0">
+		<img id="fire-image" src="/fire.dadcec5b.jpg" width="0" height="0">
+		<img id="ground-image" src="/ground.8dcad275.jpg" width="0" height="0">
+		<img id="cube1-image" src="/1.9761c4a5.jpg" width="0" height="0">
+		<img id="cube2-image" src="/2.a344d67f.jpg" width="0" height="0">
+		<img id="cube3-image" src="/3.33c7feaf.jpg" width="0" height="0">
+		<img id="plane-image" src="/iron.856840bb.jpg" width="0" height="0">
+		
+	<script src="/Laba7.3464ddca.js"></script></body>
+</html>

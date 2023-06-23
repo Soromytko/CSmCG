@@ -17,7 +17,7 @@ class Renderer {
 
     submit(shader, vertexArray) {
         if (!shader) {
-            console.warn("The shader is undefined")
+            console.warn("The shader is undefined", shader)
         }
         if (!vertexArray) {
             consoel.warn("The vertexArray is  undefined")

@@ -56,35 +56,6 @@ function bindGUI() {
     })
 
     document.getElementById("shaderSelector").addEventListener("change", (event) => {
-        const setShader = function(shader) {
-            redCube.meshRenderer.material.shader = shader
-            greenCube.meshRenderer.material.shader = shader
-            blueCube.meshRenderer.material.shader = shader
-            plane.meshRenderer.material.shader = shader
-        }
-
-        const model = event.target.value
-        if (model == "Standard") {
-            setShader(SHADERS.standard)
-            console.log("Standard shader is set")
-        } else if (model == "Phong (Texture)") {
-            setShader(SHADERS.phongTexture)
-            console.log("Phong (Texture) shader is set")
-        } else if (model == "Simple") {
-            setShader(SHADERS.simple)
-            console.log("Simple shader is set")
-        } else if (model == "Lambert") {
-            setShader(SHADERS.lambert)
-            console.log("Lambert shader is set")
-        } else if (model == "Phong") {
-            setShader(SHADERS.phong)
-            console.log("Phong shader is set")
-        } else if (model == "Guro") {
-            setShader(SHADERS.guro)
-            console.log("Guro shader is set")
-        }
-        else {
-            console.log("Unknown model: ", model)
-        }
+      
     })
 }
