@@ -38,6 +38,8 @@ let plane
 let headlightL
 let headlightR
 
+let coinControl
+
 const objects = []
 
 async function loadShaders() {
@@ -136,7 +138,7 @@ function createScene() {
     lightCube = createLampCube([0.0, 2.0, -2.0], [0.1, 0.1, 0.1])
     lightCube.meshRenderer.material = new Material(SHADERS.lamp)
     
-    pedestal.parent = scene
+    // pedestal.parent = scene
     redCube.parent = pedestal
     greenCube.parent = pedestal
     blueCube.parent = pedestal
@@ -145,9 +147,15 @@ function createScene() {
     plane.parent = scene
 
     car = createModel(meshes.car, [1.0, 1.0, 1.0])
-    car.globalPosition = [0.0, 0.0, -10.0]
+    car.globalPosition = [0.0, 0.0, 0.0]
     car.parent = scene
     car.script = new CarController(car)
+    const carColliderCube = createCube([0, 0,0 ], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], marble)
+    car.collider = new BoxCollider()
+    car.collider.parent = car
+    car.collider.localPosition = [0,0,0]
+    car.collider.scale = [5.0, 5.0, 3.0]
+    // carColliderCube.parent = car.collider
 
     headlightL = new LightInfo()
     headlightL.type = 1
@@ -162,18 +170,61 @@ function createScene() {
 
     //Camera
     cameraPivot = new GameObject([0.0, 0.0, 0.0])
-    cameraPivot.parent = car
+    cameraPivot.parent = scene
     cameraPivot.localPosition = [0.0, 0.0, 0.0]
     camera = new GameObject([0.0, 3.0, 2.0])
     camera.parent = cameraPivot
-    camera.localPosition = [0.0, 0.0, 10.0]
+    camera.localPosition = [0.0, 5.0, 15.0]
     camera.script = new CameraPivotController(camera)
+
+    const random = (min, max) => (Math.random() * (max - min) + min)        
+
+    const createObstacles = () => {
+        const pos = [random(-10, 10), 1.5, random(-10, 10)]
+        const rot = random(0, Math.PI * 2)
+        const obstacle = createCube(pos, [1.0, 3.0, 1.0], [1.0, 1.0, 1.0], marble)
+        // obstacle.rotate(0.0, rot, 0.0)
+        obstacle.parent = scene
+        const collider = new BoxCollider()
+        collider.parent = obstacle
+        collider.localPosition = [0, 0, 0]
+    }
+    // createObstacles()
+
+    const createLights = () => {
+        for (let i = 0; i < 3; i++) {
+            const pos = [random(-30, 30), 2, random(-30, 30)]
+            const light = new LightInfo(pos)
+            light.parent = scene
+        }
+    }
+    // createLights()
+
+    coinControl = new GameObject()
+    coinControl.script = new CoinsController(coinControl)
+    coinControl.parent = scene
+    const createCoins = () => {
+        const material = new Material(SHADERS.simple)
+        material.setFloat3("u_Color", [1.0, 1.0, 0.0])
+
+        for(let i = 0; i < 3; i++) {
+            const pos = [random(-10, 10), 1.5, random(-10, 10)]
+            const rot = [0, random(0, 360 * Math.PI / 180)]
+            const coin = new GameObject(pos, rot, [1, 1, 1])
+            coin.meshRenderer = new MeshRenderer(new CoinMesh(), material)
+            coin.parent = coinControl
+
+            const light = new LightInfo()
+            light.size = 10
+            light.parent = coin
+            light.localPosition = [0, 2, 0]
+        }
+    }
+    createCoins()
     
     // Push only a root objects, child objects will be rendered recursively
     objects.push(scene)
-    objects.push(lightCube)
-
-
+    // objects.push(lightCube)
 }
 
 async function loadModels() {
@@ -242,8 +293,9 @@ async function main() {
     renderLoop()
     function renderLoop() {
         input.update()
-        camera._script.update()
-        car._script.update()
+        car.script.update()
+        camera.script.update(car)
+        coinControl.script.update(car)
 
         glMatrix.mat4.perspective(PROJECT_MATRIX, (60 * Math.PI) / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0)
         glMatrix.mat4.invert(VIEW_MATRIX, camera.matrix)

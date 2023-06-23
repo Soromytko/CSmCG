@@ -8,7 +8,7 @@ struct LightInfo {
     int type;
 };
 
-#define LIGHT_COUNT 3
+#define LIGHT_COUNT 5
 
 varying vec3 v_VertexPosition;
 varying vec3 v_VertexNormal;

@@ -3,9 +3,11 @@ class CameraPivotController {
         this._object = object
 
         this._rot = {x: 0.0, y: 0.0}
+
+        this._lerpRotation = glMatrix.vec3.create()
     }
 
-    update() {
+    update(car) {
         const h = input.getKey("A") ? -1.0 : input.getKey("D") ? 1.0 : 0.0
         const right = {
             x: Math.cos(this._rot.x) * h,
@@ -37,6 +39,14 @@ class CameraPivotController {
         if (input.mouse.isHoldButton) {
             this._looking()
         }
+
+        const lerpPosition = glMatrix.vec3.create()
+        glMatrix.vec3.lerp(lerpPosition, lerpPosition, car.globalPosition, 0.9)
+        this._object.parent.globalPosition = lerpPosition
+
+        glMatrix.vec3.lerp(this._lerpRotation, this._lerpRotation, car.rotation, 0.020)
+        const rotOffset = -90 * Math.PI / 180
+        this._object.parent.rotation = [-this._rot.y, -this._rot.x + this._lerpRotation[1] + rotOffset, 0]
     }
 
     _looking() {

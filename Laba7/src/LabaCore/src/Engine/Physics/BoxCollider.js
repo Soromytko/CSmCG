@@ -2,12 +2,24 @@ class BoxCollider extends GameObject {
     constructor(position, rotation, scale) {
         super(position, rotation, scale)
 
+        this._points = []
+        this._points.push([-1, -1, -1])
+        this._points.push([-1, -1, +1])
+        this._points.push([-1, +1, -1])
+        this._points.push([-1, +1, +1])
+        this._points.push([+1, -1, -1])
+        this._points.push([+1, -1, +1])
+        this._points.push([+1, +1, -1])
+        this._points.push([+1, +1, +1])
+
+        this.updatePoints()
+
         BoxCollider.COLLIDERS.push(this)
     }
 
     updatePoints() {
         for (let i = 0; i < this._points.length; i++){
-            glMatrix.vec3.translateMat4(this._points[i], this._points[i], this._matrix)
+            glMatrix.vec3.transformMat4(this._points[i], BoxCollider.POINTS[i], this._matrix)
         }
     }
 
@@ -26,12 +38,25 @@ class BoxCollider extends GameObject {
 
     isCollisionWith(collider) {
         for (let i = 0; i < this._points.length; i++) {
-            if (collider.contains(this._points[i])) {
+            if (this.contains(collider._points[i])) {
                 return true
             }
         }
         return false
     }
 }
+
+BoxCollider.size = 0.5
+
+BoxCollider.POINTS = [
+    [-BoxCollider.size, -BoxCollider.size, -BoxCollider.size],
+    [-BoxCollider.size, -BoxCollider.size, +BoxCollider.size],
+    [-BoxCollider.size, +BoxCollider.size, -BoxCollider.size],
+    [-BoxCollider.size, +BoxCollider.size, +BoxCollider.size],
+    [+BoxCollider.size, -BoxCollider.size, -BoxCollider.size],
+    [+BoxCollider.size, -BoxCollider.size, +BoxCollider.size],
+    [+BoxCollider.size, +BoxCollider.size, -BoxCollider.size],
+    [+BoxCollider.size, +BoxCollider.size, +BoxCollider.size],
+]
 
 BoxCollider.COLLIDERS = []
